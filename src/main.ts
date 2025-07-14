@@ -1,54 +1,47 @@
-export function createSpotlightUI(): void {
-  const body = document.body;
-  body.id = "body";
+import { createModelUI } from "./ui/model";
+import { populateHistory } from "./browser/history";
+import { updateSuggestion, searchAndSuggest } from "./browser/suggestion";
+import { handleGlobalKeys } from "./events/keyboard";
+import { createNewTabPage } from "./ui/newtab";
 
-  // Create <main class="container">
-  const main = document.createElement("main");
-  main.className = "container";
+document.addEventListener("keydown", (e: KeyboardEvent) => {
+  if (e.ctrlKey && e.shiftKey && e.key === "K") {
+    e.preventDefault();
+    showSpotlight();
+  }
+});
 
-  // Create wrapper
-  const wrapper = document.createElement("div");
-  wrapper.className = "wrapper";
+console.log("content js loaded");
 
-  // Create header (title-wrapper)
-  const header = document.createElement("header");
-  header.className = "title-wrapper";
+document.addEventListener("DOMContentLoaded", () => {
+  createNewTabPage();
+  showSpotlight();
+});
 
-  // Create logo image
-  const logo = document.createElement("img");
-  logo.id = "logo";
-  logo.src = "src/assets/icon128.webp";
-  logo.alt = "Spotlight Logo";
-  logo.width = 64; // fallback in case CSS doesn't load
-  logo.height = 64;
+function showSpotlight() {
+  createModelUI();
+  const searchInput = document.getElementById(
+    "spotlight-search-input-ext",
+  ) as HTMLInputElement;
 
-  // Create title h1
-  const title = document.createElement("h1");
-  title.className = "title bricolage-grotesque-latin";
-  title.textContent = "Spotlight";
+  searchInput.onclick = showSpotlight;
 
-  // Append logo and title to header
-  header.appendChild(logo);
-  header.appendChild(title);
+  let debounceTimeout: NodeJS.Timeout;
+  searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      const query = searchInput.value.trim();
+      updateSuggestion(query);
+      if (query.length > 0) {
+        searchAndSuggest(query);
+      } else {
+        populateHistory();
+      }
+    }, 150);
+  });
 
-  // Create input-wrapper div
-  const inputWrapper = document.createElement("div");
-  inputWrapper.className = "input-wrapper";
+  document.addEventListener("keydown", handleGlobalKeys);
 
-  // Create input element
-  const input = document.createElement("input");
-  input.type = "text";
-  input.id = "search-input";
-  input.className = "bricolage-grotesque-latin";
-  input.placeholder = "Search or type a URL";
-  input.autocomplete = "off";
-  input.autocorrect = "off";
-
-  inputWrapper.appendChild(input);
-
-  // Assemble structure
-  wrapper.appendChild(header);
-  wrapper.appendChild(inputWrapper);
-  main.appendChild(wrapper);
-  body.appendChild(main);
+  populateHistory();
+  updateSuggestion("");
 }
