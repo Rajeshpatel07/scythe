@@ -11,13 +11,6 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 
 console.log("content js loaded");
 
-document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (e.key === "/") {
-    e.preventDefault();
-    showSpotlight();
-  }
-});
-
 document.addEventListener("DOMContentLoaded", () => {
   showSpotlight();
 });
