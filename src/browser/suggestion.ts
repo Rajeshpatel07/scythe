@@ -13,7 +13,6 @@ export function searchAndSuggest(query: string) {
     { action: "searchHistory", query: query },
     (response) => {
       if (response?.history) {
-        console.log(response);
         resultsList.innerHTML = ""; // Clear placeholder
         if (response.history.length > 0) {
           // @ts-ignore
@@ -70,7 +69,7 @@ export function updateSuggestion(query: string) {
     let potentialSuggestion = "";
     const resultUrl = firstResult.getAttribute("data-url");
 
-    // Prefer matching against URL hostname for autocompletion
+    // matching against URL hostname for autocompletion
     try {
       if (resultUrl) {
         const hostname = new URL(resultUrl).hostname.replace("www.", "");
@@ -86,7 +85,6 @@ export function updateSuggestion(query: string) {
       potentialSuggestion &&
       potentialSuggestion.toLowerCase() !== query.toLowerCase()
     ) {
-      console.log("potential", potentialSuggestion);
       suggestionEl.innerText = potentialSuggestion;
       config.currentSuggestion = potentialSuggestion;
     } else {

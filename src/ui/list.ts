@@ -16,9 +16,6 @@ export function createListItem(title: string, url: string) {
   }
 
   favicon.src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
-  // favicon.onerror = () => {
-  //   favicon.src = "./assets/icon128.webp";
-  // };
 
   const textContent = document.createElement("div");
   textContent.className = "spotlight-text-content-ext";
@@ -27,7 +24,9 @@ export function createListItem(title: string, url: string) {
   titleEl.textContent = title;
   const urlEl = document.createElement("span");
   urlEl.className = "spotlight-url-ext";
-  urlEl.textContent = `— ${url}`;
+  if (url.length > 0) {
+    urlEl.textContent = `— ${url}`;
+  }
 
   textContent.appendChild(titleEl);
   textContent.appendChild(urlEl);
@@ -51,8 +50,6 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
     config.selectedResultIndex =
       (config.selectedResultIndex - 1 + results.length) % results.length;
   }
-
-  // console.log(config.selectedResultIndex, results.length);
 
   results[config.selectedResultIndex].classList.add("selected");
   results[config.selectedResultIndex].scrollIntoView({ block: "nearest" });

@@ -1,3 +1,5 @@
+import { config } from "../config";
+
 export function createModelUI() {
   const overlay = document.createElement("div");
   overlay.id = "spotlight-overlay-ext";
@@ -22,7 +24,6 @@ export function createModelUI() {
   searchInput.placeholder = "Search or enter address";
   searchInput.autocomplete = "off";
 
-  // *** NEW: Suggestion element for autocompletion ***
   const suggestionEl = document.createElement("div");
   suggestionEl.id = "spotlight-suggestion-ext";
 
@@ -53,6 +54,7 @@ export function hideSpotlight() {
     setTimeout(() => {
       // Check if the overlay is truly hidden before removing to avoid race conditions
       if (!overlay.classList.contains("visible")) {
+        config.isModelOpen = false;
         overlay.remove();
       }
     }, 200);

@@ -5,7 +5,6 @@ export function handleSearchSubmit() {
 
   const input = searchInput.value.trim();
 
-  console.log("input-> ", input);
   if (input.length > 0) {
     const isLikelyURL =
       /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(input) ||
@@ -15,8 +14,6 @@ export function handleSearchSubmit() {
         ? input
         : `https://${input}`
       : `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
-    console.log("url-> ", url);
-    // debugger;
     window.location.href = url;
   }
 }

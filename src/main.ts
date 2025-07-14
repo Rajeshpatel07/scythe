@@ -3,6 +3,7 @@ import { populateHistory } from "./browser/history";
 import { updateSuggestion, searchAndSuggest } from "./browser/suggestion";
 import { handleGlobalKeys } from "./events/keyboard";
 import { createNewTabPage } from "./ui/newtab";
+import { config } from "./config";
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.ctrlKey && e.shiftKey && e.key === "K") {
@@ -11,7 +12,14 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
   }
 });
 
-console.log("content js loaded");
+document.addEventListener("keydown", (e: KeyboardEvent) => {
+  if (e.key === "/") {
+    e.preventDefault();
+    if (!config.isModelOpen) {
+      showSpotlight();
+    }
+  }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   createNewTabPage();
@@ -19,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function showSpotlight() {
+  config.isModelOpen = true;
   createModelUI();
   const searchInput = document.getElementById(
     "spotlight-search-input-ext",

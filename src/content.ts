@@ -9,8 +9,6 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   }
 });
 
-console.log("content js loaded");
-
 document.addEventListener("DOMContentLoaded", () => {
   showSpotlight();
 });
