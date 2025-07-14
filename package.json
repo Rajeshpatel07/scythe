@@ -1,0 +1,21 @@
+{
+  "name": "spotlight-extension",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "format": "bunx biome format --write",
+    "lint": "bunx biome lint --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@types/chrome": "^0.1.0",
+    "@types/node": "^24.0.13",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4",
+    "vite-plugin-chrome-extension": "^0.0.7"
+  }
+}

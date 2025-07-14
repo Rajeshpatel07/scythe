@@ -1,0 +1,227 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Bricolage Grotesque", sans-serif;
+  background-color: #000;
+  color: #fff;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Font Class */
+.bricolage-grotesque-latin {
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+/* Layout */
+.container {
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header */
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+#logo {
+  height: 4rem;
+  width: 4rem;
+  border-radius: 0.8rem;
+  object-fit: cover;
+}
+
+/* Title */
+.title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+}
+
+/* Input */
+.input-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#search-input {
+  width: 100%;
+  max-width: 500px;
+  font-size: 1.2rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #1a1a1a;
+  color: #fff;
+  outline: none;
+}
+
+/* Placeholder */
+#search-input::placeholder {
+  color: #aaa;
+}
+
+/* Spotlight model */
+
+#spotlight-overlay-ext {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 9999;
+  font-family:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+#spotlight-modal-ext {
+  background-color: #1c1c1e;
+  color: #f2f2f7;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 60%;
+  margin-top: 15vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.spotlight-search-container-ext {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* This position relative is crucial for the suggestion element */
+  position: relative;
+}
+
+.spotlight-search-container-ext svg {
+  color: #8e8e93;
+  margin-right: 12px;
+  flex-shrink: 0; /* Prevents the icon from shrinking */
+}
+
+/* Container for the input and the suggestion text */
+.spotlight-input-wrapper-ext {
+  position: relative;
+  width: 100%;
+}
+
+#spotlight-search-input-ext,
+#spotlight-suggestion-ext {
+  width: 100%;
+  padding: 16px 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f2f2f7;
+  font-size: 18px;
+  font-weight: 400;
+  font-family: inherit; /* Ensure font is consistent */
+  box-sizing: border-box; /* Important for consistent sizing */
+}
+
+/* The actual input the user types in */
+#spotlight-search-input-ext {
+  position: relative; /* To appear on top of the suggestion */
+  z-index: 2;
+}
+
+/* The ghost text for autocompletion */
+#spotlight-suggestion-ext {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #555; /* Dim color for the suggestion */
+  z-index: 1;
+  pointer-events: none; /* Make it non-interactive */
+}
+
+#spotlight-search-input-ext::placeholder {
+  color: #8e8e93;
+}
+
+#spotlight-results-ext {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.spotlight-result-item-ext {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.spotlight-result-item-ext:hover,
+.spotlight-result-item-ext.selected {
+  background-color: #3a3a3c;
+}
+
+.spotlight-favicon-ext {
+  width: 23px;
+  height: 23px;
+  margin-right: 12px;
+  object-fit: contain;
+}
+
+.spotlight-text-content-ext {
+  display: flex;
+  align-items: baseline;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.spotlight-title-ext {
+  color: #f2f2f7;
+  font-size: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.spotlight-url-ext {
+  color: #8e8e93;
+  font-size: 15px;
+  margin-left: 8px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Spotlight",
+  "version": "1.0",
+  "description": "A beautiful spotlight command palette for your browser.",
+  "permissions": ["history", "tabs", "storage"],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"],
+      "css": ["src/style.css"]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "src/assets/icon16.webp",
+      "48": "src/assets/icon48.webp",
+      "128": "src/assets/icon128.webp"
+    },
+    "default_title": "Open Spotlight"
+  },
+  "icons": {
+    "16": "src/assets/icon16.webp",
+    "48": "src/assets/icon48.webp",
+    "128": "src/assets/icon128.webp"
+  },
+  "commands": {
+    "toggle-spotlight": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Open the Spotlight Search"
+    }
+  }
+}
