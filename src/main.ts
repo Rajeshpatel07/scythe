@@ -18,13 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
   showSpotlight();
 });
 
-function showSpotlight() {
+export function showSpotlight() {
   createModelUI();
   const searchInput = document.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
-
-  searchInput.onclick = showSpotlight;
 
   let debounceTimeout: NodeJS.Timeout;
   searchInput.addEventListener("input", () => {

@@ -1,3 +1,5 @@
+import { showSpotlight } from "../main";
+
 export function createNewTabPage(): void {
   const body = document.body;
   body.id = "body";
@@ -43,6 +45,7 @@ export function createNewTabPage(): void {
   input.placeholder = "Search or type a URL";
   input.autocomplete = "off";
   // input.autocorrect = "off";
+  input.onclick = showSpotlight;
 
   inputWrapper.appendChild(input);
 

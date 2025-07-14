@@ -6,10 +6,9 @@ chrome.commands.onCommand.addListener((command) => {
           tabs[0].id,
           { action: "toggleSpotlight" },
           (_response) => {
-            console.log("response-> ", _response);
             if (chrome.runtime.lastError) {
-              console.log(chrome.runtime.lastError);
-              console.log("Spotlight: Content script not ready.");
+              console.error(chrome.runtime.lastError);
+              console.error("Spotlight: Content script not ready.");
             }
           },
         );

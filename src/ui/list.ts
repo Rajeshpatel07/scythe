@@ -52,7 +52,7 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
       (config.selectedResultIndex - 1 + results.length) % results.length;
   }
 
-  console.log(config.selectedResultIndex, results.length);
+  // console.log(config.selectedResultIndex, results.length);
 
   results[config.selectedResultIndex].classList.add("selected");
   results[config.selectedResultIndex].scrollIntoView({ block: "nearest" });

@@ -9,7 +9,6 @@ export function handleGlobalKeys(e: KeyboardEvent) {
   ) as HTMLInputElement;
   if (document.activeElement !== searchInput) {
     if (e.key.length === 1 || e.key === "Backspace") {
-      console.log(e);
       searchInput.focus();
     }
   }
