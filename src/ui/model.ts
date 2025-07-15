@@ -39,11 +39,7 @@ export function createModelUI() {
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  // --- Focus Management ---
-  // Use a small timeout to ensure the browser is ready to give focus.
-  setTimeout(() => {
-    searchInput.focus();
-  }, 0);
+  forceFocusOnInput(searchInput);
 }
 
 export function hideSpotlight() {
@@ -58,5 +54,24 @@ export function hideSpotlight() {
         overlay.remove();
       }
     }, 200);
+  }
+}
+
+function forceFocusOnInput(inputElement: HTMLInputElement) {
+  // Try to focus immediately
+  inputElement.focus();
+
+  // If focus is not yet set, start a persistent interval to grab it
+  if (document.activeElement !== inputElement) {
+    const focusInterval = setInterval(() => {
+      inputElement.focus();
+      // If we successfully get focus, stop trying
+      if (document.activeElement === inputElement) {
+        clearInterval(focusInterval);
+      }
+    }, 50); // Retry every 50ms
+
+    // As a safeguard, clear the interval after 500ms
+    setTimeout(() => clearInterval(focusInterval), 500);
   }
 }

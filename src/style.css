@@ -11,7 +11,7 @@
 }
 
 /* Font Class */
-.bricolage-grotesque-latin {
+.spotlight-bricolage-grotesque-latin {
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
@@ -19,7 +19,7 @@
 }
 
 /* Layout */
-.container {
+.spotlight-container {
   width: 100%;
   padding: 1rem;
   display: flex;
@@ -27,7 +27,7 @@
   align-items: center;
 }
 
-.wrapper {
+.spotlight-wrapper {
   width: 100%;
   max-width: 600px;
   display: flex;
@@ -36,7 +36,7 @@
 }
 
 /* Header */
-.title-wrapper {
+.spotlight-title-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,13 +53,13 @@
 }
 
 /* Title */
-.title {
+.spotlight-title {
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
 }
 
 /* Input */
-.input-wrapper {
+.spotlight-input-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -105,8 +105,8 @@
 #spotlight-modal-ext {
   background-color: #1c1c1e;
   color: #f2f2f7;
-  border-radius: 12px;
-  width: 90%;
+  border-radius: 3px;
+  width: 65%;
   max-width: 60%;
   margin-top: 15vh;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -117,7 +117,8 @@
 .spotlight-search-container-ext {
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  gap: 0.5rem;
+  padding: 0 21px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   /* This position relative is crucial for the suggestion element */
   position: relative;
@@ -181,7 +182,7 @@
   display: flex;
   align-items: center;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -213,7 +214,7 @@
 }
 
 .spotlight-url-ext {
-  color: #8e8e93;
+  color: #f2f2f7;
   font-size: 15px;
   margin-left: 8px;
   text-overflow: ellipsis;

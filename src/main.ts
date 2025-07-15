@@ -44,7 +44,7 @@ export function showSpotlight() {
       } else {
         populateHistory();
       }
-    }, 150);
+    }, 1000);
   });
 
   document.addEventListener("keydown", handleGlobalKeys);

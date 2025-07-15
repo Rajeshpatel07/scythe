@@ -1,17 +1,18 @@
 import { showSpotlight } from "../main";
 
 export function createNewTabPage(): void {
+  console.log("newtab page loaded");
   const body = document.body;
   body.id = "body";
 
   const main = document.createElement("main");
-  main.className = "container";
+  main.className = "spotlight-container";
 
   const wrapper = document.createElement("div");
-  wrapper.className = "wrapper";
+  wrapper.className = "spotlight-wrapper";
 
   const header = document.createElement("header");
-  header.className = "title-wrapper";
+  header.className = "spotlight-title-wrapper";
 
   const logo = document.createElement("img");
   logo.id = "logo";
@@ -21,19 +22,19 @@ export function createNewTabPage(): void {
   logo.height = 64;
 
   const title = document.createElement("h1");
-  title.className = "title bricolage-grotesque-latin";
+  title.className = "spotlight-title bricolage-grotesque-latin";
   title.textContent = "Spotlight";
 
   header.appendChild(logo);
   header.appendChild(title);
 
   const inputWrapper = document.createElement("div");
-  inputWrapper.className = "input-wrapper";
+  inputWrapper.className = "spotlight-input-wrapper";
 
   const input = document.createElement("input");
   input.type = "text";
   input.id = "search-input";
-  input.className = "bricolage-grotesque-latin";
+  input.className = "spotlight-bricolage-grotesque-latin";
   input.placeholder = "Search or type a URL";
   input.autocomplete = "off";
 
