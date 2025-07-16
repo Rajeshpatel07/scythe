@@ -1,10 +1,13 @@
+import { InitiatePageNavigation } from "../browser/search";
 import { config } from "../config";
 
 export function createListItem(title: string, url: string) {
   const li = document.createElement("li");
   li.className = "spotlight-result-item-ext";
   li.setAttribute("data-url", url);
-  li.addEventListener("click", () => (window.location.href = url));
+  li.addEventListener("click", () => {
+    InitiatePageNavigation(url);
+  });
 
   const favicon = document.createElement("img");
   favicon.className = "spotlight-favicon-ext";

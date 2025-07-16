@@ -1,3 +1,6 @@
+import { config } from "../config";
+import { hideSpotlight } from "../ui/model";
+
 export function handleSearchSubmit() {
   const searchInput = document.getElementById(
     "spotlight-search-input-ext",
@@ -14,6 +17,16 @@ export function handleSearchSubmit() {
         ? input
         : `https://${input}`
       : `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
+    console.log("Initiated navigation...");
+    InitiatePageNavigation(url);
+  }
+}
+
+export function InitiatePageNavigation(url: string) {
+  if (config.openNewtab) {
+    hideSpotlight();
+    window.open(url);
+  } else {
     window.location.href = url;
   }
 }

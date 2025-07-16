@@ -6,14 +6,7 @@ import { createNewTabPage } from "./ui/newtab";
 import { config } from "./config";
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (e.ctrlKey && e.shiftKey && e.key === "K") {
-    e.preventDefault();
-    showSpotlight();
-  }
-});
-
-document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (e.key === "/") {
+  if (e.ctrlKey && e.key === "/") {
     e.preventDefault();
     if (!config.isModelOpen) {
       showSpotlight();
@@ -27,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function showSpotlight() {
+  config.openNewtab = false;
   config.isModelOpen = true;
   createModelUI();
   const searchInput = document.getElementById(
@@ -44,7 +38,7 @@ export function showSpotlight() {
       } else {
         populateHistory();
       }
-    }, 1000);
+    }, 800);
   });
 
   document.addEventListener("keydown", handleGlobalKeys);

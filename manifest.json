@@ -19,12 +19,13 @@
     }
   ],
   "action": {
+    "default_title": "Open Spotlight",
     "default_icon": {
       "16": "src/assets/icon16.webp",
       "48": "src/assets/icon48.webp",
       "128": "src/assets/icon128.webp"
     },
-    "default_title": "Open Spotlight"
+    "default_popup": "popup.html"
   },
   "icons": {
     "16": "src/assets/icon16.webp",

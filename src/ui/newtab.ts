@@ -1,9 +1,8 @@
 import { showSpotlight } from "../main";
 
 export function createNewTabPage(): void {
-  console.log("newtab page loaded");
   const body = document.body;
-  body.id = "body";
+  body.id = "spotlight-body";
 
   const main = document.createElement("main");
   main.className = "spotlight-container";
@@ -33,7 +32,7 @@ export function createNewTabPage(): void {
 
   const input = document.createElement("input");
   input.type = "text";
-  input.id = "search-input";
+  input.id = "spotlight-search-input";
   input.className = "spotlight-bricolage-grotesque-latin";
   input.placeholder = "Search or type a URL";
   input.autocomplete = "off";
