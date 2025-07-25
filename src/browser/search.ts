@@ -1,7 +1,7 @@
 import { config } from "../config";
 import { hideSpotlight } from "../ui/model";
 
-export function handleSearchSubmit() {
+export async function handleSearchSubmit() {
   const searchInput = document.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
@@ -16,8 +16,7 @@ export function handleSearchSubmit() {
       ? input.startsWith("http")
         ? input
         : `https://${input}`
-      : `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
-    console.log("Initiated navigation...");
+      : await getSearchUrl(input);
     InitiatePageNavigation(url);
   }
 }
@@ -29,4 +28,25 @@ export function InitiatePageNavigation(url: string) {
   } else {
     window.location.href = url;
   }
+}
+
+export async function getSearchUrl(input: string) {
+  const name = await getStoredSearchEngine();
+  if (name === "DuckDuckGo") {
+    return `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
+  } else if (name === "Brave") {
+    return `https://search.brave.com/search?q=${encodeURIComponent(input)}`;
+  } else if (name === "Bing") {
+    return `https://www.bing.com/search?q=${encodeURIComponent(input)}`;
+  } else {
+    return `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+  }
+}
+
+export async function getStoredSearchEngine(): Promise<string> {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(["searchEngine"], (result) => {
+      resolve(result.searchEngine || "Google");
+    });
+  });
 }

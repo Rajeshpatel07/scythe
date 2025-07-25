@@ -1,3 +1,4 @@
+import { config } from "../config";
 import { showSpotlight } from "../main";
 
 export function createNewTabPage() {
@@ -63,9 +64,8 @@ export function createNewTabPage() {
   searchInput.type = "text";
   searchInput.id = "spotlight-search-input";
   searchInput.name = "q";
-  searchInput.placeholder = "Ask anything, find anything...";
+  searchInput.placeholder = "find anything...";
   searchInput.autocomplete = "off";
-  searchInput.autofocus = true;
 
   searchInput.onfocus = showSpotlight;
   searchWrapper.appendChild(searchInput);
@@ -159,6 +159,29 @@ export function createNewTabPage() {
   const searchEngineSettingControl = document.createElement("div");
   searchEngineSettingControl.className = "spotlight-setting-control";
 
+  const engines = [
+    {
+      name: "Google",
+      value: "google",
+      favicon: "https://svgl.app/library/google.svg",
+    },
+    {
+      name: "DuckDuckGo",
+      value: "duckduckgo",
+      favicon: "https://svgl.app/library/duckduckgo.svg",
+    },
+    {
+      name: "Brave",
+      value: "brave",
+      favicon: "https://svgl.app/library/brave.svg",
+    },
+    {
+      name: "Bing",
+      value: "bing",
+      favicon: "https://svgl.app/library/bing.svg",
+    },
+  ];
+
   const engineSelectWrapper = document.createElement("div");
   engineSelectWrapper.className = "spotlight-engine-select-wrapper";
 
@@ -167,12 +190,16 @@ export function createNewTabPage() {
   engineSelectTrigger.id = "spotlight-engine-trigger";
 
   const defaultEngineImg = document.createElement("img");
-  defaultEngineImg.src = "https://svgl.app/library/google.svg";
-  defaultEngineImg.alt = "Google";
+  const engine = engines.find((e) => config.searchEngine === e.name);
+
+  defaultEngineImg.src = engine
+    ? engine.favicon
+    : "https://svgl.app/library/google.svg";
+  defaultEngineImg.alt = engine ? engine.name : "Google";
   engineSelectTrigger.appendChild(defaultEngineImg);
 
   const defaultEngineSpan = document.createElement("span");
-  defaultEngineSpan.textContent = "Google";
+  defaultEngineSpan.textContent = config.searchEngine || "Google";
   engineSelectTrigger.appendChild(defaultEngineSpan);
 
   const dropdownArrow = document.createElement("svg");
@@ -196,36 +223,6 @@ export function createNewTabPage() {
   engineOptionsList.className = "spotlight-engine-options";
   engineOptionsList.id = "spotlight-engine-options-list";
 
-  const engines = [
-    {
-      name: "Google",
-      value: "google",
-      favicon: "https://svgl.app/library/google.svg",
-    },
-    {
-      name: "DuckDuckGo",
-      value: "duckduckgo",
-      favicon: "https://svgl.app/library/duckduckgo.svg",
-    },
-    {
-      name: "Brave",
-      value: "brave",
-      favicon: "https://svgl.app/library/brave.svg",
-    },
-    {
-      name: "Bing",
-      value: "bing",
-      favicon: "https://svgl.app/library/bing.svg",
-    },
-    {
-      name: "Unduck",
-      value: "unduck",
-      favicon:
-        "[https://i.ibb.co/6g3wzCf/spotlight-logo-removebg-preview.png](https://i.ibb.co/6g3wzCf/spotlight-logo-removebg-preview.png)",
-      style: "background: #fff; border-radius: 50%;",
-    },
-  ];
-
   engines.forEach((engine) => {
     const optionItem = document.createElement("li");
     optionItem.className = "spotlight-engine-option-item";
@@ -234,9 +231,6 @@ export function createNewTabPage() {
     const img = document.createElement("img");
     img.src = engine.favicon;
     img.alt = engine.name;
-    if (engine.style) {
-      img.style.cssText = engine.style;
-    }
     optionItem.appendChild(img);
 
     const span = document.createElement("span");
@@ -257,4 +251,87 @@ export function createNewTabPage() {
   pageContainer.appendChild(overlayDiv);
 
   body.appendChild(pageContainer);
+}
+
+export function SidebarSettings() {
+  const settingsButton = document.getElementById(
+    "spotlight-settings-button",
+  ) as HTMLButtonElement;
+  const settingsModal = document.getElementById(
+    "spotlight-settings-modal",
+  ) as HTMLDivElement;
+  const closeButton = document.getElementById(
+    "spotlight-settings-close-button",
+  ) as HTMLButtonElement;
+  const overlay = document.getElementById(
+    "spotlight-overlay",
+  ) as HTMLDivElement;
+
+  function closeSettings() {
+    settingsModal.classList.remove("spotlight-modal-visible");
+    overlay.classList.remove("spotlight-modal-visible");
+  }
+
+  settingsButton?.addEventListener("click", () => {
+    settingsModal.classList.add("spotlight-modal-visible");
+    overlay.classList.add("spotlight-modal-visible");
+  });
+
+  closeButton?.addEventListener("click", closeSettings);
+  overlay?.addEventListener("click", closeSettings);
+  document.addEventListener("keydown", (event) => {
+    if (
+      settingsModal.classList.contains("spotlight-modal-visible") &&
+      event.key === "Escape"
+    ) {
+      closeSettings();
+    }
+  });
+
+  // --- Custom Search Engine Dropdown Logic ---
+  const engineTrigger = document.getElementById(
+    "spotlight-engine-trigger",
+  ) as HTMLButtonElement;
+  const engineOptionsList = document.getElementById(
+    "spotlight-engine-options-list",
+  ) as HTMLUListElement;
+  const engineOptions = document.querySelectorAll(
+    ".spotlight-engine-option-item",
+
+    //@ts-ignore
+  ) as NodeListof<HTMLLIElement>;
+
+  // Toggle dropdown visibility
+  engineTrigger?.addEventListener("click", () => {
+    engineOptionsList.classList.toggle("spotlight-open");
+  });
+
+  // Handle selection of an engine
+  //@ts-ignore
+  engineOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      // Get the selected engine's details from the clicked item
+      //@ts-ignore
+      const selectedValue = option.dataset.value;
+      const selectedImgSrc = option.querySelector("img").src;
+      const selectedName = option.querySelector("span").textContent;
+
+      // Update the trigger button's content
+      const triggerImg = engineTrigger.querySelector("img");
+      const triggerSpan = engineTrigger.querySelector("span");
+      if (triggerImg && triggerSpan) {
+        triggerImg.src = selectedImgSrc;
+        triggerImg.alt = selectedName;
+        triggerSpan.textContent = selectedName;
+      }
+      localStorage.setItem("searchEngine", selectedName);
+      config.searchEngine = selectedName;
+      chrome.storage.sync.set({ searchEngine: selectedName });
+
+      // Close the dropdown
+      engineOptionsList.classList.remove("spotlight-open");
+    });
+  });
+
+  // Close dropdown if clicking outside of it
 }
