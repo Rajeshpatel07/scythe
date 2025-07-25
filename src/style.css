@@ -1,87 +1,3 @@
-#spotlight-body {
-  font-family: "Bricolage Grotesque", sans-serif;
-  background-color: #000;
-  color: #fff;
-  height: 100dvh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-}
-
-/* Font Class */
-.spotlight-bricolage-grotesque-latin {
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
-  font-variation-settings: "wdth" 100;
-}
-
-/* Layout */
-.spotlight-container {
-  width: 100%;
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.spotlight-wrapper {
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-/* Header */
-.spotlight-title-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  text-align: center;
-}
-
-#spotlight-logo {
-  height: 4rem;
-  width: 4rem;
-  border-radius: 0.8rem;
-  object-fit: cover;
-}
-
-/* Title */
-.spotlight-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
-}
-
-/* Input */
-.spotlight-input-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-#spotlight-search-input {
-  width: 100%;
-  max-width: 500px;
-  font-size: 1.2rem;
-  padding: 0.75rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background: #1a1a1a;
-  color: #fff;
-  outline: none;
-}
-
-/* Placeholder */
-#spotlight-search-input::placeholder {
-  color: #aaa;
-}
-
 /* Spotlight model */
 
 #spotlight-overlay-ext {
@@ -106,8 +22,7 @@
   background-color: #1c1c1e;
   color: #f2f2f7;
   border-radius: 3px;
-  width: 65%;
-  max-width: 60%;
+  width: 40%;
   margin-top: 15vh;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -181,7 +96,7 @@
 .spotlight-result-item-ext {
   display: flex;
   align-items: center;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -193,8 +108,8 @@
 }
 
 .spotlight-favicon-ext {
-  width: 23px;
-  height: 23px;
+  width: 20px;
+  height: 20px;
   margin-right: 12px;
   object-fit: contain;
 }
@@ -208,15 +123,26 @@
 
 .spotlight-title-ext {
   color: #f2f2f7;
-  font-size: 20px;
+  font-size: 16px;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
 .spotlight-url-ext {
   color: #f2f2f7;
-  font-size: 15px;
+  font-size: 13px;
   margin-left: 8px;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+@media (width <= 1350px) {
+  #spotlight-modal-ext {
+    width: 50%;
+  }
+}
+@media (width <= 1000px) {
+  #spotlight-modal-ext {
+    width: 80%;
+  }
 }
