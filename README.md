@@ -1,0 +1,92 @@
+<div align="center">
+  <img src="src/assets/logo.png" alt="Spotlight Logo"/>
+
+</div>
+
+<p align="center">
+  A beautiful and keyboard based search replacement for your browser,<br>
+
+</p>
+
+---
+
+## ✨ Features
+
+- ✅ **Instant History Search**: Immediately find and navigate to sites from your browsing history.
+- ✅ **Smart Autocompletion**: Get automatic domain name suggestions as you type and complete them with a press of the Tab key.
+- ✅ **New Tab Homepage**: Replaces the default new tab page with the elegant Spotlight interface, complete with a settings panel to customize your experience.  
+
+  ![New Tab](src/assets/newtab.png)
+- ✅ **In-Website Modal**: Activate the Spotlight search from any webpage using a keyboard shortcut for quick access without leaving your current page.  
+
+  ![spotlight](src/assets/spotlightmodel.png)
+
+---
+
+## 🐛 Bugs / To-Do
+
+- [ ] **Fix CSS Conflicts**: On some websites, the page's native CSS can interfere with the Spotlight modal's styling.
+- [ ] **Pathname Autocompletion**: Currently only domain names are suggested. Extend to include full paths (e.g., `github.com/user/repo`).
+- [ ] **Optimized History Filtering**: Improve performance when filtering very large history databases.
+- [ ] **Firefox Support**: Add support for Firefox (currently only works in Chromium-based browsers).
+
+---
+
+## 🚀 Installation
+
+### Requirements
+
+- [Bun](https://bun.sh/): Version `1.2.8` or higher.
+- **Browser**: A Chromium-based browser like Chrome, Brave, or Edge.
+
+### Setup
+
+Clone the project:
+
+```bash
+    git clone https://github.com/Rajeshpatel07/spotlight.git
+    cd spotlight
+```
+
+Install dependencies:
+
+```bash
+    bun install
+```
+Build the project:
+
+```bash
+    bun run build
+```
+This will generate a `dist/` folder containing the extension files.
+
+### Add to Browser
+- Open your browser and go to: chrome://extensions or brave://extensions
+- Enable Developer mode (top-right corner).
+- Click Load unpacked.
+- Select the `dist/` folder inside the project.
+- follow this link [Add custom extension](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)
+
+
+## 🤝 Contributing
+Contributions are always welcome!
+
+To contribute:
+- Fork the repository
+
+- Create a new feature branch
+
+```bash
+    git checkout -b feature/AmazingFeature
+```
+- Commit your changes
+
+```bash
+    git commit -m 'Add some AmazingFeature'
+```
+- Push to GitHub
+
+```bash
+    git push origin feature/AmazingFeature
+```
+Open a pull request
