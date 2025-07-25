@@ -83,18 +83,18 @@ export function createNewTabPage() {
   const githubNavItem = document.createElement("li");
   githubNavItem.className = "spotlight-nav-item";
   const githubLink = document.createElement("a");
-  githubLink.href = "#";
+  githubLink.href = "https://github.com/Rajeshpatel07/spotlight";
   githubLink.className = "spotlight-nav-link";
-  githubLink.textContent = "GitHub";
+  githubLink.textContent = "github";
   githubNavItem.appendChild(githubLink);
   navList.appendChild(githubNavItem);
 
   const aboutNavItem = document.createElement("li");
   aboutNavItem.className = "spotlight-nav-item";
   const aboutLink = document.createElement("a");
-  aboutLink.href = "#";
+  aboutLink.href = "https://x.com/rajeshp04252589";
   aboutLink.className = "spotlight-nav-link";
-  aboutLink.textContent = "About";
+  aboutLink.textContent = "rajesh";
   aboutNavItem.appendChild(aboutLink);
   navList.appendChild(aboutNavItem);
 

@@ -18,7 +18,11 @@ export function createListItem(title: string, url: string) {
     /* invalid URL */
   }
 
-  favicon.src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
+  favicon.src = `https://favicon.is/${hostname}`;
+  favicon.onerror = () => {
+    favicon.src = chrome.runtime.getURL("src/assets/icon16.png");
+    favicon.onerror = null;
+  };
 
   const textContent = document.createElement("div");
   textContent.className = "spotlight-text-content-ext";
