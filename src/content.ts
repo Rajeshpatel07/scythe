@@ -6,16 +6,13 @@ import { config } from "./config";
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   if (request.action === "toggleSpotlight") {
-    showSpotlight();
+    if (!config.isModelOpen) showSpotlight();
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  showSpotlight();
 });
 
 function showSpotlight() {
   config.openNewtab = true;
+  config.isModelOpen = true;
   createModelUI();
   const searchInput = document.getElementById(
     "spotlight-search-input-ext",
