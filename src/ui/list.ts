@@ -1,5 +1,6 @@
 import { InitiatePageNavigation } from "../browser/search";
 import { config } from "../config";
+import { createFaviconURL } from "./favicon";
 
 export function createListItem(title: string, url: string) {
   const li = document.createElement("li");
@@ -18,9 +19,13 @@ export function createListItem(title: string, url: string) {
     /* invalid URL */
   }
 
-  favicon.src = `https://favicon.is/${hostname}`;
+  favicon.src = createFaviconURL(url);
   favicon.onerror = () => {
-    favicon.src = chrome.runtime.getURL("src/assets/icon16.png");
+    favicon.src = `https://favicon.is/${hostname}`;
+    favicon.onerror = () => {
+      favicon.src = chrome.runtime.getURL("src/assets/icon16.png");
+      favicon.onerror = null;
+    };
     favicon.onerror = null;
   };
 
