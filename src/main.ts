@@ -55,7 +55,7 @@ export function showSpotlight() {
       } else {
         populateHistory();
       }
-    }, 800);
+    }, 10);
   });
 
   document.addEventListener("keydown", handleGlobalKeys);

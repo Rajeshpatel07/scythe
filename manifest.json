@@ -3,7 +3,7 @@
   "name": "Spotlight",
   "version": "1.0",
   "description": "A beautiful spotlight command palette for your browser.",
-  "permissions": ["history", "tabs", "storage"],
+  "permissions": ["history", "tabs", "storage", "favicon"],
   "chrome_url_overrides": {
     "newtab": "index.html"
   },

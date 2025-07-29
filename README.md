@@ -9,6 +9,14 @@
 </p>
 
 ---
+### 🎹 Keyboard Shortcuts
+
+#### 🌐 On Any Website
+- `Ctrl + Shift + K` → Launch **Spotlight** on websites
+
+#### 🆕 On New Tab Page
+- `Ctrl + /` → Launch **Spotlight** on new tab
+
 
 ## ✨ Features
 
@@ -70,6 +78,7 @@ This will generate a `dist/` folder containing the extension files.
 
 ## 🤝 Contributing
 Contributions are always welcome!
+- If you find any bug/issue or what to add feature please create a issue on it.
 
 To contribute:
 - Fork the repository
