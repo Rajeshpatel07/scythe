@@ -15,7 +15,10 @@ export function populateHistory() {
         resultsList.innerHTML = "<li>No recent history.</li>";
       } else {
         //@ts-ignore
-        response.history.forEach((item) => {
+        const filterdDomains: Array<T> = response.history.filter((item) =>
+          filterDomainsOnly(item.url),
+        );
+        filterdDomains.slice(0, 8).forEach((item) => {
           const li = createListItem(item.title || item.url, item.url);
           resultsList.appendChild(li);
         });
@@ -24,4 +27,13 @@ export function populateHistory() {
       resultsList.innerHTML = "<li>Could not load history.</li>";
     }
   });
+}
+
+function filterDomainsOnly(url: string) {
+  try {
+    const parsed = new URL(url);
+    return parsed.pathname === "/" && !parsed.search && !parsed.hash;
+  } catch (_err) {
+    return false;
+  }
 }

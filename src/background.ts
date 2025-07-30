@@ -7,7 +7,6 @@ chrome.commands.onCommand.addListener((command) => {
           { action: "toggleSpotlight" },
           (_response) => {
             if (chrome.runtime.lastError) {
-              console.log("Spotlight: Content script not ready.");
             }
           },
         );
@@ -19,7 +18,7 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === "getHistory") {
     chrome.history.search(
-      { text: "", startTime: 0, maxResults: 8 },
+      { text: "", startTime: 0, maxResults: 100 },
       (historyItems) => {
         sendResponse({ history: historyItems });
       },

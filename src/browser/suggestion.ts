@@ -57,7 +57,6 @@ export function updateSuggestion(query: string) {
   const suggestionEl = document.getElementById(
     "spotlight-suggestion-ext",
   ) as HTMLLIElement;
-  //@ts-ignore
   if (!query) {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
@@ -69,18 +68,33 @@ export function updateSuggestion(query: string) {
     let potentialSuggestion = "";
     const resultUrl = firstResult.getAttribute("data-url");
 
-    // matching against URL hostname for autocompletion
-    try {
-      if (resultUrl) {
-        const hostname = new URL(resultUrl).hostname.replace("www.", "");
-        if (hostname.toLowerCase().startsWith(query.toLowerCase())) {
+    if (resultUrl) {
+      let url: URL;
+      try {
+        url = new URL(resultUrl);
+      } catch {
+        return null;
+      }
+      const lowerCaseQuery = query.toLowerCase();
+      const hasPath = lowerCaseQuery.includes("/");
+
+      if (hasPath) {
+        const fullUrlPath = (
+          url.hostname +
+          url.pathname +
+          url.search +
+          url.hash
+        ).replace(/^www\./i, "");
+        if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
+          potentialSuggestion = query + fullUrlPath.slice(query.length);
+        }
+      } else {
+        const hostname = url.hostname.replace(/^www\./i, "");
+        if (hostname.toLowerCase().startsWith(lowerCaseQuery)) {
           potentialSuggestion = query + hostname.slice(query.length);
         }
       }
-    } catch (_e) {
-      /* ignore invalid URLs */
     }
-
     if (
       potentialSuggestion &&
       potentialSuggestion.toLowerCase() !== query.toLowerCase()

@@ -297,23 +297,18 @@ export function SidebarSettings() {
   ) as HTMLUListElement;
   const engineOptions = document.querySelectorAll(
     ".spotlight-engine-option-item",
+  ) as NodeListOf<HTMLElement>;
 
-    //@ts-ignore
-  ) as NodeListof<HTMLLIElement>;
-
-  // Toggle dropdown visibility
   engineTrigger?.addEventListener("click", () => {
     engineOptionsList.classList.toggle("spotlight-open");
   });
 
-  // Handle selection of an engine
   //@ts-ignore
   engineOptions.forEach((option) => {
     option.addEventListener("click", () => {
-      // Get the selected engine's details from the clicked item
       //@ts-ignore
-      const selectedValue = option.dataset.value;
       const selectedImgSrc = option.querySelector("img").src;
+      //@ts-ignore
       const selectedName = option.querySelector("span").textContent;
 
       // Update the trigger button's content
@@ -321,9 +316,12 @@ export function SidebarSettings() {
       const triggerSpan = engineTrigger.querySelector("span");
       if (triggerImg && triggerSpan) {
         triggerImg.src = selectedImgSrc;
+
+        //@ts-ignore
         triggerImg.alt = selectedName;
         triggerSpan.textContent = selectedName;
       }
+      //@ts-ignore
       localStorage.setItem("searchEngine", selectedName);
       config.searchEngine = selectedName;
       chrome.storage.sync.set({ searchEngine: selectedName });
@@ -332,6 +330,4 @@ export function SidebarSettings() {
       engineOptionsList.classList.remove("spotlight-open");
     });
   });
-
-  // Close dropdown if clicking outside of it
 }
