@@ -14,9 +14,10 @@ function showSpotlight() {
   config.openNewtab = true;
   config.isModelOpen = true;
   createModelUI();
-  document.addEventListener("keydown", handleGlobalKeys);
+  document.addEventListener("keydown", handleGlobalKeys, true);
   const shadowHost = document.getElementById("spotlight-host");
   const shadowRoot = shadowHost?.shadowRoot;
+
   if (shadowRoot) {
     const searchInput = shadowRoot.getElementById(
       "spotlight-search-input-ext",
