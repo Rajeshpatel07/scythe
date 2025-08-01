@@ -33,10 +33,11 @@
 
 ## 🐛 Bugs / To-Do
 
-- [ ] **Fix CSS Conflicts**: On some websites, the page's native CSS can interfere with the Spotlight modal's styling.
-- [ ] **Pathname Autocompletion**: Currently only domain names are suggested. Extend to include full paths (e.g., `github.com/user/repo`).
+- <del>[ ] **Fix CSS Conflicts**: On some websites, the page's native CSS can interfere with the Spotlight modal's styling.</del>
+- <del> [ ] **Pathname Autocompletion**: Currently only domain names are suggested. Extend to include full paths (e.g., `github.com/user/repo`).</del>
 - [ ] **Optimized History Filtering**: Improve performance when filtering very large history databases.
 - [ ] **Firefox Support**: Add support for Firefox (currently only works in Chromium-based browsers).
+- [] **Optimize Favicons**: Improve the speed of favicon display by leveraging caching mechanisms or retrieving them from local browsing history when available.
 
 ---
 

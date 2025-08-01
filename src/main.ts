@@ -40,26 +40,30 @@ export function showSpotlight() {
   config.openNewtab = false;
   config.isModelOpen = true;
   createModelUI();
-  const searchInput = document.getElementById(
-    "spotlight-search-input-ext",
-  ) as HTMLInputElement;
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (shadowRoot) {
+    const searchInput = shadowRoot.getElementById(
+      "spotlight-search-input-ext",
+    ) as HTMLInputElement;
 
-  let debounceTimeout: NodeJS.Timeout;
-  searchInput.addEventListener("input", () => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-      const query = searchInput.value.trim();
-      updateSuggestion(query);
-      if (query.length > 0) {
-        searchAndSuggest(query);
-      } else {
-        populateHistory();
-      }
-    }, 10);
-  });
+    let debounceTimeout: NodeJS.Timeout;
+    searchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        const query = searchInput.value.trim();
+        updateSuggestion(query);
+        if (query.length > 0) {
+          searchAndSuggest(query);
+        } else {
+          populateHistory();
+        }
+      }, 10);
+    });
 
-  document.addEventListener("keydown", handleGlobalKeys);
+    document.addEventListener("keydown", handleGlobalKeys);
 
-  populateHistory();
-  updateSuggestion("");
+    populateHistory();
+    updateSuggestion("");
+  }
 }

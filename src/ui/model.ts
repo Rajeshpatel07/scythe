@@ -1,6 +1,16 @@
 import { config } from "../config";
 
 export function createModelUI() {
+  const host = document.createElement("div");
+  host.id = "spotlight-host";
+  document.body.appendChild(host);
+  const shadowRoot = host.attachShadow({ mode: "open" });
+  const stylesheetLink = document.createElement("link");
+  stylesheetLink.setAttribute("rel", "stylesheet");
+  // Make sure your style.css is in the "web_accessible_resources" in your manifest!
+  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/style.css"));
+  shadowRoot.appendChild(stylesheetLink);
+
   const overlay = document.createElement("div");
   overlay.id = "spotlight-overlay-ext";
 
@@ -37,22 +47,19 @@ export function createModelUI() {
   modal.appendChild(searchContainer);
   modal.appendChild(resultsList);
   overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+  shadowRoot.appendChild(overlay);
 
   forceFocusOnInput(searchInput);
 }
 
 export function hideSpotlight() {
-  const overlay = document.getElementById("spotlight-overlay-ext");
-  if (overlay) {
-    overlay.classList.remove("visible");
+  const host = document.getElementById("spotlight-host");
+
+  if (host) {
     // Remove the element after the transition is complete
     setTimeout(() => {
-      // Check if the overlay is truly hidden before removing to avoid race conditions
-      if (!overlay.classList.contains("visible")) {
-        config.isModelOpen = false;
-        overlay.remove();
-      }
+      config.isModelOpen = false;
+      host.remove();
     }, 200);
   }
 }

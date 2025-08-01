@@ -48,7 +48,11 @@ export function createListItem(title: string, url: string) {
 }
 
 export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
-  const results = document.querySelectorAll(".spotlight-result-item-ext");
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (!shadowRoot) return;
+
+  const results = shadowRoot.querySelectorAll(".spotlight-result-item-ext");
   if (results.length === 0) return;
 
   if (config.selectedResultIndex !== -1) {

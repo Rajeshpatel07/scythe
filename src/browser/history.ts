@@ -2,7 +2,10 @@ import { createListItem } from "../ui/list";
 import { config } from "../config";
 
 export function populateHistory() {
-  const resultsList = document.getElementById(
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (!shadowRoot) return;
+  const resultsList = shadowRoot.getElementById(
     "spotlight-results-ext",
   ) as HTMLUListElement;
   resultsList.innerHTML = "<li>Loading recent history...</li>";

@@ -2,7 +2,10 @@ import { config } from "../config";
 import { hideSpotlight } from "../ui/model";
 
 export async function handleSearchSubmit() {
-  const searchInput = document.getElementById(
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (!shadowRoot) return;
+  const searchInput = shadowRoot.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
 

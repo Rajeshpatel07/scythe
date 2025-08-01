@@ -2,7 +2,10 @@ import { createListItem } from "../ui/list";
 import { config } from "../config";
 
 export function searchAndSuggest(query: string) {
-  const resultsList = document.getElementById(
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (!shadowRoot) return;
+  const resultsList = shadowRoot.getElementById(
     "spotlight-results-ext",
   ) as HTMLUListElement;
   resultsList.innerHTML = "<li>Searching history...</li>"; // Initial message
@@ -54,7 +57,10 @@ function fetchSuggestions(query: string, historyCount = 0) {
 }
 
 export function updateSuggestion(query: string) {
-  const suggestionEl = document.getElementById(
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (!shadowRoot) return;
+  const suggestionEl = shadowRoot.getElementById(
     "spotlight-suggestion-ext",
   ) as HTMLLIElement;
   if (!query) {
@@ -63,7 +69,7 @@ export function updateSuggestion(query: string) {
     return;
   }
 
-  const firstResult = document.querySelector(".spotlight-result-item-ext");
+  const firstResult = shadowRoot.querySelector(".spotlight-result-item-ext");
   if (firstResult) {
     let potentialSuggestion = "";
     const resultUrl = firstResult.getAttribute("data-url");

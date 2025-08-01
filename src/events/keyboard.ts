@@ -4,7 +4,11 @@ import { handleSearchSubmit } from "../browser/search";
 import { navigateResults } from "../ui/list";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
-  const searchInput = document.getElementById(
+  const shadowHost = document.getElementById("spotlight-host");
+  const shadowRoot = shadowHost?.shadowRoot;
+  if (!shadowRoot) return;
+
+  const searchInput = shadowRoot.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
   if (document.activeElement !== searchInput) {
@@ -18,7 +22,7 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     navigateResults(e.key);
   } else if (e.key === "Enter") {
     e.preventDefault();
-    const selectedItem = document.querySelector(
+    const selectedItem = shadowRoot.querySelector(
       ".spotlight-result-item-ext.selected",
     ) as HTMLLIElement;
     if (selectedItem) {
@@ -29,7 +33,7 @@ export function handleGlobalKeys(e: KeyboardEvent) {
   } else if (e.key === "Tab" && config.currentSuggestion) {
     e.preventDefault();
     searchInput.value = config.currentSuggestion;
-    const reslutList = document.getElementById(
+    const reslutList = shadowRoot.getElementById(
       "spotlight-suggestion-ext",
     ) as HTMLUListElement;
     reslutList.innerText = "";
