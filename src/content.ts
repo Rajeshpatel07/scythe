@@ -14,6 +14,7 @@ function showSpotlight() {
   config.openNewtab = true;
   config.isModelOpen = true;
   createModelUI();
+  document.addEventListener("keydown", handleGlobalKeys);
   const shadowHost = document.getElementById("spotlight-host");
   const shadowRoot = shadowHost?.shadowRoot;
   if (shadowRoot) {
@@ -34,8 +35,6 @@ function showSpotlight() {
         }
       }, 10);
     });
-
-    document.addEventListener("keydown", handleGlobalKeys);
 
     populateHistory();
     updateSuggestion("");

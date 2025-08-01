@@ -4,6 +4,7 @@ import { handleSearchSubmit } from "../browser/search";
 import { navigateResults } from "../ui/list";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
+  e.stopPropagation();
   const shadowHost = document.getElementById("spotlight-host");
   const shadowRoot = shadowHost?.shadowRoot;
   if (!shadowRoot) return;
