@@ -18,7 +18,7 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === "getHistory") {
     chrome.history.search(
-      { text: "", startTime: 0, maxResults: 100 },
+      { text: "", startTime: 0, maxResults: 50 },
       (historyItems) => {
         sendResponse({ history: historyItems });
       },

@@ -313,21 +313,19 @@ export function SidebarSettings() {
       //@ts-ignore
       const selectedName = option.querySelector("span").textContent;
 
-      // Update the trigger button's content
-      const triggerImg = engineTrigger.querySelector("img");
-      const triggerSpan = engineTrigger.querySelector("span");
-      if (triggerImg && triggerSpan) {
-        triggerImg.src = selectedImgSrc;
-
-        //@ts-ignore
-        triggerImg.alt = selectedName;
-        triggerSpan.textContent = selectedName;
+      if (selectedName) {
+        // Update the trigger button's content
+        const triggerImg = engineTrigger.querySelector("img");
+        const triggerSpan = engineTrigger.querySelector("span");
+        if (triggerImg && triggerSpan) {
+          triggerImg.src = selectedImgSrc;
+          triggerImg.alt = selectedName;
+          triggerSpan.textContent = selectedName;
+        }
+        localStorage.setItem("searchEngine", selectedName);
+        config.searchEngine = selectedName;
+        chrome.storage.sync.set({ searchEngine: selectedName });
       }
-      //@ts-ignore
-      localStorage.setItem("searchEngine", selectedName);
-      config.searchEngine = selectedName;
-      chrome.storage.sync.set({ searchEngine: selectedName });
-
       // Close the dropdown
       engineOptionsList.classList.remove("spotlight-open");
     });
