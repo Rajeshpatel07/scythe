@@ -182,6 +182,11 @@ export function createNewTabPage() {
       value: "bing",
       favicon: "https://svgl.app/library/bing.svg",
     },
+    {
+      name: "Unduck",
+      value: "unduck",
+      favicon: "https://favicon.is/unduck.link",
+    },
   ];
 
   const engineSelectWrapper = document.createElement("div");

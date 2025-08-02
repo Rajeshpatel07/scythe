@@ -41,6 +41,8 @@ export async function getSearchUrl(input: string) {
     return `https://search.brave.com/search?q=${encodeURIComponent(input)}`;
   } else if (name === "Bing") {
     return `https://www.bing.com/search?q=${encodeURIComponent(input)}`;
+  } else if (name === "Unduck") {
+    return `https://unduck.link?q=${encodeURIComponent(input)}`;
   } else {
     return `https://www.google.com/search?q=${encodeURIComponent(input)}`;
   }
