@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Spotlight",
+  "name": "Scythe",
   "version": "1.0",
-  "description": "A beautiful spotlight command palette for your browser.",
+  "description": "Cut through the noise. Find instantly.",
   "permissions": ["storage", "history", "favicon"],
   "host_permissions": ["<all_urls>"],
   "background": {
