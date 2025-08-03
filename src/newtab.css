@@ -141,11 +141,14 @@
 .spotlight-info-button {
   background-color: inherit;
   border: none;
+  padding: 0px;
+  margin: 0px;
+  border-radius: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: white;
   transition: transform 0.2s ease;
 }
 
@@ -154,7 +157,7 @@
 }
 
 .spotlight-info-button svg {
-  color: #606266;
+  color: #a3a5a9;
 }
 
 .spotlight-info-popup {

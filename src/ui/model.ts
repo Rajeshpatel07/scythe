@@ -8,7 +8,6 @@ export function createModelUI() {
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
   stylesheetLink.setAttribute("rel", "stylesheet");
-  // Make sure your style.css is in the "web_accessible_resources" in your manifest!
   stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/style.css"));
   shadowRoot.appendChild(stylesheetLink);
 
@@ -57,7 +56,6 @@ export function hideSpotlight() {
   const host = document.getElementById("spotlight-host");
 
   if (host) {
-    // Remove the element after the transition is complete
     setTimeout(() => {
       config.isModelOpen = false;
       host.remove();
@@ -66,20 +64,16 @@ export function hideSpotlight() {
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {
-  // Try to focus immediately
   inputElement.focus();
 
-  // If focus is not yet set, start a persistent interval to grab it
   if (document.activeElement !== inputElement) {
     const focusInterval = setInterval(() => {
       inputElement.focus();
-      // If we successfully get focus, stop trying
       if (document.activeElement === inputElement) {
         clearInterval(focusInterval);
       }
-    }, 50); // Retry every 50ms
+    }, 50);
 
-    // As a safeguard, clear the interval after 500ms
     setTimeout(() => clearInterval(focusInterval), 500);
   }
 }

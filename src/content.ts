@@ -4,6 +4,8 @@ import { populateHistory } from "./browser/history";
 import { handleGlobalKeys } from "./events/keyboard";
 import { config } from "./config";
 
+window.addEventListener("keydown", handleGlobalKeys, true);
+
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   if (request.action === "toggleSpotlight") {
     if (!config.isModelOpen) showSpotlight();
@@ -14,7 +16,6 @@ function showSpotlight() {
   config.openNewtab = true;
   config.isModelOpen = true;
   createModelUI();
-  document.addEventListener("keydown", handleGlobalKeys, true);
   const shadowHost = document.getElementById("spotlight-host");
   const shadowRoot = shadowHost?.shadowRoot;
 
@@ -24,18 +25,22 @@ function showSpotlight() {
     ) as HTMLInputElement;
 
     let debounceTimeout: NodeJS.Timeout;
-    searchInput.addEventListener("input", () => {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        const query = searchInput.value.trim();
-        updateSuggestion(query);
-        if (query.length > 0) {
-          searchAndSuggest(query);
-        } else {
-          populateHistory();
-        }
-      }, 10);
-    });
+    searchInput.addEventListener(
+      "input",
+      () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          const query = searchInput.value.trim();
+          updateSuggestion(query);
+          if (query.length > 0) {
+            searchAndSuggest(query);
+          } else {
+            populateHistory();
+          }
+        }, 50);
+      },
+      true,
+    );
 
     populateHistory();
     updateSuggestion("");

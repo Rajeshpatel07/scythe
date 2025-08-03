@@ -43,5 +43,49 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     hideSpotlight();
   }
 
-  e.stopImmediatePropagation();
+  if (shadowHost && e.composedPath().includes(shadowHost)) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+
+    const inputElement = shadowRoot.getElementById(
+      "spotlight-search-input-ext",
+    ) as HTMLInputElement;
+
+    if (inputElement && e.key.length === 1) {
+      const start = inputElement.selectionStart;
+      const end = inputElement.selectionEnd;
+      const text = inputElement.value;
+
+      if (start == null || end == null) return;
+
+      inputElement.value =
+        text.substring(0, start) + e.key + text.substring(end);
+      inputElement.selectionStart = inputElement.selectionEnd = start + 1;
+
+      inputElement.dispatchEvent(
+        new Event("input", { bubbles: true, cancelable: true }),
+      );
+    } else if (inputElement && e.key === "Backspace") {
+      const start = inputElement.selectionStart;
+      const end = inputElement.selectionEnd;
+
+      if (start == null || end == null) return;
+      if (start === end && start > 0) {
+        inputElement.value =
+          inputElement.value.substring(0, start - 1) +
+          inputElement.value.substring(end);
+        inputElement.selectionStart = inputElement.selectionEnd = start - 1;
+      } else {
+        inputElement.value =
+          inputElement.value.substring(0, start) +
+          inputElement.value.substring(end);
+        inputElement.selectionStart = inputElement.selectionEnd = start;
+      }
+      if (start !== 0 && end !== 0) {
+        inputElement.dispatchEvent(
+          new Event("input", { bubbles: true, cancelable: true }),
+        );
+      }
+    }
+  }
 }

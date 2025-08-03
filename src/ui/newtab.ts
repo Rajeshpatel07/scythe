@@ -152,7 +152,7 @@ export function createNewTabPage() {
   const githubLink = document.createElement("a");
   githubLink.href = "https://github.com/Rajeshpatel07/scythe";
   githubLink.className = "spotlight-nav-link";
-  githubLink.textContent = "github";
+  githubLink.textContent = "Github";
   githubNavItem.appendChild(githubLink);
   navList.appendChild(githubNavItem);
 
