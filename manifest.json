@@ -42,7 +42,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["src/style.css"],
+      "resources": ["src/style.css", "src/assets/icon48.png"],
       "matches": ["<all_urls>"]
     }
   ]

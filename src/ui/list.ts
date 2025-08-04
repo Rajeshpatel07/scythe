@@ -18,17 +18,23 @@ export function createListItem(title: string, url: string) {
   } catch (_e) {
     /* invalid URL */
   }
+  const isLikelyURL =
+    /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(url) ||
+    /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i.test(url);
 
-  favicon.src = createFaviconURL(url);
-  favicon.onerror = () => {
-    favicon.src = `https://favicon.is/${hostname}`;
+  if (isLikelyURL) {
+    favicon.src = createFaviconURL(url);
     favicon.onerror = () => {
-      favicon.src = chrome.runtime.getURL("src/assets/icon16.png");
+      favicon.src = `https://favicon.is/${hostname}`;
+      favicon.onerror = () => {
+        favicon.src = chrome.runtime.getURL("src/assets/icon16.png");
+        favicon.onerror = null;
+      };
       favicon.onerror = null;
     };
-    favicon.onerror = null;
-  };
-
+  } else {
+    favicon.src = chrome.runtime.getURL("src/assets/icon48.png");
+  }
   const textContent = document.createElement("div");
   textContent.className = "spotlight-text-content-ext";
   const titleEl = document.createElement("span");

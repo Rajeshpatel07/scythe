@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "format": "bunx biome format --write src/",
+    "format": "bunx biome format --write .",
     "lint": "bunx biome lint --write src/"
   },
   "devDependencies": {
