@@ -1,6 +1,6 @@
+import { loadFaviconFromCache } from "../browser/cache";
 import { InitiatePageNavigation } from "../browser/search";
 import { config } from "../config";
-import { createFaviconURL } from "./favicon";
 
 export function createListItem(title: string, url: string) {
   const li = document.createElement("li");
@@ -12,26 +12,13 @@ export function createListItem(title: string, url: string) {
 
   const favicon = document.createElement("img");
   favicon.className = "spotlight-favicon-ext";
-  let hostname = "...";
-  try {
-    hostname = new URL(url).hostname;
-  } catch (_e) {
-    /* invalid URL */
-  }
+
   const isLikelyURL =
     /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(url) ||
     /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i.test(url);
 
   if (isLikelyURL) {
-    favicon.src = createFaviconURL(url);
-    favicon.onerror = () => {
-      favicon.src = `https://favicon.is/${hostname}`;
-      favicon.onerror = () => {
-        favicon.src = chrome.runtime.getURL("src/assets/icon16.png");
-        favicon.onerror = null;
-      };
-      favicon.onerror = null;
-    };
+    loadFaviconFromCache(url, favicon);
   } else {
     favicon.src = chrome.runtime.getURL("src/assets/icon48.png");
   }
