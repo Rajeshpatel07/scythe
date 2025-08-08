@@ -47,13 +47,17 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     e.stopImmediatePropagation();
 
     if (
-      (e.ctrlKey && e.key === "v") ||
-      (e.ctrlKey && e.key === "Backspace") ||
-      (e.ctrlKey && e.key === "c")
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight" ||
+      (e.ctrlKey &&
+        (e.key === "v" ||
+          e.key === "c" ||
+          e.key === "Backspace" ||
+          e.key === "ArrowLeft" ||
+          e.key === "ArrowRight"))
     ) {
       return;
     }
-
     e.preventDefault();
 
     if (searchInput && e.key.length === 1) {
