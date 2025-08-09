@@ -69,48 +69,50 @@ export function updateSuggestion(query: string) {
     return;
   }
 
-  const firstResult = shadowRoot.querySelector(".spotlight-result-item-ext");
-  if (firstResult) {
-    let potentialSuggestion = "";
-    const resultUrl = firstResult.getAttribute("data-url");
+  const suggestions = shadowRoot.querySelectorAll(".spotlight-result-item-ext");
+  let potentialSuggestion = "";
+  for (const firstResult of suggestions) {
+    if (firstResult) {
+      const resultUrl = firstResult.getAttribute("data-url");
 
-    if (resultUrl) {
-      let url: URL;
-      try {
-        url = new URL(resultUrl);
-      } catch {
-        return null;
-      }
-      const lowerCaseQuery = query.toLowerCase();
-      const hasPath = lowerCaseQuery.includes("/");
+      if (resultUrl) {
+        let url: URL;
+        try {
+          url = new URL(resultUrl);
+        } catch {
+          return null;
+        }
+        const lowerCaseQuery = query.toLowerCase();
+        const hasPath = lowerCaseQuery.includes("/");
 
-      if (hasPath) {
-        const fullUrlPath = (
-          url.hostname +
-          url.pathname +
-          url.search +
-          url.hash
-        ).replace(/^www\./i, "");
-        if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
-          potentialSuggestion = query + fullUrlPath.slice(query.length);
-        }
-      } else {
-        const hostname = url.hostname.replace(/^www\./i, "");
-        if (hostname.toLowerCase().startsWith(lowerCaseQuery)) {
-          potentialSuggestion = query + hostname.slice(query.length);
+        if (hasPath) {
+          const fullUrlPath = (
+            url.hostname +
+            url.pathname +
+            url.search +
+            url.hash
+          ).replace(/^www\./i, "");
+          if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
+            potentialSuggestion = query + fullUrlPath.slice(query.length);
+          }
+        } else {
+          const hostname = url.hostname.replace(/^www\./i, "");
+          if (hostname.toLowerCase().startsWith(lowerCaseQuery)) {
+            potentialSuggestion = query + hostname.slice(query.length);
+          }
         }
       }
-    }
-    if (
-      potentialSuggestion &&
-      potentialSuggestion.toLowerCase() !== query.toLowerCase()
-    ) {
-      suggestionEl.innerText = potentialSuggestion;
-      config.currentSuggestion = potentialSuggestion;
     } else {
       suggestionEl.innerText = "";
       config.currentSuggestion = "";
     }
+  }
+  if (
+    potentialSuggestion &&
+    potentialSuggestion.toLowerCase() !== query.toLowerCase()
+  ) {
+    suggestionEl.innerText = potentialSuggestion;
+    config.currentSuggestion = potentialSuggestion;
   } else {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
