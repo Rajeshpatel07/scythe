@@ -3,7 +3,7 @@ import { config } from "../config";
 export function createModelUI() {
   const host = document.createElement("div");
   host.id = "spotlight-host";
-  host.setAttribute("style", "position:absolute;top:0;left:0;");
+  host.setAttribute("style", "position:fixed;bottom:0;right:0;z-index:9999;");
   document.body.appendChild(host);
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
