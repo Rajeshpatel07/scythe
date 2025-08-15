@@ -55,7 +55,7 @@ export function showSpotlight() {
         updateSuggestion(query);
         if (query.length > 0) {
           searchAndSuggest(query);
-        } else {
+        } else if (searchInput.value.length === 0) {
           populateHistory();
         }
       }, 50);
