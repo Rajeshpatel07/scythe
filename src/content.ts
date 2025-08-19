@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 });
 
 function showSpotlight() {
-  config.openNewtab = true;
+  config.isNewtab = true;
   config.isModelOpen = true;
   createModelUI();
   const shadowHost = document.getElementById("spotlight-host");

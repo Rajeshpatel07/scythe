@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function showSpotlight() {
-  config.openNewtab = false;
+  config.isNewtab = false;
   config.isModelOpen = true;
   createModelUI();
   const shadowHost = document.getElementById("spotlight-host");

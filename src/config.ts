@@ -2,6 +2,6 @@ export const config = {
   selectedResultIndex: -1,
   currentSuggestion: "",
   isModelOpen: false,
-  openNewtab: false,
+  isNewtab: false,
   searchEngine: localStorage.getItem("searchEngine"),
 };

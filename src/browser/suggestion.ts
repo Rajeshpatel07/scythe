@@ -8,8 +8,7 @@ export function searchAndSuggest(query: string) {
   const resultsList = shadowRoot.getElementById(
     "spotlight-results-ext",
   ) as HTMLUListElement;
-  resultsList.innerHTML = "<li>Searching history...</li>"; // Initial message
-  // selectedResultIndex = -1; // Reset selection
+  resultsList.innerHTML = "<li>Searching history...</li>";
 
   // 1. Search browser history first
   chrome.runtime.sendMessage(

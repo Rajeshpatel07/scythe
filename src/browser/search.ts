@@ -1,16 +1,7 @@
 import { config } from "../config";
 import { hideSpotlight } from "../ui/model";
 
-export async function handleSearchSubmit() {
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
-  if (!shadowRoot) return;
-  const searchInput = shadowRoot.getElementById(
-    "spotlight-search-input-ext",
-  ) as HTMLInputElement;
-
-  const input = searchInput.value.trim();
-
+export async function handleSearchSubmit(input: string): Promise<void> {
   if (input.length > 0) {
     const isLikelyURL =
       /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(input) ||
@@ -24,8 +15,8 @@ export async function handleSearchSubmit() {
   }
 }
 
-export function InitiatePageNavigation(url: string) {
-  if (config.openNewtab) {
+export function InitiatePageNavigation(url: string): void {
+  if (config.isNewtab) {
     hideSpotlight();
     window.open(url);
   } else {
@@ -33,7 +24,7 @@ export function InitiatePageNavigation(url: string) {
   }
 }
 
-export async function getSearchUrl(input: string) {
+export async function getSearchUrl(input: string): Promise<string> {
   const name = await getStoredSearchEngine();
   if (name === "DuckDuckGo") {
     return `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;

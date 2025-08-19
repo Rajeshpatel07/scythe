@@ -12,26 +12,29 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
   if (document.activeElement !== searchInput) {
-    if (e.key.length === 1 || e.key === "Backspace") {
-      searchInput.focus();
-    }
+    searchInput.focus();
   }
 
   if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-    e.preventDefault();
     navigateResults(e.key);
+  } else if (e.ctrlKey && e.key === "Enter") {
+    const firstItem = shadowRoot.querySelector(
+      ".spotlight-result-item-ext",
+    ) as HTMLLIElement;
+    if (firstItem) {
+      const url = firstItem.getAttribute("data-url");
+      if (url) handleSearchSubmit(url);
+    }
   } else if (e.key === "Enter") {
-    e.preventDefault();
     const selectedItem = shadowRoot.querySelector(
       ".spotlight-result-item-ext.selected",
     ) as HTMLLIElement;
     if (selectedItem) {
       selectedItem.click();
     } else {
-      handleSearchSubmit();
+      handleSearchSubmit(searchInput.value);
     }
   } else if (e.key === "Tab" && config.currentSuggestion) {
-    e.preventDefault();
     searchInput.value = config.currentSuggestion;
     const reslutList = shadowRoot.getElementById(
       "spotlight-suggestion-ext",
@@ -39,7 +42,6 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     reslutList.innerText = "";
     config.currentSuggestion = "";
   } else if (e.key === "Escape") {
-    e.preventDefault();
     hideSpotlight();
   }
 
