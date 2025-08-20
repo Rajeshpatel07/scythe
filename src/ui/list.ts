@@ -1,6 +1,7 @@
 import { loadFaviconFromCache } from "../browser/cache";
 import { InitiatePageNavigation } from "../browser/search";
 import { config } from "../config";
+import { getShadowRoot } from "../utils/dom";
 
 export function createListItem(title: string, url: string) {
   const li = document.createElement("li");
@@ -41,8 +42,7 @@ export function createListItem(title: string, url: string) {
 }
 
 export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
+  const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
 
   const results = shadowRoot.querySelectorAll(".spotlight-result-item-ext");

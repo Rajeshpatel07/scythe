@@ -1,15 +1,15 @@
 import { config } from "../config";
 import type { HistoryResposne } from "../types/historyTypes";
+import { getShadowRoot } from "../utils/dom";
 import {
   filterDomainsOnly,
   renderListItems,
   mergeHistory,
   getStoredHistory,
-} from "../utils/sync";
+} from "../utils/filterHistory.ts";
 
 export async function populateHistory() {
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
+  const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
 
   const resultsList = shadowRoot.getElementById(

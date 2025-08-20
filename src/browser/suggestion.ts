@@ -1,63 +1,53 @@
 import { createListItem } from "../ui/list";
 import { config } from "../config";
+import { getShadowRoot } from "../utils/dom";
+import type { HistoryResposne } from "../types/historyTypes";
 
-export function searchAndSuggest(query: string) {
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
+export async function searchAndSuggest(query: string) {
+  const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
+
   const resultsList = shadowRoot.getElementById(
     "spotlight-results-ext",
-  ) as HTMLUListElement;
+  ) as HTMLUListElement | null;
+  if (!resultsList) return;
+
   resultsList.innerHTML = "<li>Searching history...</li>";
 
-  // 1. Search browser history first
-  chrome.runtime.sendMessage(
-    { action: "searchHistory", query: query },
-    (response) => {
-      if (response?.history) {
-        resultsList.innerHTML = ""; // Clear placeholder
-        if (response.history.length > 0) {
-          // @ts-ignore
-          response.history.slice(0, 5).forEach((item) => {
-            const li = createListItem(item.title || item.url, item.url);
-            resultsList.appendChild(li);
-          });
-        }
-
-        if (response.history.length < 5 || response.history.length === 0) {
-          if (response.history.length === 0 && query.length > 0) {
-            const li = createListItem(query, "");
-            resultsList.appendChild(li);
-            return;
-          }
-          fetchSuggestions(query, response.history.length); // Pass history count
-        }
-      } else {
-        resultsList.innerHTML =
-          "<li>Could not search history. Fetching web suggestions...</li>";
-        fetchSuggestions(query, 0); // Fallback to API if history search fails
-      }
-    },
-  );
-}
-
-function fetchSuggestions(query: string, historyCount = 0) {
-  const resultsList = document.getElementById(
-    "spotlight-results-ext",
-  ) as HTMLUListElement;
-
-  if (historyCount === 0) {
-    resultsList.innerHTML = "";
-    createListItem(
+  let response: HistoryResposne | null = null;
+  try {
+    response = (await chrome.runtime.sendMessage({
+      action: "searchHistory",
       query,
-      "https://api.iconify.design/iconamoon:search-light.svg",
-    );
+    })) as HistoryResposne;
+  } catch {
+    response = null;
+  }
+
+  if (!response || !response.history) {
+    resultsList.innerHTML =
+      "<li>Could not search history. Fetching web suggestions...</li>";
+    return;
+  }
+
+  resultsList.innerHTML = "";
+  const history = response.history;
+  if (history.length === 0 && query.length > 0) {
+    const li = createListItem(query, "");
+    resultsList.appendChild(li);
+    return;
+  } else {
+    const frag = document.createDocumentFragment();
+    history.forEach((item) => {
+      const li = createListItem(item.title, item.url || "");
+      frag.appendChild(li);
+    });
+    resultsList.appendChild(frag);
   }
 }
 
 export function updateSuggestion(query: string) {
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
+  const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
   const suggestionEl = shadowRoot.getElementById(
     "spotlight-suggestion-ext",

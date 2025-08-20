@@ -3,12 +3,13 @@ import { updateSuggestion, searchAndSuggest } from "./browser/suggestion";
 import { populateHistory } from "./browser/history";
 import { handleGlobalKeys } from "./events/keyboard";
 import { config } from "./config";
+import { getShadowHost, getShadowRoot } from "./utils/dom";
 
 window.addEventListener("keydown", handleGlobalKeys, true);
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
-    const shadowHost = document.getElementById("spotlight-host");
+    const shadowHost = getShadowHost();
     if (shadowHost && e.composedPath().includes(shadowHost)) {
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -27,33 +28,33 @@ function showSpotlight() {
   config.isNewtab = true;
   config.isModelOpen = true;
   createModelUI();
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
 
-  if (shadowRoot) {
-    const searchInput = shadowRoot.getElementById(
-      "spotlight-search-input-ext",
-    ) as HTMLInputElement;
+  const shadowRoot = getShadowRoot();
 
-    let debounceTimeout: NodeJS.Timeout;
-    searchInput.addEventListener(
-      "input",
-      () => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-          const query = searchInput.value.trim();
-          updateSuggestion(query);
-          if (query.length > 0) {
-            searchAndSuggest(query);
-          } else if (searchInput.value.length === 0) {
-            populateHistory();
-          }
-        }, 50);
-      },
-      true,
-    );
+  if (!shadowRoot) return;
 
-    populateHistory();
-    updateSuggestion("");
-  }
+  const searchInput = shadowRoot.getElementById(
+    "spotlight-search-input-ext",
+  ) as HTMLInputElement;
+
+  let debounceTimeout: NodeJS.Timeout;
+  searchInput.addEventListener(
+    "input",
+    () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        const query = searchInput.value.trim();
+        updateSuggestion(query);
+        if (query.length > 0) {
+          searchAndSuggest(query);
+        } else if (searchInput.value.length === 0) {
+          populateHistory();
+        }
+      }, 50);
+    },
+    true,
+  );
+
+  populateHistory();
+  updateSuggestion("");
 }

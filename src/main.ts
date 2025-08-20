@@ -4,6 +4,7 @@ import { updateSuggestion, searchAndSuggest } from "./browser/suggestion";
 import { handleGlobalKeys } from "./events/keyboard";
 import { createNewTabPage, SidebarSettings } from "./ui/newtab";
 import { config } from "./config";
+import { getShadowRoot } from "./utils/dom";
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.ctrlKey && e.key === "/") {
@@ -40,8 +41,7 @@ export function showSpotlight() {
   config.isNewtab = false;
   config.isModelOpen = true;
   createModelUI();
-  const shadowHost = document.getElementById("spotlight-host");
-  const shadowRoot = shadowHost?.shadowRoot;
+  const shadowRoot = getShadowRoot();
   if (shadowRoot) {
     const searchInput = shadowRoot.getElementById(
       "spotlight-search-input-ext",
