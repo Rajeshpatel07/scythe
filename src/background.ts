@@ -46,7 +46,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       })
       .then((blob) => {
         const reader = new FileReader();
-
         reader.onloadend = () => {
           sendResponse({ status: "success", dataUrl: reader.result });
         };

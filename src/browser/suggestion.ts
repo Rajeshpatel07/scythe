@@ -33,7 +33,7 @@ export async function searchAndSuggest(query: string) {
   resultsList.innerHTML = "";
   const history = response.history;
   if (history.length === 0 && query.length > 0) {
-    const li = createListItem(query, "");
+    const li = createListItem(query, query);
     resultsList.appendChild(li);
     return;
   } else {

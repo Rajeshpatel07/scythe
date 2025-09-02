@@ -33,11 +33,11 @@
 
 ## 🐛 Bugs / To-Do
 
+- [ ] **Firefox Support**: Add support for Firefox (currently only works in Chromium-based browsers).
 - <del>[ ] **Fix CSS Conflicts**: On some websites, the page's native CSS can interfere with the Spotlight modal's styling.</del>
 - <del> [ ] **Pathname Autocompletion**: Currently only domain names are suggested. Extend to include full paths (e.g., `github.com/user/repo`).</del>
-- [ ] **Optimized History Filtering**: Improve performance when filtering very large history databases.
-- [ ] **Firefox Support**: Add support for Firefox (currently only works in Chromium-based browsers).
-- [ ] **Optimize Favicons**: Improve the speed of favicon display by leveraging caching mechanisms or retrieving them from local browsing history when available.
+- <del> [ ] **Optimized History Filtering**: Improve performance when filtering very large history databases.</del>
+- <del> [ ] **Optimize Favicons**: Improve the speed of favicon display by leveraging caching mechanisms or retrieving them from local browsing history when available.</del>
 
 ---
 
@@ -76,6 +76,17 @@ This will generate a `dist/` folder containing the extension files.
 - Select the `dist/` folder inside the project.
 - follow this link [Add custom extension](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)
 
+
+## Customize
+
+- By default the extension will show it's custom `new tab` page.
+- If you want to remove this behaviour open `manifest.json` file and remove the below lines in the file.
+
+```json
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+```
 
 ## 🤝 Contributing
 Contributions are always welcome!

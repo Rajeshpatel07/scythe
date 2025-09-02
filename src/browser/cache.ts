@@ -11,6 +11,8 @@ export function loadFaviconFromCache(
       imgElement.src = response.dataUrl;
     } else {
       let hostname = "...";
+      const havePrefix = /^https?:\/\//.test(url);
+      if (!havePrefix) url = `https://${url}`;
       try {
         hostname = new URL(url).hostname;
       } catch (_e) {}
