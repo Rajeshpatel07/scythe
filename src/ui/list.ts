@@ -3,7 +3,11 @@ import { InitiatePageNavigation } from "../browser/search";
 import { config } from "../config";
 import { getShadowRoot } from "../utils/dom";
 
-export function createListItem(title: string, url: string) {
+export function createListItem(
+  title: string,
+  url: string,
+  showUrl: boolean = true,
+) {
   const li = document.createElement("li");
   li.className = "spotlight-result-item-ext";
   li.setAttribute("data-url", url);
@@ -28,14 +32,18 @@ export function createListItem(title: string, url: string) {
   const titleEl = document.createElement("span");
   titleEl.className = "spotlight-title-ext";
   titleEl.textContent = title;
-  const urlEl = document.createElement("span");
-  urlEl.className = "spotlight-url-ext";
-  if (url.length > 0) {
-    urlEl.textContent = `— ${url}`;
+  if (showUrl) {
+    const urlEl = document.createElement("span");
+    urlEl.className = "spotlight-url-ext";
+    if (url.length > 0) {
+      urlEl.textContent = `— ${url}`;
+    }
+    textContent.appendChild(titleEl);
+    textContent.appendChild(urlEl);
+  } else {
+    textContent.appendChild(titleEl);
   }
 
-  textContent.appendChild(titleEl);
-  textContent.appendChild(urlEl);
   li.appendChild(favicon);
   li.appendChild(textContent);
   return li;

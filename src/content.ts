@@ -50,7 +50,7 @@ function showSpotlight() {
         } else if (searchInput.value.length === 0) {
           populateHistory();
         }
-      }, 50);
+      }, 100);
     },
     true,
   );
