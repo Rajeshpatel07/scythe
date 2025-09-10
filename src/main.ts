@@ -50,14 +50,14 @@ export function showSpotlight() {
     let debounceTimeout: NodeJS.Timeout;
     searchInput.addEventListener("input", () => {
       clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
+      debounceTimeout = setTimeout(async () => {
         const query = searchInput.value.trim();
-        updateSuggestion(query);
         if (query.length > 0) {
-          searchAndSuggest(query);
+          await searchAndSuggest(query);
         } else if (searchInput.value.length === 0) {
           populateHistory();
         }
+        updateSuggestion(query);
       }, 100);
     });
 

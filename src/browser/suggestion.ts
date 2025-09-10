@@ -59,40 +59,36 @@ export function updateSuggestion(query: string) {
 
   const suggestions = shadowRoot.querySelectorAll(".spotlight-result-item-ext");
   let potentialSuggestion = "";
-  for (const firstResult of suggestions) {
-    if (firstResult) {
-      const resultUrl = firstResult.getAttribute("data-url");
+  for (const result of suggestions) {
+    const resultUrl = result.getAttribute("data-url");
+    if (!resultUrl) continue;
 
-      if (resultUrl) {
-        let url: URL;
-        try {
-          url = new URL(resultUrl);
-        } catch {
-          return null;
-        }
-        const lowerCaseQuery = query.toLowerCase();
-        const hasPath = lowerCaseQuery.includes("/");
+    let url: URL;
+    try {
+      url = new URL(resultUrl);
+    } catch {
+      continue;
+    }
+    const lowerCaseQuery = query.toLowerCase();
+    const hasPath = lowerCaseQuery.includes("/");
 
-        if (hasPath) {
-          const fullUrlPath = (
-            url.hostname +
-            url.pathname +
-            url.search +
-            url.hash
-          ).replace(/^www\./i, "");
-          if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
-            potentialSuggestion = query + fullUrlPath.slice(query.length);
-          }
-        } else {
-          const hostname = url.hostname.replace(/^www\./i, "");
-          if (hostname.toLowerCase().startsWith(lowerCaseQuery)) {
-            potentialSuggestion = query + hostname.slice(query.length);
-          }
-        }
+    if (hasPath) {
+      const fullUrlPath = (
+        url.hostname +
+        url.pathname +
+        url.search +
+        url.hash
+      ).replace(/^www\./i, "");
+      if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
+        potentialSuggestion = query + fullUrlPath.slice(query.length);
+        break;
       }
     } else {
-      suggestionEl.innerText = "";
-      config.currentSuggestion = "";
+      const hostname = url.hostname.replace(/^www\./i, "");
+      if (hostname.toLowerCase().startsWith(lowerCaseQuery)) {
+        potentialSuggestion = query + hostname.slice(query.length);
+        break;
+      }
     }
   }
   if (
