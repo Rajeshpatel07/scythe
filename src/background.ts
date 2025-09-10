@@ -55,5 +55,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         sendResponse({ status: "error", dataUrl: null });
       });
     return true;
+  } else if (request.action === "createTab") {
+    chrome.tabs.create({ url: request.url, active: true });
+    sendResponse({ success: true });
   }
 });

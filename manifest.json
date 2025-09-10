@@ -3,7 +3,7 @@
   "name": "Scythe",
   "version": "1.0",
   "description": "Cut through the noise. Find instantly.",
-  "permissions": ["storage", "history", "favicon"],
+  "permissions": ["storage", "history", "favicon", "tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "src/background.js"

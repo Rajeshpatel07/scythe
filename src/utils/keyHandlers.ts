@@ -1,6 +1,7 @@
 import { config } from "../config.ts";
 import { handleSearchSubmit } from "../browser/search";
 import { navigateResults } from "../ui/list";
+import { hideSpotlight } from "../ui/model";
 import {
   getFirstResultItem,
   getSearchInput,
@@ -45,7 +46,10 @@ export function handleCtrlEnter() {
   const firstItem = getFirstResultItem();
   if (!firstItem) return;
   const url = firstItem.getAttribute("data-url");
-  if (url) handleSearchSubmit(url);
+  if (url) {
+    hideSpotlight();
+    chrome.runtime.sendMessage({ action: "createTab", url: url });
+  }
 }
 
 export function handleTab() {
