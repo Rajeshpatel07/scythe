@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 });
 
 function showSpotlight() {
-  config.isNewtab = true;
+  config.openNewtab = true;
   config.isModelOpen = true;
   createModelUI();
 

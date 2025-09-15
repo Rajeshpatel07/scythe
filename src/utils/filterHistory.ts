@@ -29,7 +29,7 @@ export function renderListItems(
   resultList: HTMLUListElement,
 ) {
   items.forEach((item) => {
-    const li = createListItem(item.title || item.url, item.url);
+    const li = createListItem({ title: item.title || item.url, url: item.url });
     resultList.appendChild(li);
   });
 }

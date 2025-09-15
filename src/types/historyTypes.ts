@@ -10,3 +10,9 @@ export interface HistoryItem {
   url: string;
   visitCount: number;
 }
+
+export interface ListItems {
+  title: string;
+  url: string;
+  showUrl?: boolean;
+}

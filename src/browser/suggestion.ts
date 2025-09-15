@@ -32,13 +32,13 @@ export async function searchAndSuggest(query: string) {
 
   resultsList.innerHTML = "";
   if (response.history.length === 0 && query.length > 0) {
-    const li = createListItem(query, query, false);
+    const li = createListItem({ title: query, url: query, showUrl: false });
     resultsList.appendChild(li);
     return;
   } else {
     const frag = document.createDocumentFragment();
     response.history.forEach((item) => {
-      const li = createListItem(item.title, item.url || "");
+      const li = createListItem({ title: item.title, url: item.url || "" });
       frag.appendChild(li);
     });
     resultsList.appendChild(frag);

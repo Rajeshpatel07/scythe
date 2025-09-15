@@ -48,7 +48,11 @@ export function handleCtrlEnter() {
   const url = firstItem.getAttribute("data-url");
   if (url) {
     hideSpotlight();
-    chrome.runtime.sendMessage({ action: "createTab", url: url });
+    if (config.openNewtab) {
+      chrome.runtime.sendMessage({ action: "createTab", url: url });
+    } else {
+      window.location.href = url;
+    }
   }
 }
 

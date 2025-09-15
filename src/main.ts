@@ -22,13 +22,14 @@ document.addEventListener("click", (event: MouseEvent) => {
   const engineOptionsList = document.getElementById(
     "spotlight-engine-options-list",
   ) as HTMLUListElement;
-  if (
-    //@ts-ignore
-    !engineTrigger?.contains(event.target) &&
-    //@ts-ignore
-    !engineOptionsList?.contains(event.target)
-  ) {
-    engineOptionsList?.classList.remove("spotlight-open");
+
+  if (event.target instanceof HTMLElement) {
+    if (
+      !engineTrigger.contains(event.target) &&
+      !engineOptionsList.contains(event.target)
+    ) {
+      engineOptionsList.classList.remove("spotlight-open");
+    }
   }
 });
 
@@ -38,32 +39,32 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function showSpotlight() {
-  config.isNewtab = false;
+  config.openNewtab = false;
   config.isModelOpen = true;
   createModelUI();
   const shadowRoot = getShadowRoot();
-  if (shadowRoot) {
-    const searchInput = shadowRoot.getElementById(
-      "spotlight-search-input-ext",
-    ) as HTMLInputElement;
+  if (!shadowRoot) return;
 
-    let debounceTimeout: NodeJS.Timeout;
-    searchInput.addEventListener("input", () => {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(async () => {
-        const query = searchInput.value.trim();
-        if (query.length > 0) {
-          await searchAndSuggest(query);
-        } else if (searchInput.value.length === 0) {
-          populateHistory();
-        }
-        updateSuggestion(query);
-      }, 100);
-    });
+  const searchInput = shadowRoot.getElementById(
+    "spotlight-search-input-ext",
+  ) as HTMLInputElement;
 
-    document.addEventListener("keydown", handleGlobalKeys);
+  let debounceTimeout: NodeJS.Timeout;
+  searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(async () => {
+      const query = searchInput.value.trim();
+      if (query.length > 0) {
+        await searchAndSuggest(query);
+      } else if (searchInput.value.length === 0) {
+        populateHistory();
+      }
+      updateSuggestion(query);
+    }, 100);
+  });
 
-    populateHistory();
-    updateSuggestion("");
-  }
+  document.addEventListener("keydown", handleGlobalKeys);
+
+  populateHistory();
+  updateSuggestion("");
 }

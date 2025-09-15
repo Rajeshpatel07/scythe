@@ -16,7 +16,7 @@ export async function handleSearchSubmit(input: string): Promise<void> {
 }
 
 export function InitiatePageNavigation(url: string): void {
-  if (config.isNewtab) {
+  if (config.openNewtab) {
     hideSpotlight();
     window.open(url);
   } else {

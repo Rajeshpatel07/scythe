@@ -1,13 +1,10 @@
 import { loadFaviconFromCache } from "../browser/cache";
 import { InitiatePageNavigation } from "../browser/search";
 import { config } from "../config";
+import type { ListItems } from "../types/historyTypes";
 import { getShadowRoot } from "../utils/dom";
 
-export function createListItem(
-  title: string,
-  url: string,
-  showUrl: boolean = true,
-) {
+export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
   li.className = "spotlight-result-item-ext";
   li.setAttribute("data-url", url);
