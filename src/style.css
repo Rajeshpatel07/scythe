@@ -21,9 +21,9 @@
 #spotlight-modal-ext {
   background-color: #1c1c1e;
   color: #f2f2f7;
-  border-radius: 3px;
+  border-radius: 10px;
   width: 40%;
-  margin-top: 15vh;
+  margin-top: 20vh;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
@@ -60,7 +60,7 @@
   outline: none;
   color: #f2f2f7;
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 500;
   font-family: inherit; /* Ensure font is consistent */
   box-sizing: border-box; /* Important for consistent sizing */
 }
@@ -96,7 +96,7 @@
 .spotlight-result-item-ext {
   display: flex;
   align-items: center;
-  padding: 12px 14px;
+  padding: 13px 14px;
   border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -123,9 +123,10 @@
 
 .spotlight-title-ext {
   color: #f2f2f7;
-  font-size: 16px;
+  font-size: 17px;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-weight: 500;
 }
 
 .spotlight-url-ext {
