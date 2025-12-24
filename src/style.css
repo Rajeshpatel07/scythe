@@ -77,6 +77,8 @@
   color: #555; /* Dim color for the suggestion */
   z-index: 1;
   pointer-events: none; /* Make it non-interactive */
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 #spotlight-search-input-ext::placeholder {
