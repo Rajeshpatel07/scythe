@@ -311,10 +311,18 @@ export function createNewTabPage() {
     engineOptionsList.appendChild(optionItem);
   });
 
+  const ToggleNewTab = document.createElement("button");
+  ToggleNewTab.innerText = "Toggle page";
+  ToggleNewTab.onclick = () => {
+    hidePage();
+    config.shownewtab = !config.shownewtab;
+  };
+
   engineSelectWrapper.appendChild(engineOptionsList);
   searchEngineSettingControl.appendChild(engineSelectWrapper);
   searchEngineSettingItem.appendChild(searchEngineSettingControl);
   settingsContent.appendChild(searchEngineSettingItem);
+  settingsContent.appendChild(ToggleNewTab);
   settingsModal.appendChild(settingsContent);
   pageContainer.appendChild(settingsModal);
 
@@ -400,4 +408,18 @@ export function SidebarSettings() {
       engineOptionsList.classList.remove("spotlight-open");
     });
   });
+}
+
+function hidePage() {
+  const mainContent = document.getElementById(
+    "spotlight-main-content",
+  ) as HTMLElement;
+  const info = document.querySelector(
+    "#spotlight-page-container > div.spotlight-info-widget-container",
+  ) as HTMLDivElement;
+  const footer = document.getElementById("spotlight-footer") as HTMLElement;
+
+  mainContent.style.display = "none";
+  info.style.display = "none";
+  footer.style.display = "none";
 }
