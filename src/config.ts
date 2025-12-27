@@ -4,5 +4,5 @@ export const config = {
   isModelOpen: false,
   openNewtab: false,
   searchEngine: localStorage.getItem("searchEngine"),
-  shownewtab: true,
+  shownewtab: localStorage.getItem("shownewtab") === "true",
 };

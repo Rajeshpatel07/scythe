@@ -2,30 +2,21 @@ import { config } from "../config";
 import { showSpotlight } from "../main";
 
 export function createNewTabPage() {
-  const body = document.body;
+  const body = document.body as HTMLBodyElement;
   body.id = "spotlight-body";
 
+  if (config.shownewtab) {
+    const pageContainer = newtabPageContent();
+    showSidebar(body);
+    body.appendChild(pageContainer);
+  } else {
+    showSidebar(body);
+  }
+}
+
+function newtabPageContent() {
   const pageContainer = document.createElement("div");
   pageContainer.id = "spotlight-page-container";
-
-  const header = document.createElement("header");
-  header.id = "spotlight-header";
-
-  const settingsButton = document.createElement("button");
-  settingsButton.id = "spotlight-settings-button";
-  settingsButton.className = "spotlight-icon-button";
-  settingsButton.setAttribute("aria-label", "Open settings");
-  settingsButton.innerHTML = `
-        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path
-                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-            <circle cx="12" cy="12" r="3" />
-        </svg>
-    `;
-  header.appendChild(settingsButton);
-  pageContainer.appendChild(header);
 
   const mainContent = document.createElement("main");
   mainContent.id = "spotlight-main-content";
@@ -167,7 +158,28 @@ export function createNewTabPage() {
 
   footer.appendChild(navList);
   pageContainer.appendChild(footer);
+  return pageContainer;
+}
 
+function showSidebar(body: HTMLBodyElement) {
+  const header = document.createElement("header");
+  header.id = "spotlight-header";
+
+  const settingsButton = document.createElement("button");
+  settingsButton.id = "spotlight-settings-button";
+  settingsButton.className = "spotlight-icon-button";
+  settingsButton.setAttribute("aria-label", "Open settings");
+  settingsButton.innerHTML = `
+        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path
+                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+            <circle cx="12" cy="12" r="3" />
+        </svg>
+    `;
+  header.appendChild(settingsButton);
+  body.appendChild(header);
   // The settings modal panel, hidden by default
   const settingsModal = document.createElement("aside");
   settingsModal.id = "spotlight-settings-modal";
@@ -312,10 +324,23 @@ export function createNewTabPage() {
   });
 
   const ToggleNewTab = document.createElement("button");
+
+  ToggleNewTab.setAttribute("id", "spotlight-newtab-toggle");
   ToggleNewTab.innerText = "Toggle page";
+
   ToggleNewTab.onclick = () => {
-    hidePage();
-    config.shownewtab = !config.shownewtab;
+    if (config.shownewtab === true) {
+      localStorage.setItem("shownewtab", "false");
+      config.shownewtab = false;
+      hidePage();
+    } else {
+      const body = document.body as HTMLBodyElement;
+      body.innerHTML = "";
+      localStorage.setItem("shownewtab", "true");
+      config.shownewtab = true;
+      createNewTabPage();
+      SidebarSettings();
+    }
   };
 
   engineSelectWrapper.appendChild(engineOptionsList);
@@ -324,13 +349,12 @@ export function createNewTabPage() {
   settingsContent.appendChild(searchEngineSettingItem);
   settingsContent.appendChild(ToggleNewTab);
   settingsModal.appendChild(settingsContent);
-  pageContainer.appendChild(settingsModal);
+
+  body.appendChild(settingsModal);
 
   const overlayDiv = document.createElement("div");
   overlayDiv.id = "spotlight-overlay";
-  pageContainer.appendChild(overlayDiv);
-
-  body.appendChild(pageContainer);
+  body.appendChild(overlayDiv);
 }
 
 export function SidebarSettings() {
@@ -412,14 +436,8 @@ export function SidebarSettings() {
 
 function hidePage() {
   const mainContent = document.getElementById(
-    "spotlight-main-content",
+    "spotlight-page-container",
   ) as HTMLElement;
-  const info = document.querySelector(
-    "#spotlight-page-container > div.spotlight-info-widget-container",
-  ) as HTMLDivElement;
-  const footer = document.getElementById("spotlight-footer") as HTMLElement;
 
   mainContent.style.display = "none";
-  info.style.display = "none";
-  footer.style.display = "none";
 }
