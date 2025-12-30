@@ -1,11 +1,12 @@
 import { config } from "../config";
 import { showSpotlight } from "../main";
+import { sidebarItem } from "./sidebar";
 
 export function createNewTabPage() {
   const body = document.body as HTMLBodyElement;
   body.id = "spotlight-body";
 
-  if (config.shownewtab) {
+  if (!config.shownewtab) {
     const pageContainer = newtabPageContent();
     showSidebar(body);
     body.appendChild(pageContainer);
@@ -210,30 +211,10 @@ function showSidebar(body: HTMLBodyElement) {
   settingsContent.className = "spotlight-settings-content";
 
   // Search Engine Setting
-  const searchEngineSettingItem = document.createElement("div");
-  searchEngineSettingItem.className = "spotlight-setting-item";
-
-  const searchEngineSettingIcon = document.createElement("div");
-  searchEngineSettingIcon.className = "spotlight-setting-icon";
-  searchEngineSettingIcon.innerHTML = `
-        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-    `;
-  searchEngineSettingItem.appendChild(searchEngineSettingIcon);
-
-  const searchEngineSettingDetails = document.createElement("div");
-  searchEngineSettingDetails.className = "spotlight-setting-details";
-  const searchEngineLabel = document.createElement("label");
-  searchEngineLabel.textContent = "Search engine";
-  searchEngineSettingDetails.appendChild(searchEngineLabel);
-  const searchEngineSpan = document.createElement("span");
-  searchEngineSpan.textContent = "Choose your default engine";
-  searchEngineSettingDetails.appendChild(searchEngineSpan);
-  searchEngineSettingItem.appendChild(searchEngineSettingDetails);
+  const searchEngineSettingItem = sidebarItem(
+    "Search engine",
+    "Choose your default engine",
+  );
 
   const searchEngineSettingControl = document.createElement("div");
   searchEngineSettingControl.className = "spotlight-setting-control";
@@ -323,21 +304,25 @@ function showSidebar(body: HTMLBodyElement) {
     engineOptionsList.appendChild(optionItem);
   });
 
-  const ToggleNewTab = document.createElement("button");
+  const togglePageSettings = sidebarItem(
+    "Toggle content",
+    "hide the content in new tab.",
+  );
+  const toggleNewTabBtn = document.createElement("button");
+  toggleNewTabBtn.setAttribute("id", "spotlight-newtab-toggle");
+  toggleNewTabBtn.setAttribute("class", "spotlight-engine-select-trigger");
+  toggleNewTabBtn.innerText = "Toggle page";
 
-  ToggleNewTab.setAttribute("id", "spotlight-newtab-toggle");
-  ToggleNewTab.innerText = "Toggle page";
-
-  ToggleNewTab.onclick = () => {
-    if (config.shownewtab === true) {
-      localStorage.setItem("shownewtab", "false");
-      config.shownewtab = false;
+  toggleNewTabBtn.onclick = () => {
+    if (config.shownewtab === false) {
+      localStorage.setItem("shownewtab", "true");
+      config.shownewtab = true;
       hidePage();
     } else {
       const body = document.body as HTMLBodyElement;
       body.innerHTML = "";
-      localStorage.setItem("shownewtab", "true");
-      config.shownewtab = true;
+      localStorage.setItem("shownewtab", "false");
+      config.shownewtab = false;
       createNewTabPage();
       SidebarSettings();
     }
@@ -347,7 +332,8 @@ function showSidebar(body: HTMLBodyElement) {
   searchEngineSettingControl.appendChild(engineSelectWrapper);
   searchEngineSettingItem.appendChild(searchEngineSettingControl);
   settingsContent.appendChild(searchEngineSettingItem);
-  settingsContent.appendChild(ToggleNewTab);
+  togglePageSettings.appendChild(toggleNewTabBtn);
+  settingsContent.appendChild(togglePageSettings);
   settingsModal.appendChild(settingsContent);
 
   body.appendChild(settingsModal);

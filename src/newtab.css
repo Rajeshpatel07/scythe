@@ -319,8 +319,9 @@
 
 .spotlight-setting-details label {
   display: block;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.25rem;
+  font-size: medium;
 }
 
 .spotlight-setting-details span {
