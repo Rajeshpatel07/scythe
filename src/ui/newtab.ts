@@ -314,7 +314,7 @@ function showSidebar(body: HTMLBodyElement) {
   toggleNewTabBtn.innerText = "Toggle page";
 
   toggleNewTabBtn.onclick = () => {
-    if (config.shownewtab === false) {
+    if (!config.shownewtab) {
       localStorage.setItem("shownewtab", "true");
       config.shownewtab = true;
       hidePage();
