@@ -223,27 +223,27 @@ function showSidebar(body: HTMLBodyElement) {
     {
       name: "Google",
       value: "google",
-      favicon: "https://svgl.app/library/google.svg",
+      favicon: "src/assets/search-engine-logos/google.svg",
     },
     {
       name: "DuckDuckGo",
       value: "duckduckgo",
-      favicon: "https://svgl.app/library/duckduckgo.svg",
+      favicon: "src/assets/search-engine-logos/duckduckgo.svg",
     },
     {
       name: "Brave",
       value: "brave",
-      favicon: "https://svgl.app/library/brave.svg",
+      favicon: "src/assets/search-engine-logos/brave.svg",
     },
     {
       name: "Bing",
       value: "bing",
-      favicon: "https://svgl.app/library/bing.svg",
+      favicon: "src/assets/search-engine-logos/bing.svg",
     },
     {
       name: "Unduck",
       value: "unduck",
-      favicon: "https://favicon.is/unduck.link",
+      favicon: "src/assets/search-engine-logos/unduck.png",
     },
   ];
 
