@@ -32,7 +32,12 @@ export function handleEnter() {
   if (selectedItem) {
     selectedItem.click();
   } else {
-    handleSearchSubmit(searchInput.value);
+    const query = searchInput.value.trim();
+    if (query.length) {
+      handleSearchSubmit(searchInput.value);
+    } else {
+      searchInput.value = "";
+    }
   }
 }
 
