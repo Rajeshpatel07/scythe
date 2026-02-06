@@ -1,4 +1,7 @@
 /* Spotlight model */
+:host {
+  all: initial;
+}
 
 #spotlight-overlay-ext {
   position: fixed;
