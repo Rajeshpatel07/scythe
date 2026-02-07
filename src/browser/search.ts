@@ -3,14 +3,23 @@ import { hideSpotlight } from "../ui/model";
 
 export async function handleSearchSubmit(input: string): Promise<void> {
   if (input.length > 0) {
+    const isLocalHost =
+      /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i.test(input);
+
     const isLikelyURL =
-      /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(input) ||
-      /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i.test(input);
-    const url = isLikelyURL
-      ? input.startsWith("http")
+      /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i.test(input) ||
+      /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^ ]*)?$/i.test(input);
+
+    const url = isLocalHost
+      ? input.startsWith("http://") || input.startsWith("https://")
         ? input
-        : `https://${input}`
-      : await getSearchUrl(input);
+        : `http://${input}`
+      : isLikelyURL
+        ? input.startsWith("http://") || input.startsWith("https://")
+          ? input
+          : `https://${input}`
+        : await getSearchUrl(input);
+
     InitiatePageNavigation(url);
   }
 }
