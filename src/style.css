@@ -1,6 +1,6 @@
 /* Spotlight model */
 :host {
-  all: initial;
+  all: initial !important;
 }
 
 #spotlight-overlay-ext {
