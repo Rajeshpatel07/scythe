@@ -1,5 +1,5 @@
 import { createListItem } from "../ui/list";
-import { config } from "../config";
+import { config } from "../config/config.ts";
 import { getShadowRoot } from "../utils/dom";
 import type { HistoryResposne } from "../types/historyTypes";
 

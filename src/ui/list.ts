@@ -1,6 +1,6 @@
 import { loadFaviconFromCache } from "../browser/cache";
 import { InitiatePageNavigation } from "../browser/search";
-import { config } from "../config";
+import { config } from "../config/config.ts";
 import type { ListItems } from "../types/historyTypes";
 import { getShadowRoot } from "../utils/dom";
 

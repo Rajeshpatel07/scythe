@@ -1,10 +1,47 @@
-import { config } from "../config";
-import { hideSpotlight } from "../ui/model";
+import { config } from "../config/config.ts";
+import { createModelUI, hideSpotlight } from "../ui/model";
+import { getShadowRoot } from "../utils/dom.ts";
+import { populateHistory } from "./history.ts";
+import { searchAndSuggest, updateSuggestion } from "./suggestion.ts";
+
+export function handleWebSearch() {
+  createModelUI();
+
+  const shadowRoot = getShadowRoot();
+
+  if (!shadowRoot) return;
+
+  const searchInput = shadowRoot.getElementById(
+    "spotlight-search-input-ext"
+  ) as HTMLInputElement;
+
+  let debounceTimeout: NodeJS.Timeout;
+  searchInput.addEventListener(
+    "input",
+    () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(async () => {
+        const query = searchInput.value.trim();
+        if (query.length > 0) {
+          await searchAndSuggest(query);
+        } else if (searchInput.value.length === 0) {
+          populateHistory();
+        }
+        updateSuggestion(query);
+      }, 100);
+    },
+    true
+  );
+
+  populateHistory();
+  updateSuggestion("");
+}
 
 export async function handleSearchSubmit(input: string): Promise<void> {
   if (input.length > 0) {
-    const isLocalHost =
-      /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i.test(input);
+    const isLocalHost = /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i.test(
+      input
+    );
 
     const isLikelyURL =
       /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i.test(input) ||
@@ -15,10 +52,10 @@ export async function handleSearchSubmit(input: string): Promise<void> {
         ? input
         : `http://${input}`
       : isLikelyURL
-        ? input.startsWith("http://") || input.startsWith("https://")
-          ? input
-          : `https://${input}`
-        : await getSearchUrl(input);
+      ? input.startsWith("http://") || input.startsWith("https://")
+        ? input
+        : `https://${input}`
+      : await getSearchUrl(input);
 
     InitiatePageNavigation(url);
   }
@@ -49,8 +86,8 @@ export async function getSearchUrl(input: string): Promise<string> {
 }
 
 export async function getStoredSearchEngine(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get(["searchEngine"], (result) => {
+  return new Promise(resolve => {
+    chrome.storage.sync.get(["searchEngine"], result => {
       resolve(result.searchEngine || "Google");
     });
   });

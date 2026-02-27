@@ -1,4 +1,4 @@
-import { config } from "../config";
+import { config } from "../config/config.ts";
 import type { HistoryResposne } from "../types/historyTypes";
 import { getShadowRoot } from "../utils/dom";
 import {

@@ -1,9 +1,7 @@
-import { createModelUI } from "./ui/model";
-import { updateSuggestion, searchAndSuggest } from "./browser/suggestion";
-import { populateHistory } from "./browser/history";
 import { handleGlobalKeys } from "./events/keyboard";
-import { config } from "./config";
-import { getShadowHost, getShadowRoot } from "./utils/dom";
+import { config } from "./config/config.ts";
+import { getShadowHost } from "./utils/dom";
+import { handleWebSearch } from "./browser/search.ts";
 
 window.addEventListener("keydown", handleGlobalKeys, true);
 window.addEventListener(
@@ -15,7 +13,7 @@ window.addEventListener(
       e.preventDefault();
     }
   },
-  { capture: true },
+  { capture: true }
 );
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
@@ -27,34 +25,5 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 function showSpotlight() {
   config.openNewtab = true;
   config.isModelOpen = true;
-  createModelUI();
-
-  const shadowRoot = getShadowRoot();
-
-  if (!shadowRoot) return;
-
-  const searchInput = shadowRoot.getElementById(
-    "spotlight-search-input-ext",
-  ) as HTMLInputElement;
-
-  let debounceTimeout: NodeJS.Timeout;
-  searchInput.addEventListener(
-    "input",
-    () => {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(async () => {
-        const query = searchInput.value.trim();
-        if (query.length > 0) {
-          await searchAndSuggest(query);
-        } else if (searchInput.value.length === 0) {
-          populateHistory();
-        }
-        updateSuggestion(query);
-      }, 100);
-    },
-    true,
-  );
-
-  populateHistory();
-  updateSuggestion("");
+  handleWebSearch();
 }

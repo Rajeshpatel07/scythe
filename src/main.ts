@@ -1,11 +1,10 @@
-import { createModelUI } from "./ui/model";
-import { populateHistory } from "./browser/history";
-import { updateSuggestion, searchAndSuggest } from "./browser/suggestion";
 import { handleGlobalKeys } from "./events/keyboard";
-import { createNewTabPage, SidebarSettings } from "./ui/newtab";
-import { config } from "./config";
-import { getShadowRoot } from "./utils/dom";
+import { createNewTabPage } from "./ui/newtab";
+import { config } from "./config/config.ts";
+import { SidebarSettings } from "./ui/sidebar.ts";
+import { handleWebSearch } from "./browser/search.ts";
 
+document.addEventListener("keydown", handleGlobalKeys);
 document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.ctrlKey && e.key === "/") {
     e.preventDefault();
@@ -17,10 +16,10 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
 
 document.addEventListener("click", (event: MouseEvent) => {
   const engineTrigger = document.getElementById(
-    "spotlight-engine-trigger",
+    "spotlight-engine-trigger"
   ) as HTMLButtonElement;
   const engineOptionsList = document.getElementById(
-    "spotlight-engine-options-list",
+    "spotlight-engine-options-list"
   ) as HTMLUListElement;
 
   if (event.target instanceof HTMLElement) {
@@ -41,30 +40,5 @@ document.addEventListener("DOMContentLoaded", () => {
 export function showSpotlight() {
   config.openNewtab = false;
   config.isModelOpen = true;
-  createModelUI();
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
-
-  const searchInput = shadowRoot.getElementById(
-    "spotlight-search-input-ext",
-  ) as HTMLInputElement;
-
-  let debounceTimeout: NodeJS.Timeout;
-  searchInput.addEventListener("input", () => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(async () => {
-      const query = searchInput.value.trim();
-      if (query.length > 0) {
-        await searchAndSuggest(query);
-      } else if (searchInput.value.length === 0) {
-        populateHistory();
-      }
-      updateSuggestion(query);
-    }, 100);
-  });
-
-  document.addEventListener("keydown", handleGlobalKeys);
-
-  populateHistory();
-  updateSuggestion("");
+  handleWebSearch();
 }

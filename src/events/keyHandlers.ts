@@ -1,12 +1,12 @@
-import { config } from "../config.ts";
+import { config } from "../config/config.ts";
 import { handleSearchSubmit } from "../browser/search";
 import { navigateResults } from "../ui/list";
 import { hideSpotlight } from "../ui/model";
 import {
   getFirstResultItem,
   getSearchInput,
-  getSelectedResultItem,
-} from "./dom";
+  getSelectedResultItem
+} from "../utils/dom.ts";
 
 export function IgnoreKeys(e: KeyboardEvent) {
   if (

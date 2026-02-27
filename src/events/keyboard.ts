@@ -1,4 +1,4 @@
-import { config } from "../config";
+import { config } from "../config/config.ts";
 import { hideSpotlight } from "../ui/model.ts";
 import { fireCustomInputEvent } from "./customInputEvent";
 import { getSearchInput, getShadowHost } from "../utils/dom";
@@ -7,8 +7,8 @@ import {
   handleArrowNavigation,
   handleCtrlEnter,
   handleEnter,
-  handleTab,
-} from "../utils/keyHandlers.ts";
+  handleTab
+} from "./keyHandlers.ts";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
   const searchInput = getSearchInput();

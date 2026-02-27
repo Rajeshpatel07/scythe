@@ -1,4 +1,4 @@
-import { config } from "../config";
+import { config } from "../config/config.ts";
 import { getShadowHost } from "../utils/dom";
 
 export function createModelUI() {
