@@ -103,7 +103,7 @@ function newtabPageContent() {
 
   const shortcuts = [
     { keys: ["Ctrl", "Shift", "K"], action: "Websites" },
-    { keys: ["Ctrl", "/"], action: "New Tab" }
+    { keys: ["Ctrl", "/"], action: "New Tab" },
   ];
 
   for (const shortcut of shortcuts) {
@@ -111,7 +111,7 @@ function newtabPageContent() {
 
     const keysSpan = document.createElement("span");
     keysSpan.innerHTML = shortcut.keys
-      .map(key => `<kbd>${key}</kbd>`)
+      .map((key) => `<kbd>${key}</kbd>`)
       .join(" + ");
 
     const arrowSpan = document.createElement("span");

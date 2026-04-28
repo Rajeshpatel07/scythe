@@ -5,7 +5,7 @@ import { hideSpotlight } from "../ui/model";
 import {
   getFirstResultItem,
   getSearchInput,
-  getSelectedResultItem
+  getSelectedResultItem,
 } from "../utils/dom.ts";
 
 export function IgnoreKeys(e: KeyboardEvent) {

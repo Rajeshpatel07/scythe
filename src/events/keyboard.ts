@@ -7,7 +7,7 @@ import {
   handleArrowNavigation,
   handleCtrlEnter,
   handleEnter,
-  handleTab
+  handleTab,
 } from "./keyHandlers.ts";
 
 export function handleGlobalKeys(e: KeyboardEvent) {

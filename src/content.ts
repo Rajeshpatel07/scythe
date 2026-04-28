@@ -13,17 +13,16 @@ window.addEventListener(
       e.preventDefault();
     }
   },
-  { capture: true }
+  { capture: true },
 );
 
+//Initial starting point.
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   if (request.action === "toggleSpotlight") {
-    if (!config.isModelOpen) showSpotlight();
+    if (!config.isModelOpen) {
+      config.openNewtab = true;
+      config.isModelOpen = true;
+      handleWebSearch();
+    }
   }
 });
-
-function showSpotlight() {
-  config.openNewtab = true;
-  config.isModelOpen = true;
-  handleWebSearch();
-}

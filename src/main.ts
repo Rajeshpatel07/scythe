@@ -16,10 +16,10 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
 
 document.addEventListener("click", (event: MouseEvent) => {
   const engineTrigger = document.getElementById(
-    "spotlight-engine-trigger"
+    "spotlight-engine-trigger",
   ) as HTMLButtonElement;
   const engineOptionsList = document.getElementById(
-    "spotlight-engine-options-list"
+    "spotlight-engine-options-list",
   ) as HTMLUListElement;
 
   if (event.target instanceof HTMLElement) {

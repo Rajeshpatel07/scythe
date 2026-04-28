@@ -12,7 +12,7 @@ export function handleWebSearch() {
   if (!shadowRoot) return;
 
   const searchInput = shadowRoot.getElementById(
-    "spotlight-search-input-ext"
+    "spotlight-search-input-ext",
   ) as HTMLInputElement;
 
   let debounceTimeout: NodeJS.Timeout;
@@ -22,15 +22,19 @@ export function handleWebSearch() {
       clearTimeout(debounceTimeout);
       debounceTimeout = setTimeout(async () => {
         const query = searchInput.value.trim();
-        if (query.length > 0) {
-          await searchAndSuggest(query);
-        } else if (searchInput.value.length === 0) {
+
+        if (searchInput.value.length === 0) {
           populateHistory();
+          updateSuggestion("");
+          return;
         }
+        if (query.length === 0) return;
+
+        await searchAndSuggest(query);
         updateSuggestion(query);
       }, 100);
     },
-    true
+    true,
   );
 
   populateHistory();
@@ -39,9 +43,8 @@ export function handleWebSearch() {
 
 export async function handleSearchSubmit(input: string): Promise<void> {
   if (input.length > 0) {
-    const isLocalHost = /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i.test(
-      input
-    );
+    const isLocalHost =
+      /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i.test(input);
 
     const isLikelyURL =
       /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i.test(input) ||
@@ -52,10 +55,10 @@ export async function handleSearchSubmit(input: string): Promise<void> {
         ? input
         : `http://${input}`
       : isLikelyURL
-      ? input.startsWith("http://") || input.startsWith("https://")
-        ? input
-        : `https://${input}`
-      : await getSearchUrl(input);
+        ? input.startsWith("http://") || input.startsWith("https://")
+          ? input
+          : `https://${input}`
+        : await getSearchUrl(input);
 
     InitiatePageNavigation(url);
   }
@@ -72,22 +75,23 @@ export function InitiatePageNavigation(url: string): void {
 
 export async function getSearchUrl(input: string): Promise<string> {
   const name = await getStoredSearchEngine();
-  if (name === "DuckDuckGo") {
-    return `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
-  } else if (name === "Brave") {
-    return `https://search.brave.com/search?q=${encodeURIComponent(input)}`;
-  } else if (name === "Bing") {
-    return `https://www.bing.com/search?q=${encodeURIComponent(input)}`;
-  } else if (name === "Unduck") {
-    return `https://unduck.link?q=${encodeURIComponent(input)}`;
-  } else {
-    return `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+  switch (name) {
+    case "DuckDuckGo":
+      return `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
+    case "Brave":
+      return `https://search.brave.com/search?q=${encodeURIComponent(input)}`;
+    case "Bing":
+      return `https://www.bing.com/search?q=${encodeURIComponent(input)}`;
+    case "Unduck":
+      return `https://unduck.link?q=${encodeURIComponent(input)}`;
+    default:
+      return `https://www.google.com/search?q=${encodeURIComponent(input)}`;
   }
 }
 
 export async function getStoredSearchEngine(): Promise<string> {
-  return new Promise(resolve => {
-    chrome.storage.sync.get(["searchEngine"], result => {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(["searchEngine"], (result) => {
       resolve(result.searchEngine || "Google");
     });
   });

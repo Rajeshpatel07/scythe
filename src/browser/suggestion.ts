@@ -26,7 +26,7 @@ export async function searchAndSuggest(query: string) {
 
   if (!response || !response.history) {
     resultsList.innerHTML =
-      "<li>Could not search history. Fetching web suggestions...</li>";
+      "<li class='spotlight-result-item-ext'>Could not search history. Fetching web suggestions...</li>";
     return;
   }
 
@@ -45,7 +45,7 @@ export async function searchAndSuggest(query: string) {
   }
 }
 
-export function updateSuggestion(query: string) {
+export async function updateSuggestion(query: string) {
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
   const suggestionEl = shadowRoot.getElementById(
@@ -57,10 +57,20 @@ export function updateSuggestion(query: string) {
     return;
   }
 
-  const suggestions = shadowRoot.querySelectorAll(".spotlight-result-item-ext");
+  let response: HistoryResposne | null = null;
+  try {
+    response = (await chrome.runtime.sendMessage({
+      action: "searchHistory",
+      query,
+      maxResults: 50,
+    })) as HistoryResposne;
+  } catch {
+    response = null;
+  }
+
+  const suggestions = response ? response.history.map((res) => res.url) : [];
   let potentialSuggestion = "";
-  for (const result of suggestions) {
-    const resultUrl = result.getAttribute("data-url");
+  for (const resultUrl of suggestions) {
     if (!resultUrl) continue;
 
     let url: URL;
