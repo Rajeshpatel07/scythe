@@ -52,7 +52,7 @@ export function showSidebar(body: HTMLBodyElement) {
   // Search Engine Setting
   const searchEngineSettingItem = sidebarItem(
     "Search engine",
-    "Choose your default engine",
+    "Choose your default engine"
   );
 
   const searchEngineSettingControl = document.createElement("div");
@@ -62,28 +62,28 @@ export function showSidebar(body: HTMLBodyElement) {
     {
       name: "Google",
       value: "google",
-      favicon: "src/assets/search-engine-logos/google.svg",
+      favicon: "src/assets/search-engine-logos/google.svg"
     },
     {
       name: "DuckDuckGo",
       value: "duckduckgo",
-      favicon: "src/assets/search-engine-logos/duckduckgo.svg",
+      favicon: "src/assets/search-engine-logos/duckduckgo.svg"
     },
     {
       name: "Brave",
       value: "brave",
-      favicon: "src/assets/search-engine-logos/brave.svg",
+      favicon: "src/assets/search-engine-logos/brave.svg"
     },
     {
       name: "Bing",
       value: "bing",
-      favicon: "src/assets/search-engine-logos/bing.svg",
+      favicon: "src/assets/search-engine-logos/bing.svg"
     },
     {
       name: "Unduck",
       value: "unduck",
-      favicon: "src/assets/search-engine-logos/unduck.png",
-    },
+      favicon: "src/assets/search-engine-logos/unduck.png"
+    }
   ];
 
   const engineSelectWrapper = document.createElement("div");
@@ -94,7 +94,7 @@ export function showSidebar(body: HTMLBodyElement) {
   engineSelectTrigger.id = "spotlight-engine-trigger";
 
   const defaultEngineImg = document.createElement("img");
-  const engine = engines.find((e) => config.searchEngine === e.name);
+  const engine = engines.find(e => config.searchEngine === e.name);
 
   defaultEngineImg.src = engine
     ? engine.favicon
@@ -109,7 +109,7 @@ export function showSidebar(body: HTMLBodyElement) {
   const dropdownArrow = document.createElement("svg");
   dropdownArrow.setAttribute(
     "xmlns",
-    "[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)",
+    "[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)"
   );
   dropdownArrow.setAttribute("width", "16");
   dropdownArrow.setAttribute("height", "16");
@@ -127,7 +127,7 @@ export function showSidebar(body: HTMLBodyElement) {
   engineOptionsList.className = "spotlight-engine-options";
   engineOptionsList.id = "spotlight-engine-options-list";
 
-  engines.forEach((engine) => {
+  engines.forEach(engine => {
     const optionItem = document.createElement("li");
     optionItem.className = "spotlight-engine-option-item";
     optionItem.setAttribute("data-value", engine.value);
@@ -145,7 +145,7 @@ export function showSidebar(body: HTMLBodyElement) {
 
   const togglePageSettings = sidebarItem(
     "Toggle content",
-    "hide the content in new tab.",
+    "hide the content in new tab."
   );
   const toggleNewTabBtn = document.createElement("button");
   toggleNewTabBtn.setAttribute("id", "spotlight-newtab-toggle");
@@ -199,16 +199,16 @@ export function sidebarItem(label: string, txt: string) {
 
 export function SidebarSettings() {
   const settingsButton = document.getElementById(
-    "spotlight-settings-button",
+    "spotlight-settings-button"
   ) as HTMLButtonElement;
   const settingsModal = document.getElementById(
-    "spotlight-settings-modal",
+    "spotlight-settings-modal"
   ) as HTMLDivElement;
   const closeButton = document.getElementById(
-    "spotlight-settings-close-button",
+    "spotlight-settings-close-button"
   ) as HTMLButtonElement;
   const overlay = document.getElementById(
-    "spotlight-overlay",
+    "spotlight-overlay"
   ) as HTMLDivElement;
 
   function closeSettings() {
@@ -223,7 +223,7 @@ export function SidebarSettings() {
 
   closeButton?.addEventListener("click", closeSettings);
   overlay?.addEventListener("click", closeSettings);
-  document.addEventListener("keydown", (event) => {
+  document.addEventListener("keydown", event => {
     if (
       settingsModal.classList.contains("spotlight-modal-visible") &&
       event.key === "Escape"
@@ -234,13 +234,13 @@ export function SidebarSettings() {
 
   // --- Custom Search Engine Dropdown Logic ---
   const engineTrigger = document.getElementById(
-    "spotlight-engine-trigger",
+    "spotlight-engine-trigger"
   ) as HTMLButtonElement;
   const engineOptionsList = document.getElementById(
-    "spotlight-engine-options-list",
+    "spotlight-engine-options-list"
   ) as HTMLUListElement;
   const engineOptions = document.querySelectorAll(
-    ".spotlight-engine-option-item",
+    ".spotlight-engine-option-item"
   ) as NodeListOf<HTMLElement>;
 
   engineTrigger?.addEventListener("click", () => {
@@ -248,7 +248,7 @@ export function SidebarSettings() {
   });
 
   //@ts-ignore
-  engineOptions.forEach((option) => {
+  engineOptions.forEach(option => {
     option.addEventListener("click", () => {
       //@ts-ignore
       const selectedImgSrc = option.querySelector("img").src;
@@ -276,7 +276,7 @@ export function SidebarSettings() {
 
 export function hidePage() {
   const mainContent = document.getElementById(
-    "spotlight-page-container",
+    "spotlight-page-container"
   ) as HTMLElement;
 
   mainContent.style.display = "none";
