@@ -45,16 +45,32 @@ export async function searchAndSuggest(query: string) {
   }
 }
 
+const suggestionCache = new Map<string, string>();
+const WWW_REGEX = /^www\./i;
+
 export async function updateSuggestion(query: string) {
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
+
   const suggestionEl = shadowRoot.getElementById(
     "spotlight-suggestion-ext",
   ) as HTMLLIElement;
+
   if (!query) {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
     return;
+  }
+
+  const lowerCaseQuery = query.toLowerCase();
+
+  if (suggestionCache.has(lowerCaseQuery)) {
+    const cached = suggestionCache.get(lowerCaseQuery);
+    if (cached) {
+      suggestionEl.innerText = cached;
+      config.currentSuggestion = cached;
+      return;
+    }
   }
 
   let response: HistoryResposne | null = null;
@@ -68,19 +84,19 @@ export async function updateSuggestion(query: string) {
     response = null;
   }
 
-  const suggestions = response ? response.history.map((res) => res.url) : [];
+  const suggestions = response?.history || [];
   let potentialSuggestion = "";
-  for (const resultUrl of suggestions) {
-    if (!resultUrl) continue;
+  const hasPath = lowerCaseQuery.includes("/");
+
+  for (const res of suggestions) {
+    if (!res.url) continue;
 
     let url: URL;
     try {
-      url = new URL(resultUrl);
+      url = new URL(res.url);
     } catch {
       continue;
     }
-    const lowerCaseQuery = query.toLowerCase();
-    const hasPath = lowerCaseQuery.includes("/");
 
     if (hasPath) {
       const fullUrlPath = (
@@ -88,27 +104,30 @@ export async function updateSuggestion(query: string) {
         url.pathname +
         url.search +
         url.hash
-      ).replace(/^www\./i, "");
+      ).replace(WWW_REGEX, "");
       if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
         potentialSuggestion = query + fullUrlPath.slice(query.length);
         break;
       }
     } else {
-      const hostname = url.hostname.replace(/^www\./i, "");
+      const hostname = url.hostname.replace(WWW_REGEX, "");
       if (hostname.toLowerCase().startsWith(lowerCaseQuery)) {
         potentialSuggestion = query + hostname.slice(query.length);
         break;
       }
     }
   }
+
   if (
     potentialSuggestion &&
-    potentialSuggestion.toLowerCase() !== query.toLowerCase()
+    potentialSuggestion.toLowerCase() !== lowerCaseQuery
   ) {
     suggestionEl.innerText = potentialSuggestion;
     config.currentSuggestion = potentialSuggestion;
+    suggestionCache.set(lowerCaseQuery, potentialSuggestion);
   } else {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
+    suggestionCache.set(lowerCaseQuery, "");
   }
 }

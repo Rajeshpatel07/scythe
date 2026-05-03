@@ -3,6 +3,6 @@ export const config = {
   currentSuggestion: "",
   isModelOpen: false,
   openNewtab: false,
-  searchEngine: localStorage.getItem("searchEngine"),
+  searchEngine: "Google",
   shownewtab: localStorage.getItem("shownewtab") === "true",
 };

@@ -1,11 +1,14 @@
 import { config } from "../config/config.ts";
-import type { HistoryResposne } from "../types/historyTypes";
+import type {
+  HistoryItem,
+  HistoryResposne,
+  StorageResult,
+} from "../types/historyTypes";
 import { getShadowRoot } from "../utils/dom";
 import {
   filterDomainsOnly,
   renderListItems,
   mergeHistory,
-  getStoredHistory,
 } from "../utils/filterHistory.ts";
 
 export async function populateHistory() {
@@ -15,41 +18,38 @@ export async function populateHistory() {
   const resultsList = shadowRoot.getElementById(
     "spotlight-results-ext",
   ) as HTMLUListElement;
-
-  resultsList.innerHTML = "<li>Loading recent history...</li>";
   config.selectedResultIndex = -1;
 
-  const response: HistoryResposne = await chrome.runtime.sendMessage({
-    action: "getHistory",
-  });
+  const [storedResult, recentResponse] = await Promise.all([
+    chrome.storage.local.get(["storedHistory"]) as Promise<StorageResult>,
+    chrome.runtime
+      .sendMessage({ action: "getHistory" })
+      .catch(() => ({ history: [] })) as Promise<HistoryResposne>,
+  ]);
 
-  if (!response.history) {
-    resultsList.innerHTML = "<li>Could not load history.</li>";
-    return;
-  }
+  const storedHistory: HistoryItem[] = storedResult.storedHistory || [];
+  const recentItems = recentResponse?.history || [];
 
-  resultsList.innerHTML = "";
-  if (response.history.length === 0) {
+  if (recentItems.length === 0 && storedHistory.length === 0) {
     resultsList.innerHTML = "<li>No recent history.</li>";
     return;
   }
 
-  const recentHistory = response.history.filter((item) =>
+  const recentHistory = recentItems.filter((item) =>
     filterDomainsOnly(item.url),
   );
 
-  if (recentHistory.length >= 8) {
-    renderListItems(recentHistory.slice(0, 8), resultsList);
-    chrome.storage.sync.set({ storedHistory: recentHistory });
-    return;
+  let finalHistory = recentHistory;
+  if (recentHistory.length < 8) {
+    finalHistory = mergeHistory(storedHistory, recentHistory).slice(0, 8);
+  } else {
+    finalHistory = recentHistory.slice(0, 8);
   }
 
-  const storedHistory = await getStoredHistory();
-
-  const finalHistory = storedHistory
-    ? mergeHistory(storedHistory, recentHistory).slice(0, 8)
-    : recentHistory.slice(0, 8);
-
   renderListItems(finalHistory, resultsList);
-  chrome.storage.sync.set({ storedHistory: finalHistory });
+
+  const isSame = JSON.stringify(storedHistory) === JSON.stringify(finalHistory);
+  if (!isSame) {
+    chrome.storage.local.set({ storedHistory: finalHistory });
+  }
 }

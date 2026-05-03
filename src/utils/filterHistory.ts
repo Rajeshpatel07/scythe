@@ -28,8 +28,13 @@ export function renderListItems(
   items: HistoryItem[],
   resultList: HTMLUListElement,
 ) {
+  const fragment = document.createDocumentFragment();
+
   items.forEach((item) => {
     const li = createListItem({ title: item.title || item.url, url: item.url });
-    resultList.appendChild(li);
+    fragment.appendChild(li);
   });
+
+  resultList.innerHTML = "";
+  resultList.appendChild(fragment);
 }

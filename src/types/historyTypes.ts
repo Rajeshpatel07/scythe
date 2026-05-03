@@ -16,3 +16,7 @@ export interface ListItems {
   url: string;
   showUrl?: boolean;
 }
+
+export interface StorageResult {
+  storedHistory?: HistoryItem[];
+}

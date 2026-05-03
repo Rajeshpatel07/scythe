@@ -4,34 +4,45 @@ import { getShadowRoot } from "../utils/dom.ts";
 import { populateHistory } from "./history.ts";
 import { searchAndSuggest, updateSuggestion } from "./suggestion.ts";
 
+const LOCALHOST_REGEX = /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i;
+const LIKELY_URL_REGEX = /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i;
+const IP_URL_REGEX = /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^ ]*)?$/i;
+const HAS_PROTOCOL_REGEX = /^https?:\/\//i;
+
 export function handleWebSearch() {
   createModelUI();
-
   const shadowRoot = getShadowRoot();
-
   if (!shadowRoot) return;
 
   const searchInput = shadowRoot.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
 
-  let debounceTimeout: NodeJS.Timeout;
+  let searchTimeout: NodeJS.Timeout;
+  let suggestTimeout: NodeJS.Timeout;
+
   searchInput.addEventListener(
     "input",
     () => {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(async () => {
-        const query = searchInput.value.trim();
+      const query = searchInput.value.trim();
 
-        if (searchInput.value.length === 0) {
-          populateHistory();
-          updateSuggestion("");
-          return;
-        }
-        if (query.length === 0) return;
+      clearTimeout(searchTimeout);
+      clearTimeout(suggestTimeout);
 
-        await searchAndSuggest(query);
+      if (searchInput.value.length === 0) {
+        populateHistory();
+        updateSuggestion("");
+        return;
+      }
+
+      if (query.length === 0) return;
+
+      suggestTimeout = setTimeout(() => {
         updateSuggestion(query);
+      }, 20);
+
+      searchTimeout = setTimeout(async () => {
+        await searchAndSuggest(query);
       }, 100);
     },
     true,
@@ -41,27 +52,25 @@ export function handleWebSearch() {
   updateSuggestion("");
 }
 
-export async function handleSearchSubmit(input: string): Promise<void> {
-  if (input.length > 0) {
-    const isLocalHost =
-      /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i.test(input);
+export function handleSearchSubmit(input: string): void {
+  const trimmedInput = input.trim();
+  if (trimmedInput.length === 0) return;
 
-    const isLikelyURL =
-      /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i.test(input) ||
-      /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^ ]*)?$/i.test(input);
+  let url = trimmedInput;
+  const hasProtocol = HAS_PROTOCOL_REGEX.test(trimmedInput);
 
-    const url = isLocalHost
-      ? input.startsWith("http://") || input.startsWith("https://")
-        ? input
-        : `http://${input}`
-      : isLikelyURL
-        ? input.startsWith("http://") || input.startsWith("https://")
-          ? input
-          : `https://${input}`
-        : await getSearchUrl(input);
-
-    InitiatePageNavigation(url);
+  if (LOCALHOST_REGEX.test(trimmedInput)) {
+    url = hasProtocol ? trimmedInput : `http://${trimmedInput}`;
+  } else if (
+    LIKELY_URL_REGEX.test(trimmedInput) ||
+    IP_URL_REGEX.test(trimmedInput)
+  ) {
+    url = hasProtocol ? trimmedInput : `https://${trimmedInput}`;
+  } else {
+    url = getSearchUrl(trimmedInput);
   }
+
+  InitiatePageNavigation(url);
 }
 
 export function InitiatePageNavigation(url: string): void {
@@ -73,26 +82,19 @@ export function InitiatePageNavigation(url: string): void {
   }
 }
 
-export async function getSearchUrl(input: string): Promise<string> {
-  const name = await getStoredSearchEngine();
-  switch (name) {
-    case "DuckDuckGo":
-      return `https://duckduckgo.com/?q=${encodeURIComponent(input)}`;
-    case "Brave":
-      return `https://search.brave.com/search?q=${encodeURIComponent(input)}`;
-    case "Bing":
-      return `https://www.bing.com/search?q=${encodeURIComponent(input)}`;
-    case "Unduck":
-      return `https://unduck.link?q=${encodeURIComponent(input)}`;
-    default:
-      return `https://www.google.com/search?q=${encodeURIComponent(input)}`;
-  }
-}
+export function getSearchUrl(input: string): string {
+  const encodedInput = encodeURIComponent(input);
 
-export async function getStoredSearchEngine(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get(["searchEngine"], (result) => {
-      resolve(result.searchEngine || "Google");
-    });
-  });
+  switch (config.searchEngine) {
+    case "DuckDuckGo":
+      return `https://duckduckgo.com/?q=${encodedInput}`;
+    case "Brave":
+      return `https://search.brave.com/search?q=${encodedInput}`;
+    case "Bing":
+      return `https://www.bing.com/search?q=${encodedInput}`;
+    case "Unduck":
+      return `https://unduck.link?q=${encodedInput}`;
+    default:
+      return `https://www.google.com/search?q=${encodedInput}`;
+  }
 }
