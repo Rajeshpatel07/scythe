@@ -16,6 +16,10 @@ window.addEventListener(
   { capture: true },
 );
 
+chrome.storage.sync.get(["searchEngine"], (result) => {
+  config.searchEngine = result.searchEngine;
+});
+
 //Initial starting point.
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   if (request.action === "toggleSpotlight") {
