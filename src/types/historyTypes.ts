@@ -20,3 +20,14 @@ export interface ListItems {
 export interface StorageResult {
   storedHistory?: HistoryItem[];
 }
+
+export interface TabItemType {
+  id: string;
+  url: string;
+  title: string;
+  active:boolean;
+}
+
+export interface TabsResponse {
+  tabs: TabItemType[];
+}

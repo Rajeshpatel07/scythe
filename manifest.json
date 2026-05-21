@@ -37,13 +37,14 @@
         "default": "Ctrl+Shift+K",
         "mac": "Command+Shift+K"
       },
-      "description": "Open the Spotlight Search"
+      "description": "Open Spotlight Search"
     }
   },
   "web_accessible_resources": [
     {
       "resources": [
         "src/style.css",
+        "src/tabs.css",
         "src/assets/icon48.png",
         "src/assets/search-engine-logos/*"
       ],

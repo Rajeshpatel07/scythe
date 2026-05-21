@@ -1,7 +1,7 @@
 import { config } from "../config/config.ts";
 import { hideSpotlight } from "../ui/model.ts";
 import { fireCustomInputEvent } from "./customInputEvent";
-import { getSearchInput, getShadowHost } from "../utils/dom";
+import { getSearchInput, getShadowHost, getShadowRoot } from "../utils/dom";
 import {
   IgnoreKeys,
   handleArrowNavigation,
@@ -9,8 +9,43 @@ import {
   handleEnter,
   handleTab,
 } from "./keyHandlers.ts";
+import { openSwitcher, updateSelection } from "../ui/tabs.ts";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
+  const isModifier = e.metaKey || e.ctrlKey;
+
+  if (isModifier) {
+    config.modifierPressed = true;
+  }
+
+  if (isModifier && e.code === "Space") {
+    e.preventDefault();
+
+    if (!config.tabIsOpen) {
+      config.tabIsOpen = true;
+      openSwitcher(e.shiftKey);
+    } else {
+      const shadowRoot = getShadowRoot();
+      if (!shadowRoot) return;
+
+      const items = shadowRoot.querySelectorAll(".tab-item");
+      const tabsLen = items.length;
+
+      let nextIndex;
+      if (e.shiftKey) {
+        nextIndex = (config.tabSelectedIndex - 1 + tabsLen) % tabsLen;
+      } else {
+        nextIndex = (config.tabSelectedIndex + 1) % tabsLen;
+      }
+      updateSelection(nextIndex);
+    }
+    return;
+  }
+
+  const shadowRoot = getShadowRoot();
+  if (!shadowRoot) return;
+
+
   const searchInput = getSearchInput();
   if (!searchInput) return;
 

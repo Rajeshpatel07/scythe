@@ -17,6 +17,16 @@ chrome.commands.onCommand.addListener((command) => {
 
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   switch (request.action) {
+    case "getTabs":
+      chrome.tabs.query({}, (tabs) => {
+        sendResponse({ tabs: tabs });
+      });
+      return true;
+
+    case "switchTab":
+      chrome.tabs.update(parseInt(request.id), { active: true });
+      return true;
+
     case "getHistory":
       chrome.history.search(
         { text: "", startTime: 0, maxResults: 50 },
@@ -41,9 +51,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
     case "getFavicon": {
       const pageUrl = request.url;
-      const faviconUrl = `chrome-extension://${
-        chrome.runtime.id
-      }/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=32`;
+      const faviconUrl = `chrome-extension://${chrome.runtime.id
+        }/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=32`;
 
       fetch(faviconUrl)
         .then((response) => {

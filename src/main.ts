@@ -3,6 +3,22 @@ import { createNewTabPage } from "./ui/newtab";
 import { config } from "./config/config.ts";
 import { SidebarSettings } from "./ui/sidebar.ts";
 import { handleWebSearch } from "./browser/search.ts";
+import { confirmSelection } from "./ui/tabs.ts";
+
+
+window.addEventListener(
+  "keyup",
+  (e: KeyboardEvent) => {
+    if (e.key === "Meta" || e.key === "Control") {
+      config.modifierPressed = false;
+      if (config.tabIsOpen) {
+        confirmSelection();
+      }
+      return;
+    }
+  },
+  { capture: true }
+);
 
 document.addEventListener("keydown", handleGlobalKeys);
 document.addEventListener("keydown", (e: KeyboardEvent) => {
