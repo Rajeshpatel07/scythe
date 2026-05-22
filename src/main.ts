@@ -5,7 +5,6 @@ import { SidebarSettings } from "./ui/sidebar.ts";
 import { handleWebSearch } from "./browser/search.ts";
 import { confirmSelection } from "./ui/tabs.ts";
 
-
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
@@ -17,7 +16,7 @@ window.addEventListener(
       return;
     }
   },
-  { capture: true }
+  { capture: true },
 );
 
 document.addEventListener("keydown", handleGlobalKeys);

@@ -34,9 +34,6 @@ export function createTabsDock() {
   overlay.appendChild(container);
 
   shadowRoot.appendChild(overlay);
-
-  console.log("Rendered Initial UI...")
-
 }
 
 export async function renderTabs() {
@@ -60,21 +57,30 @@ export async function renderTabs() {
 
   container.innerHTML = "";
 
-  console.log("Started Rendering tabs...")
   let activeTabIndex = 0;
   response.tabs.forEach((tab, index) => {
     if (tab.active) {
       activeTabIndex = index;
     }
+
+    const newUrl = new URL(tab.url);
     const tabItem = document.createElement("div");
     tabItem.classList.add("tab-item");
     tabItem.setAttribute("id", tab.id);
     //@ts-ignore
     tabItem.setAttribute("data-index", index);
-    tabItem.setAttribute("data-title", tab.title);
+
+    const tabUrl = newUrl.hostname.split(".");
+    let title = tabUrl[0];
+    if (tabUrl[0] === "www") {
+      title = tabUrl[1];
+    }
+
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+
+    tabItem.setAttribute("data-title", title);
 
     // Fallback for missing/broken icons
-    const newUrl = new URL(tab.url);
     const iconUrl = `https://favicon.is/${newUrl.hostname}?large=true`;
     tabItem.innerHTML = `<img src="${iconUrl}" alt="${tab.title}" class="tab-icon">`;
 
@@ -88,16 +94,15 @@ export async function renderTabs() {
   });
 
   config.tabSelectedIndex = activeTabIndex;
-
-  console.log("Completed Rendering tabs...")
 }
-
 
 export function updateSelection(index: number) {
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
 
-  const tabTitle = shadowRoot.getElementById("active-tab-title") as HTMLDivElement;
+  const tabTitle = shadowRoot.getElementById(
+    "active-tab-title",
+  ) as HTMLDivElement;
 
   config.tabSelectedIndex = index;
   const items = shadowRoot.querySelectorAll(".tab-item");
@@ -118,9 +123,7 @@ export function updateSelection(index: number) {
   });
 }
 
-
 export function confirmSelection() {
-
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
 
@@ -129,26 +132,22 @@ export function confirmSelection() {
 
   closeSwitcher();
 
-  //@ts-ignore
-  console.log("tabId number-> ", parseInt(chosenTab.id), chosenTab.attributes["data-title"].value);
-
   chrome.runtime.sendMessage({
     action: "switchTab",
-    id: chosenTab.id
+    id: chosenTab.id,
   });
-
 }
 
-
 export async function openSwitcher(isReverse = false) {
-
   createTabsDock();
   await renderTabs();
 
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
 
-  const overlay = shadowRoot.getElementById("switcher-overlay") as HTMLDivElement;
+  const overlay = shadowRoot.getElementById(
+    "switcher-overlay",
+  ) as HTMLDivElement;
   const items = shadowRoot.querySelectorAll(".tab-item");
   const tabsLen = items.length;
 
@@ -163,15 +162,15 @@ export async function openSwitcher(isReverse = false) {
   }
 }
 
-
 export function closeSwitcher() {
-
   const shadowRoot = getShadowRoot();
   const shadowHost = getShadowHost();
 
   if (!shadowRoot || !shadowHost) return;
 
-  const overlay = shadowRoot.getElementById("switcher-overlay") as HTMLDivElement;
+  const overlay = shadowRoot.getElementById(
+    "switcher-overlay",
+  ) as HTMLDivElement;
 
   setTimeout(() => {
     config.tabIsOpen = false;
@@ -179,5 +178,4 @@ export function closeSwitcher() {
     overlay.classList.add("hidden");
     shadowHost.remove();
   }, 200);
-
 }

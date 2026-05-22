@@ -37,7 +37,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom:25vh;
+  margin-bottom: 25vh;
   max-width: 92vw;
   transform: scale(1);
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -115,7 +115,8 @@
 .active-title {
   margin-top: 16px;
   font-size: 14px;
-  font-weight: 700; /* Extra bold emphasis */
+  font-family: sans-serif;
+  font-weight: 900; /* Extra bold emphasis */
   letter-spacing: 0.3px;
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);

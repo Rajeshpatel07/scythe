@@ -51,8 +51,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
     case "getFavicon": {
       const pageUrl = request.url;
-      const faviconUrl = `chrome-extension://${chrome.runtime.id
-        }/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=32`;
+      const faviconUrl = `chrome-extension://${
+        chrome.runtime.id
+      }/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=32`;
 
       fetch(faviconUrl)
         .then((response) => {

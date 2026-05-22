@@ -25,7 +25,7 @@ export interface TabItemType {
   id: string;
   url: string;
   title: string;
-  active:boolean;
+  active: boolean;
 }
 
 export interface TabsResponse {

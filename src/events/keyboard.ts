@@ -31,7 +31,7 @@ export function handleGlobalKeys(e: KeyboardEvent) {
       const items = shadowRoot.querySelectorAll(".tab-item");
       const tabsLen = items.length;
 
-      let nextIndex;
+      let nextIndex: number;
       if (e.shiftKey) {
         nextIndex = (config.tabSelectedIndex - 1 + tabsLen) % tabsLen;
       } else {
@@ -44,7 +44,6 @@ export function handleGlobalKeys(e: KeyboardEvent) {
 
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
-
 
   const searchInput = getSearchInput();
   if (!searchInput) return;

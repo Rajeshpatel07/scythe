@@ -1,6 +1,6 @@
 import { handleGlobalKeys } from "./events/keyboard";
 import { config } from "./config/config.ts";
-import { getShadowHost,  } from "./utils/dom";
+import { getShadowHost } from "./utils/dom";
 import { handleWebSearch } from "./browser/search.ts";
 import { confirmSelection } from "./ui/tabs.ts";
 
@@ -8,8 +8,6 @@ window.addEventListener("keydown", handleGlobalKeys, { capture: true });
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
-
-
     if (e.key === "Meta" || e.key === "Control") {
       config.modifierPressed = false;
       if (config.tabIsOpen) {
