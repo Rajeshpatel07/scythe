@@ -97,8 +97,8 @@
 /* Selected State via Keyboard or Mouse Hover */
 .tab-item.selected,
 .tab-item:hover {
-  background-color: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.08);
+  background-color: rgb(131 131 131 / 18%);
+  border-color: rgba(255, 255, 255, 0.18);
 
   /* Smooth popping scale factor mimicking macOS App Switcher */
   transform: scale(1.12);
