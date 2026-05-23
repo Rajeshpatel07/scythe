@@ -1,3 +1,4 @@
+import { getHighResFallback, loadFaviconFromCache } from "../browser/cache";
 import { config } from "../config/config";
 import type { TabsResponse } from "../types/historyTypes";
 import { getShadowHost, getShadowRoot } from "../utils/dom";
@@ -80,11 +81,51 @@ export async function renderTabs() {
 
     tabItem.setAttribute("data-title", title);
 
-    // Fallback for missing/broken icons
-    const iconUrl = `https://favicon.is/${newUrl.hostname}?large=true`;
-    tabItem.innerHTML = `<img src="${iconUrl}" alt="${tab.title}" class="tab-icon">`;
+    const img = document.createElement("img");
+    img.classList.add("tab-icon");
+    img.alt = tab.title || "";
 
-    // Sync active styling on mouse hover
+    const hostname = newUrl.hostname;
+
+    const currentTargetUrl = tab.url;
+    img.setAttribute("data-loading-url", currentTargetUrl);
+
+    (async () => {
+      try {
+        const storageKey = `fav_${hostname}`;
+        const result = await chrome.storage.local.get([storageKey]);
+        const cachedDataUrl = result[storageKey];
+
+        if (cachedDataUrl && cachedDataUrl !== "null") {
+          img.src = cachedDataUrl;
+          return;
+        }
+
+        loadFaviconFromCache(tab.url, img, 128);
+        if (newUrl.protocol === "chrome:") return;
+
+        const highResResult = await getHighResFallback(hostname);
+
+        if (highResResult.status === "success" && highResResult.dataUrl) {
+          if (img.getAttribute("data-loading-url") === currentTargetUrl) {
+            img.style.opacity = "0.4";
+            setTimeout(() => {
+              if (highResResult.dataUrl) {
+                img.src = highResResult.dataUrl;
+                img.style.opacity = "1";
+              }
+            }, 60);
+
+            await chrome.storage.local.set({
+              [storageKey]: highResResult.dataUrl,
+            });
+          }
+        }
+      } catch (_error) {}
+    })();
+
+    tabItem.appendChild(img);
+
     tabItem.addEventListener("mouseenter", () => updateSelection(index));
     tabItem.addEventListener("click", () => {
       confirmSelection();
@@ -111,7 +152,6 @@ export function updateSelection(index: number) {
       item.classList.add("selected");
       //@ts-ignore
       tabTitle.textContent = item.attributes["data-title"].value;
-      // Scroll smoothly into view if tabs overflow the viewport width
       item.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
@@ -154,7 +194,6 @@ export async function openSwitcher(isReverse = false) {
   config.tabIsOpen = true;
   overlay.classList.remove("hidden");
 
-  // If moving backwards on open, go to the last item; otherwise, go to the second item (index 1)
   if (isReverse) {
     updateSelection((config.tabSelectedIndex - 1 + tabsLen) % tabsLen);
   } else {
