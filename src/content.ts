@@ -8,18 +8,19 @@ window.addEventListener("keydown", handleGlobalKeys, { capture: true });
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
-    if (e.key === "Meta" || e.key === "Control") {
-      config.modifierPressed = false;
-      if (config.tabIsOpen) {
-        confirmSelection();
-      }
-      return;
-    }
-
     const shadowHost = getShadowHost();
-    if (shadowHost && e.composedPath().includes(shadowHost)) {
+    if (
+      (shadowHost && e.composedPath().includes(shadowHost)) ||
+      config.tabIsOpen
+    ) {
       e.stopImmediatePropagation();
       e.preventDefault();
+      if (e.key === "Meta" || e.key === "Control") {
+        config.modifierPressed = false;
+        if (config.tabIsOpen) {
+          confirmSelection();
+        }
+      }
     }
   },
   { capture: true },

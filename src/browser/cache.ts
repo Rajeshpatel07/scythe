@@ -30,7 +30,7 @@ export async function getHighResFallback(
 ): Promise<{ status: string; dataUrl: string | null }> {
   try {
     // const imgUrl = `https://favicon.is/${url}?larger=true`;
-    const imgUrl=`https://favicon.vemetric.com/${url}?size=128&format=webp`;
+    const imgUrl = `https://favicon.vemetric.com/${url}?size=128&format=webp`;
 
     const response = await fetch(imgUrl);
     if (!response.ok) {
