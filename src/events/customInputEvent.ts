@@ -3,6 +3,10 @@ export function fireCustomInputEvent(
   searchInput: HTMLInputElement,
 ) {
   if (searchInput && e.key.length === 1) {
+    if (document.execCommand("insertText", false, e.key)) {
+      return;
+    }
+
     const start = searchInput.selectionStart;
     const end = searchInput.selectionEnd;
     const text = searchInput.value;
@@ -15,7 +19,14 @@ export function fireCustomInputEvent(
     searchInput.dispatchEvent(
       new Event("input", { bubbles: true, cancelable: true }),
     );
+
+    searchInput.blur();
+    searchInput.focus();
   } else if (searchInput && e.key === "Backspace") {
+    if (document.execCommand("delete", false)) {
+      return;
+    }
+
     const start = searchInput.selectionStart;
     const end = searchInput.selectionEnd;
 
@@ -36,5 +47,8 @@ export function fireCustomInputEvent(
         new Event("input", { bubbles: true, cancelable: true }),
       );
     }
+
+    searchInput.blur();
+    searchInput.focus();
   }
 }
