@@ -6,7 +6,7 @@
   "permissions": ["storage", "history", "favicon", "tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
-    "service_worker": "src/background.js"
+    "service_worker": "src/background/index.js"
   },
   "action": {
     "default_title": "Open Spotlight",
@@ -27,7 +27,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content.js"],
+      "js": ["src/content/index.js"],
       "run_at": "document_start"
     }
   ],
@@ -43,8 +43,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "src/style.css",
-        "src/tabs.css",
+        "src/core/styles/style.css",
+        "src/core/styles/tabs.css",
         "src/assets/icon48.png",
         "src/assets/search-engine-logos/*"
       ],

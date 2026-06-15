@@ -1,3 +1,5 @@
+import type { MessagePayload } from "../core/messaging/message.types";
+
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle-spotlight") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -7,6 +9,7 @@ chrome.commands.onCommand.addListener((command) => {
           { action: "toggleSpotlight" },
           (_response) => {
             if (chrome.runtime.lastError) {
+              // Ignore error if content script not loaded
             }
           },
         );
@@ -15,7 +18,7 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request: MessagePayload, _sender, sendResponse) => {
   switch (request.action) {
     case "getTabs":
       chrome.tabs.query({}, (tabs) => {
@@ -24,7 +27,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       return true;
 
     case "switchTab":
-      chrome.tabs.update(parseInt(request.id), { active: true });
+      if (request.id) {
+        chrome.tabs.update(parseInt(request.id), { active: true });
+      }
       return true;
 
     case "getHistory":
@@ -39,7 +44,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     case "searchHistory":
       chrome.history.search(
         {
-          text: request.query,
+          text: request.query || "",
           startTime: 0,
           maxResults: request.maxResults || 8,
         },
@@ -51,15 +56,17 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
     case "getFavicon": {
       const pageUrl = request.url;
+      if (!pageUrl) {
+        sendResponse({ status: "error", dataUrl: null });
+        return true;
+      }
       const imgSize = request.size || 32;
-      const faviconUrl = `chrome-extension://${
-        chrome.runtime.id
-      }/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
+      const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
 
       fetch(faviconUrl)
         .then((response) => {
           if (!response.ok) {
-            throw Error(" Failed to fetch favicon ");
+            throw Error("Failed to fetch favicon");
           }
           return response.blob();
         })
@@ -77,8 +84,10 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     }
 
     case "createTab":
-      chrome.tabs.create({ url: request.url, active: true });
-      sendResponse({ success: true });
+      if (request.url) {
+        chrome.tabs.create({ url: request.url, active: true });
+        sendResponse({ success: true });
+      }
       break;
   }
 });

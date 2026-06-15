@@ -1,5 +1,5 @@
-import { config } from "../config/config.ts";
-import { createNewTabPage } from "./newtab.ts";
+import { config } from "../../../core/config/config";
+import { createNewTabPage } from "./newtab.component";
 
 export function showSidebar(body: HTMLBodyElement) {
   const header = document.createElement("header");
@@ -10,7 +10,7 @@ export function showSidebar(body: HTMLBodyElement) {
   settingsButton.className = "spotlight-icon-button";
   settingsButton.setAttribute("aria-label", "Open settings");
   settingsButton.innerHTML = `
-        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24"
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
             <path
@@ -36,7 +36,7 @@ export function showSidebar(body: HTMLBodyElement) {
   settingsCloseButton.className = "spotlight-icon-button";
   settingsCloseButton.setAttribute("aria-label", "Close settings");
   settingsCloseButton.innerHTML = `
-        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24"
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -109,7 +109,7 @@ export function showSidebar(body: HTMLBodyElement) {
   const dropdownArrow = document.createElement("svg");
   dropdownArrow.setAttribute(
     "xmlns",
-    "[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)",
+    "http://www.w3.org/2000/svg"
   );
   dropdownArrow.setAttribute("width", "16");
   dropdownArrow.setAttribute("height", "16");
@@ -239,38 +239,36 @@ export function SidebarSettings() {
   const engineOptionsList = document.getElementById(
     "spotlight-engine-options-list",
   ) as HTMLUListElement;
-  const engineOptions = document.querySelectorAll(
-    ".spotlight-engine-option-item",
-  ) as NodeListOf<HTMLElement>;
 
   engineTrigger?.addEventListener("click", () => {
     engineOptionsList.classList.toggle("spotlight-open");
   });
 
-  //@ts-ignore
-  engineOptions.forEach((option) => {
-    option.addEventListener("click", () => {
-      //@ts-ignore
-      const selectedImgSrc = option.querySelector("img").src;
-      //@ts-ignore
-      const selectedName = option.querySelector("span").textContent;
+  // Event Delegation for better performance
+  engineOptionsList?.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    const option = target.closest(".spotlight-engine-option-item") as HTMLElement;
 
-      if (selectedName) {
-        // Update the trigger button's content
-        const triggerImg = engineTrigger.querySelector("img");
-        const triggerSpan = engineTrigger.querySelector("span");
-        if (triggerImg && triggerSpan) {
-          triggerImg.src = selectedImgSrc;
-          triggerImg.alt = selectedName;
-          triggerSpan.textContent = selectedName;
-        }
-        localStorage.setItem("searchEngine", selectedName);
-        config.searchEngine = selectedName;
-        chrome.storage.sync.set({ searchEngine: selectedName });
+    if (!option) return;
+
+    const selectedImgSrc = option.querySelector("img")?.src;
+    const selectedName = option.querySelector("span")?.textContent;
+
+    if (selectedName && selectedImgSrc) {
+      // Update the trigger button's content
+      const triggerImg = engineTrigger.querySelector("img");
+      const triggerSpan = engineTrigger.querySelector("span");
+      if (triggerImg && triggerSpan) {
+        triggerImg.src = selectedImgSrc;
+        triggerImg.alt = selectedName;
+        triggerSpan.textContent = selectedName;
       }
-      // Close the dropdown
-      engineOptionsList.classList.remove("spotlight-open");
-    });
+      localStorage.setItem("searchEngine", selectedName);
+      config.searchEngine = selectedName;
+      chrome.storage.sync.set({ searchEngine: selectedName });
+    }
+    // Close the dropdown
+    engineOptionsList.classList.remove("spotlight-open");
   });
 }
 
@@ -279,5 +277,7 @@ export function hidePage() {
     "spotlight-page-container",
   ) as HTMLElement;
 
-  mainContent.style.display = "none";
+  if (mainContent) {
+    mainContent.style.display = "none";
+  }
 }

@@ -1,15 +1,9 @@
-import { config } from "../config/config.ts";
-import type {
-  HistoryItem,
-  HistoryResposne,
-  StorageResult,
-} from "../types/historyTypes";
-import { getShadowRoot } from "../utils/dom";
-import {
-  filterDomainsOnly,
-  renderListItems,
-  mergeHistory,
-} from "../utils/filterHistory.ts";
+import { config } from "../../../core/config/config";
+import type { HistoryResponse } from "../../../core/types/domain.types";
+import { getShadowRoot } from "../../../core/utils/dom.utils";
+import { filterDomainsOnly, mergeHistory, getStoredHistory } from "../../../core/utils/history.utils";
+import { MessageBroker } from "../../../core/messaging/message.broker";
+import { renderListItems } from "../components/list-item.component";
 
 export async function populateHistory() {
   const shadowRoot = getShadowRoot();
@@ -20,14 +14,11 @@ export async function populateHistory() {
   ) as HTMLUListElement;
   config.selectedResultIndex = -1;
 
-  const [storedResult, recentResponse] = await Promise.all([
-    chrome.storage.local.get(["storedHistory"]) as Promise<StorageResult>,
-    chrome.runtime
-      .sendMessage({ action: "getHistory" })
-      .catch(() => ({ history: [] })) as Promise<HistoryResposne>,
+  const [storedHistory, recentResponse] = await Promise.all([
+    getStoredHistory(),
+    MessageBroker.send({ action: "getHistory" }).catch(() => ({ history: [] })) as Promise<HistoryResponse>,
   ]);
 
-  const storedHistory: HistoryItem[] = storedResult.storedHistory || [];
   const recentItems = recentResponse?.history || [];
 
   if (recentItems.length === 0 && storedHistory.length === 0) {

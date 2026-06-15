@@ -1,12 +1,13 @@
-import { config } from "../config/config.ts";
-import { handleSearchSubmit } from "../browser/search";
-import { navigateResults } from "../ui/list";
-import { hideSpotlight } from "../ui/model";
+import { config } from "../../../core/config/config";
+import { handleSearchSubmit } from "../services/search.service";
+import { navigateResults } from "../components/list-item.component";
+import { hideSpotlight } from "../components/modal.component";
 import {
   getFirstResultItem,
   getSearchInput,
   getSelectedResultItem,
-} from "../utils/dom.ts";
+} from "../../../core/utils/dom.utils";
+import { MessageBroker } from "../../../core/messaging/message.broker";
 
 export function IgnoreKeys(e: KeyboardEvent) {
   if (
@@ -54,7 +55,7 @@ export function handleCtrlEnter() {
   if (url) {
     hideSpotlight();
     if (config.openNewtab) {
-      chrome.runtime.sendMessage({ action: "createTab", url: url });
+      MessageBroker.send({ action: "createTab", url: url });
     } else {
       window.location.href = url;
     }

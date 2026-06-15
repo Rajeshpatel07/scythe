@@ -1,8 +1,8 @@
-import { loadFaviconFromCache } from "../browser/cache";
-import { InitiatePageNavigation } from "../browser/search";
-import { config } from "../config/config.ts";
-import type { ListItems } from "../types/historyTypes";
-import { getShadowRoot } from "../utils/dom";
+import { loadFaviconFromCache } from "../services/cache.service";
+import { InitiatePageNavigation } from "../services/search.service";
+import { config } from "../../../core/config/config";
+import type { ListItems } from "../../../core/types/domain.types";
+import { getShadowRoot } from "../../../core/utils/dom.utils";
 
 export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
@@ -54,7 +54,7 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
   if (results.length === 0) return;
 
   if (config.selectedResultIndex !== -1) {
-    results[config.selectedResultIndex].classList.remove("selected");
+    results[config.selectedResultIndex]?.classList.remove("selected");
   }
 
   if (direction === "ArrowDown") {
@@ -65,6 +65,21 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
       (config.selectedResultIndex - 1 + results.length) % results.length;
   }
 
-  results[config.selectedResultIndex].classList.add("selected");
-  results[config.selectedResultIndex].scrollIntoView({ block: "nearest" });
+  results[config.selectedResultIndex]?.classList.add("selected");
+  results[config.selectedResultIndex]?.scrollIntoView({ block: "nearest" });
+}
+
+export function renderListItems(
+  items: { title: string; url: string; showUrl?: boolean }[],
+  resultList: HTMLUListElement,
+) {
+  const fragment = document.createDocumentFragment();
+
+  items.forEach((item) => {
+    const li = createListItem({ title: item.title || item.url, url: item.url, showUrl: item.showUrl });
+    fragment.appendChild(li);
+  });
+
+  resultList.innerHTML = "";
+  resultList.appendChild(fragment);
 }

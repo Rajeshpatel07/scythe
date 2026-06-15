@@ -1,9 +1,78 @@
-import { handleGlobalKeys } from "./events/keyboard";
-import { createNewTabPage } from "./ui/newtab";
-import { config } from "./config/config.ts";
-import { SidebarSettings } from "./ui/sidebar.ts";
-import { handleWebSearch } from "./browser/search.ts";
-import { confirmSelection } from "./ui/tabs.ts";
+import { createNewTabPage } from "./features/new-tab/components/newtab.component";
+import { SidebarSettings } from "./features/new-tab/components/sidebar.component";
+import { config } from "./core/config/config";
+import { handleWebSearch } from "./features/spotlight/services/search.service";
+import { openSwitcher } from "./features/tab-switcher/components/switcher.component";
+import { confirmSelection, updateSelection } from "./features/tab-switcher/handlers/selection.handler";
+import { getShadowRoot, getSearchInput, getShadowHost } from "./core/utils/dom.utils";
+import { handleArrowNavigation, handleCtrlEnter, handleEnter, handleTab, IgnoreKeys } from "./features/spotlight/handlers/keyboard.handler";
+import { hideSpotlight } from "./features/spotlight/components/modal.component";
+import { fireCustomInputEvent } from "./features/spotlight/handlers/input.handler";
+
+function handleGlobalKeys(e: KeyboardEvent) {
+  const isModifier = e.metaKey || e.ctrlKey;
+
+  if (isModifier) {
+    config.modifierPressed = true;
+  }
+
+  if (isModifier && e.code === "Space") {
+    e.preventDefault();
+
+    if (!config.tabIsOpen) {
+      config.tabIsOpen = true;
+      openSwitcher(e.shiftKey);
+    } else {
+      const shadowRoot = getShadowRoot();
+      if (!shadowRoot) return;
+
+      const items = shadowRoot.querySelectorAll(".tab-item");
+      const tabsLen = items.length;
+
+      let nextIndex: number;
+      if (e.shiftKey) {
+        nextIndex = (config.tabSelectedIndex - 1 + tabsLen) % tabsLen;
+      } else {
+        nextIndex = (config.tabSelectedIndex + 1) % tabsLen;
+      }
+      updateSelection(nextIndex);
+    }
+    return;
+  }
+
+  const shadowRoot = getShadowRoot();
+  if (!shadowRoot) return;
+
+  const searchInput = getSearchInput();
+  if (!searchInput) return;
+
+  if (document.activeElement !== searchInput) {
+    searchInput.focus();
+  }
+
+  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+    handleArrowNavigation(e.key);
+  } else if (e.ctrlKey && e.key === "Enter") {
+    handleCtrlEnter();
+  } else if (e.key === "Enter") {
+    handleEnter();
+  } else if (e.key === "Tab" && config.currentSuggestion) {
+    handleTab();
+  } else if (e.key === "Escape") {
+    hideSpotlight();
+  }
+
+  const shadowHost = getShadowHost();
+  if (shadowHost && e.composedPath().includes(shadowHost)) {
+    e.stopImmediatePropagation();
+    if (IgnoreKeys(e)) {
+      return;
+    }
+    e.preventDefault();
+
+    fireCustomInputEvent(e, searchInput);
+  }
+}
 
 window.addEventListener(
   "keyup",
@@ -39,6 +108,7 @@ document.addEventListener("click", (event: MouseEvent) => {
 
   if (event.target instanceof HTMLElement) {
     if (
+      engineTrigger && engineOptionsList &&
       !engineTrigger.contains(event.target) &&
       !engineOptionsList.contains(event.target)
     ) {

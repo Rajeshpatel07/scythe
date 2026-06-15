@@ -1,5 +1,4 @@
-import type { HistoryItem } from "../types/historyTypes";
-import { createListItem } from "../ui/list";
+import type { HistoryItem } from "../types/domain.types";
 
 export function filterDomainsOnly(url: string): boolean {
   try {
@@ -12,7 +11,7 @@ export function filterDomainsOnly(url: string): boolean {
 
 export async function getStoredHistory(): Promise<HistoryItem[]> {
   const result = await chrome.storage.sync.get(["storedHistory"]);
-  return result.storedHistory;
+  return result.storedHistory || [];
 }
 
 export function mergeHistory(
@@ -22,19 +21,4 @@ export function mergeHistory(
   const recentUrls = new Set(recent.map((item) => item.url));
   const filtered = stored.filter((item) => !recentUrls.has(item.url));
   return [...recent, ...filtered];
-}
-
-export function renderListItems(
-  items: HistoryItem[],
-  resultList: HTMLUListElement,
-) {
-  const fragment = document.createDocumentFragment();
-
-  items.forEach((item) => {
-    const li = createListItem({ title: item.title || item.url, url: item.url });
-    fragment.appendChild(li);
-  });
-
-  resultList.innerHTML = "";
-  resultList.appendChild(fragment);
 }

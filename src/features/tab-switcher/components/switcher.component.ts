@@ -1,7 +1,9 @@
-import { getHighResFallback, loadFaviconFromCache } from "../browser/cache";
-import { config } from "../config/config";
-import type { TabsResponse } from "../types/historyTypes";
-import { getShadowHost, getShadowRoot } from "../utils/dom";
+import { loadFaviconFromCache, getHighResFallback } from "../../spotlight/services/cache.service";
+import { config } from "../../../core/config/config";
+import type { TabsResponse } from "../../../core/types/domain.types";
+import { getShadowHost, getShadowRoot } from "../../../core/utils/dom.utils";
+import { MessageBroker } from "../../../core/messaging/message.broker";
+import { updateSelection, confirmSelection } from "../handlers/selection.handler";
 
 export function createTabsDock() {
   const host = document.createElement("div");
@@ -11,7 +13,7 @@ export function createTabsDock() {
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
   stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/tabs.css"));
+  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/core/styles/tabs.css"));
   shadowRoot.appendChild(stylesheetLink);
 
   const overlay = document.createElement("div");
@@ -45,9 +47,7 @@ export async function renderTabs() {
 
   let response: TabsResponse | null;
   try {
-    response = (await chrome.runtime.sendMessage({
-      action: "getTabs",
-    })) as TabsResponse;
+    response = await MessageBroker.send({ action: "getTabs" });
   } catch {
     response = null;
   }
@@ -57,6 +57,7 @@ export async function renderTabs() {
   }
 
   container.innerHTML = "";
+  const fragment = document.createDocumentFragment();
 
   let activeTabIndex = 0;
   response.tabs.forEach((tab, index) => {
@@ -73,7 +74,7 @@ export async function renderTabs() {
 
     const tabUrl = newUrl.hostname.split(".");
     let title = tabUrl[0];
-    if (tabUrl[0] === "www") {
+    if (tabUrl[0] === "www" && tabUrl[1]) {
       title = tabUrl[1];
     }
 
@@ -131,51 +132,11 @@ export async function renderTabs() {
       confirmSelection();
     });
 
-    container.appendChild(tabItem);
+    fragment.appendChild(tabItem);
   });
 
+  container.appendChild(fragment);
   config.tabSelectedIndex = activeTabIndex;
-}
-
-export function updateSelection(index: number) {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
-
-  const tabTitle = shadowRoot.getElementById(
-    "active-tab-title",
-  ) as HTMLDivElement;
-
-  config.tabSelectedIndex = index;
-  const items = shadowRoot.querySelectorAll(".tab-item");
-  items.forEach((item, idx) => {
-    if (idx === index) {
-      item.classList.add("selected");
-      //@ts-ignore
-      tabTitle.textContent = item.attributes["data-title"].value;
-      item.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "nearest",
-      });
-    } else {
-      item.classList.remove("selected");
-    }
-  });
-}
-
-export function confirmSelection() {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
-
-  const items = shadowRoot.querySelectorAll(".tab-item");
-  const chosenTab = items[config.tabSelectedIndex];
-
-  closeSwitcher();
-
-  chrome.runtime.sendMessage({
-    action: "switchTab",
-    id: chosenTab.id,
-  });
 }
 
 export async function openSwitcher(isReverse = false) {

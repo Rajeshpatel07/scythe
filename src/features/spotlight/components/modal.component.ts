@@ -1,5 +1,5 @@
-import { config } from "../config/config.ts";
-import { getShadowHost } from "../utils/dom";
+import { config } from "../../../core/config/config";
+import { getShadowHost } from "../../../core/utils/dom.utils";
 
 export function createModelUI() {
   const host = document.createElement("div");
@@ -9,7 +9,7 @@ export function createModelUI() {
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
   stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/style.css"));
+  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/core/styles/style.css"));
   shadowRoot.appendChild(stylesheetLink);
 
   const overlay = document.createElement("div");
@@ -68,13 +68,18 @@ function forceFocusOnInput(inputElement: HTMLInputElement) {
   inputElement.focus();
 
   if (document.activeElement !== inputElement) {
-    const focusInterval = setInterval(() => {
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    function focusLoop() {
       inputElement.focus();
-      if (document.activeElement === inputElement) {
-        clearInterval(focusInterval);
+      if (document.activeElement === inputElement || attempts >= maxAttempts) {
+        return;
       }
-    }, 50);
-
-    setTimeout(() => clearInterval(focusInterval), 500);
+      attempts++;
+      requestAnimationFrame(focusLoop);
+    }
+    
+    requestAnimationFrame(focusLoop);
   }
 }

@@ -1,6 +1,6 @@
-import { config } from "../config/config.ts";
-import { showSpotlight } from "../main";
-import { showSidebar } from "./sidebar";
+import { config } from "../../../core/config/config";
+import { showSidebar } from "./sidebar.component";
+import { showSpotlight } from "../../../main";
 
 export function createNewTabPage() {
   const body = document.body as HTMLBodyElement;
@@ -39,7 +39,7 @@ function newtabPageContent() {
 
   const searchForm = document.createElement("form");
   searchForm.id = "spotlight-search-form";
-  searchForm.action = "[https://duckduckgo.com/](https://duckduckgo.com/)";
+  searchForm.action = "https://duckduckgo.com/";
   searchForm.method = "get";
 
   const searchWrapper = document.createElement("div");
