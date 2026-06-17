@@ -1,10 +1,23 @@
 import { config } from "../core/config/config";
-import { getShadowHost, getShadowRoot, getSearchInput } from "../core/utils/dom.utils";
+import {
+  getShadowHost,
+  getShadowRoot,
+  getSearchInput,
+} from "../core/utils/dom.utils";
 import { openSwitcher } from "../features/tab-switcher/components/switcher.component";
-import { updateSelection, confirmSelection } from "../features/tab-switcher/handlers/selection.handler";
+import {
+  updateSelection,
+  confirmSelection,
+} from "../features/tab-switcher/handlers/selection.handler";
 import { hideSpotlight } from "../features/spotlight/components/modal.component";
 import { fireCustomInputEvent } from "../features/spotlight/handlers/input.handler";
-import { handleArrowNavigation, handleCtrlEnter, handleEnter, handleTab, IgnoreKeys } from "../features/spotlight/handlers/keyboard.handler";
+import {
+  handleArrowNavigation,
+  handleCtrlEnter,
+  handleEnter,
+  handleTab,
+  IgnoreKeys,
+} from "../features/spotlight/handlers/keyboard.handler";
 import { handleWebSearch } from "../features/spotlight/services/search.service";
 
 function handleGlobalKeys(e: KeyboardEvent) {

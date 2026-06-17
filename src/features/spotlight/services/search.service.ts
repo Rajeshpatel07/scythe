@@ -5,13 +5,14 @@ import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/list-item.component";
+import {
+  WWW_REGEX,
+  LOCALHOST_REGEX,
+  HAS_PROTOCOL_REGEX,
+  LIKELY_URL_REGEX,
+  IP_URL_REGEX,
+} from "../../../core/config/constants";
 
-const LOCALHOST_REGEX = /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i;
-const LIKELY_URL_REGEX = /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i;
-const IP_URL_REGEX = /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^ ]*)?$/i;
-const HAS_PROTOCOL_REGEX = /^https?:\/\//i;
-
-const WWW_REGEX = /^www\./i;
 const suggestionCache = new Map<string, string>();
 
 export function handleWebSearch() {
@@ -48,7 +49,7 @@ export function handleWebSearch() {
 
       searchTimeout = setTimeout(async () => {
         await searchAndSuggest(query);
-      }, 150);
+      }, 100);
     },
     true,
   );
@@ -171,13 +172,17 @@ export async function updateSuggestion(query: string) {
   let response: HistoryResponse | null = null;
   try {
     // Fetch a larger pool to ensure highly visited sites aren't buried by recent obscure ones
-    response = await MessageBroker.send({ action: "searchHistory", query, maxResults: 150 });
+    response = await MessageBroker.send({
+      action: "searchHistory",
+      query,
+      maxResults: 150,
+    });
   } catch {
     response = null;
   }
 
   const suggestions = response?.history || [];
-  
+
   // Sort suggestions to prioritize frequently typed and highly visited URLs
   suggestions.sort((a, b) => {
     const aScore = (a.typedCount || 0) * 10 + (a.visitCount || 0);
@@ -199,7 +204,7 @@ export async function updateSuggestion(query: string) {
     }
 
     const host = url.hostname.replace(WWW_REGEX, "");
-    
+
     if (hasPath) {
       // Retain full path for matching if the user explicitly typed a slash
       const fullUrlPath = host + url.pathname + url.search + url.hash;

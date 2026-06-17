@@ -1,7 +1,11 @@
 import { config } from "../../../core/config/config";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { getShadowRoot } from "../../../core/utils/dom.utils";
-import { filterDomainsOnly, mergeHistory, getStoredHistory } from "../../../core/utils/history.utils";
+import {
+  filterDomainsOnly,
+  mergeHistory,
+  getStoredHistory,
+} from "../../../core/utils/history.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/list-item.component";
 
@@ -16,7 +20,9 @@ export async function populateHistory() {
 
   const [storedHistory, recentResponse] = await Promise.all([
     getStoredHistory(),
-    MessageBroker.send({ action: "getHistory" }).catch(() => ({ history: [] })) as Promise<HistoryResponse>,
+    MessageBroker.send({ action: "getHistory" }).catch(() => ({
+      history: [],
+    })) as Promise<HistoryResponse>,
   ]);
 
   const recentItems = recentResponse?.history || [];

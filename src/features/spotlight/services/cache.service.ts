@@ -5,10 +5,21 @@ export function loadFaviconFromCache(
   imgElement: HTMLImageElement,
   size?: number,
 ) {
-  MessageBroker.send({ action: "getFavicon", url, size }).then((response) => {
-    if (response && response.status === "success" && response.dataUrl) {
-      imgElement.src = response.dataUrl;
-    } else {
+  MessageBroker.send({ action: "getFavicon", url, size })
+    .then((response) => {
+      if (response && response.status === "success" && response.dataUrl) {
+        imgElement.src = response.dataUrl;
+      } else {
+        let hostname = "...";
+        const havePrefix = /^https?:\/\//.test(url);
+        if (!havePrefix) url = `https://${url}`;
+        try {
+          hostname = new URL(url).hostname;
+        } catch (_e) {}
+        imgElement.src = `https://favicon.is/${hostname}`;
+      }
+    })
+    .catch(() => {
       let hostname = "...";
       const havePrefix = /^https?:\/\//.test(url);
       if (!havePrefix) url = `https://${url}`;
@@ -16,16 +27,7 @@ export function loadFaviconFromCache(
         hostname = new URL(url).hostname;
       } catch (_e) {}
       imgElement.src = `https://favicon.is/${hostname}`;
-    }
-  }).catch(() => {
-      let hostname = "...";
-      const havePrefix = /^https?:\/\//.test(url);
-      if (!havePrefix) url = `https://${url}`;
-      try {
-        hostname = new URL(url).hostname;
-      } catch (_e) {}
-      imgElement.src = `https://favicon.is/${hostname}`;
-  });
+    });
 }
 
 export async function getHighResFallback(

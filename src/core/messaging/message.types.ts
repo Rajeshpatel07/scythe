@@ -23,10 +23,14 @@ export interface FaviconResponse {
   dataUrl: string | null;
 }
 
-export type MessageResponseType<T extends MessageAction> = 
-  T extends "getTabs" ? TabsResponse :
-  T extends "getHistory" ? HistoryResponse :
-  T extends "searchHistory" ? HistoryResponse :
-  T extends "getFavicon" ? FaviconResponse :
-  T extends "createTab" ? { success: true } :
-  undefined;
+export type MessageResponseType<T extends MessageAction> = T extends "getTabs"
+  ? TabsResponse
+  : T extends "getHistory"
+    ? HistoryResponse
+    : T extends "searchHistory"
+      ? HistoryResponse
+      : T extends "getFavicon"
+        ? FaviconResponse
+        : T extends "createTab"
+          ? { success: true }
+          : undefined;

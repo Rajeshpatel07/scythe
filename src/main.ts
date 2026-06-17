@@ -3,9 +3,22 @@ import { SidebarSettings } from "./features/new-tab/components/sidebar.component
 import { config } from "./core/config/config";
 import { handleWebSearch } from "./features/spotlight/services/search.service";
 import { openSwitcher } from "./features/tab-switcher/components/switcher.component";
-import { confirmSelection, updateSelection } from "./features/tab-switcher/handlers/selection.handler";
-import { getShadowRoot, getSearchInput, getShadowHost } from "./core/utils/dom.utils";
-import { handleArrowNavigation, handleCtrlEnter, handleEnter, handleTab, IgnoreKeys } from "./features/spotlight/handlers/keyboard.handler";
+import {
+  confirmSelection,
+  updateSelection,
+} from "./features/tab-switcher/handlers/selection.handler";
+import {
+  getShadowRoot,
+  getSearchInput,
+  getShadowHost,
+} from "./core/utils/dom.utils";
+import {
+  handleArrowNavigation,
+  handleCtrlEnter,
+  handleEnter,
+  handleTab,
+  IgnoreKeys,
+} from "./features/spotlight/handlers/keyboard.handler";
 import { hideSpotlight } from "./features/spotlight/components/modal.component";
 import { fireCustomInputEvent } from "./features/spotlight/handlers/input.handler";
 
@@ -108,7 +121,8 @@ document.addEventListener("click", (event: MouseEvent) => {
 
   if (event.target instanceof HTMLElement) {
     if (
-      engineTrigger && engineOptionsList &&
+      engineTrigger &&
+      engineOptionsList &&
       !engineTrigger.contains(event.target) &&
       !engineOptionsList.contains(event.target)
     ) {

@@ -20,14 +20,14 @@
 }
 
 #spotlight-modal-ext {
-  background-color: #1c1c1e;
+  background-color: #101011;
   color: #f2f2f7;
   border-radius: 5px;
   width: 800px;
   max-width: 90vw;
   margin-top: 20vh;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #4a4a4a1a;
   overflow: hidden;
 }
 
@@ -36,7 +36,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0 21px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #d6d6d61a;
   /* This position relative is crucial for the suggestion element */
   position: relative;
 }
@@ -108,7 +108,7 @@
 
 .spotlight-result-item-ext:hover,
 .spotlight-result-item-ext.selected {
-  background-color: #3a3a3c;
+  background-color: #d6d6d61a;
   border-radius: 5px;
 }
 

@@ -9,7 +9,10 @@ export function createModelUI() {
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
   stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/core/styles/style.css"));
+  stylesheetLink.setAttribute(
+    "href",
+    chrome.runtime.getURL("src/core/styles/style.css"),
+  );
   shadowRoot.appendChild(stylesheetLink);
 
   const overlay = document.createElement("div");
@@ -70,7 +73,7 @@ function forceFocusOnInput(inputElement: HTMLInputElement) {
   if (document.activeElement !== inputElement) {
     let attempts = 0;
     const maxAttempts = 10;
-    
+
     function focusLoop() {
       inputElement.focus();
       if (document.activeElement === inputElement || attempts >= maxAttempts) {
@@ -79,7 +82,7 @@ function forceFocusOnInput(inputElement: HTMLInputElement) {
       attempts++;
       requestAnimationFrame(focusLoop);
     }
-    
+
     requestAnimationFrame(focusLoop);
   }
 }

@@ -107,10 +107,7 @@ export function showSidebar(body: HTMLBodyElement) {
   engineSelectTrigger.appendChild(defaultEngineSpan);
 
   const dropdownArrow = document.createElement("svg");
-  dropdownArrow.setAttribute(
-    "xmlns",
-    "http://www.w3.org/2000/svg"
-  );
+  dropdownArrow.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   dropdownArrow.setAttribute("width", "16");
   dropdownArrow.setAttribute("height", "16");
   dropdownArrow.setAttribute("viewBox", "0 0 24 24");
@@ -147,13 +144,63 @@ export function showSidebar(body: HTMLBodyElement) {
     "Toggle content",
     "hide the content in new tab.",
   );
-  const toggleNewTabBtn = document.createElement("button");
-  toggleNewTabBtn.setAttribute("id", "spotlight-newtab-toggle");
-  toggleNewTabBtn.setAttribute("class", "spotlight-engine-select-trigger");
-  toggleNewTabBtn.innerText = "Toggle page";
 
-  toggleNewTabBtn.onclick = () => {
-    if (!config.shownewtab) {
+  const toggleControl = document.createElement("div");
+  toggleControl.className = "spotlight-setting-control";
+  toggleControl.style.display = "flex";
+  toggleControl.style.alignItems = "center";
+  toggleControl.style.justifyContent = "flex-end";
+
+  const switchLabel = document.createElement("label");
+  switchLabel.style.position = "relative";
+  switchLabel.style.display = "inline-block";
+  switchLabel.style.width = "44px";
+  switchLabel.style.height = "24px";
+  switchLabel.style.flexShrink = "0";
+  switchLabel.style.cursor = "pointer";
+
+  const toggleCheckbox = document.createElement("input");
+  toggleCheckbox.type = "checkbox";
+  toggleCheckbox.id = "spotlight-newtab-toggle";
+  toggleCheckbox.style.opacity = "0";
+  toggleCheckbox.style.width = "0";
+  toggleCheckbox.style.height = "0";
+  toggleCheckbox.checked = config.shownewtab;
+
+  const slider = document.createElement("span");
+  slider.style.position = "absolute";
+  slider.style.top = "0";
+  slider.style.left = "0";
+  slider.style.right = "0";
+  slider.style.bottom = "0";
+  slider.style.backgroundColor = config.shownewtab ? "#10b981" : "#52525b";
+  slider.style.transition = "background-color 0.25s ease-in-out";
+  slider.style.borderRadius = "24px";
+  slider.style.boxShadow = "inset 0 1px 2px rgba(0, 0, 0, 0.1)";
+
+  const circle = document.createElement("span");
+  circle.style.position = "absolute";
+  circle.style.height = "18px";
+  circle.style.width = "18px";
+  circle.style.left = config.shownewtab ? "23px" : "3px";
+  circle.style.bottom = "3px";
+  circle.style.backgroundColor = "#ffffff";
+  circle.style.transition = "left 0.25s ease-in-out, transform 0.25s ease";
+  circle.style.borderRadius = "50%";
+  circle.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.3)";
+
+  slider.appendChild(circle);
+  switchLabel.appendChild(toggleCheckbox);
+  switchLabel.appendChild(slider);
+  toggleControl.appendChild(switchLabel);
+
+  toggleCheckbox.onchange = (e) => {
+    const isChecked = (e.target as HTMLInputElement).checked;
+
+    slider.style.backgroundColor = isChecked ? "#10b981" : "#52525b";
+    circle.style.left = isChecked ? "23px" : "3px";
+
+    if (isChecked) {
       localStorage.setItem("shownewtab", "true");
       config.shownewtab = true;
       hidePage();
@@ -171,7 +218,7 @@ export function showSidebar(body: HTMLBodyElement) {
   searchEngineSettingControl.appendChild(engineSelectWrapper);
   searchEngineSettingItem.appendChild(searchEngineSettingControl);
   settingsContent.appendChild(searchEngineSettingItem);
-  togglePageSettings.appendChild(toggleNewTabBtn);
+  togglePageSettings.appendChild(toggleControl);
   settingsContent.appendChild(togglePageSettings);
   settingsModal.appendChild(settingsContent);
 
@@ -247,7 +294,9 @@ export function SidebarSettings() {
   // Event Delegation for better performance
   engineOptionsList?.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
-    const option = target.closest(".spotlight-engine-option-item") as HTMLElement;
+    const option = target.closest(
+      ".spotlight-engine-option-item",
+    ) as HTMLElement;
 
     if (!option) return;
 

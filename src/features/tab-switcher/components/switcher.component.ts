@@ -1,9 +1,15 @@
-import { loadFaviconFromCache, getHighResFallback } from "../../spotlight/services/cache.service";
+import {
+  loadFaviconFromCache,
+  getHighResFallback,
+} from "../../spotlight/services/cache.service";
 import { config } from "../../../core/config/config";
 import type { TabsResponse } from "../../../core/types/domain.types";
 import { getShadowHost, getShadowRoot } from "../../../core/utils/dom.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
-import { updateSelection, confirmSelection } from "../handlers/selection.handler";
+import {
+  updateSelection,
+  confirmSelection,
+} from "../handlers/selection.handler";
 
 export function createTabsDock() {
   const host = document.createElement("div");
@@ -13,7 +19,10 @@ export function createTabsDock() {
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
   stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute("href", chrome.runtime.getURL("src/core/styles/tabs.css"));
+  stylesheetLink.setAttribute(
+    "href",
+    chrome.runtime.getURL("src/core/styles/tabs.css"),
+  );
   shadowRoot.appendChild(stylesheetLink);
 
   const overlay = document.createElement("div");

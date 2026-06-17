@@ -3,8 +3,14 @@ export const config = {
   currentSuggestion: "",
   isModelOpen: false,
   openNewtab: false,
-  searchEngine: typeof localStorage !== "undefined" ? localStorage.getItem("searchEngine") : null,
-  shownewtab: typeof localStorage !== "undefined" ? localStorage.getItem("shownewtab") === "true" : false,
+  searchEngine:
+    typeof localStorage !== "undefined"
+      ? localStorage.getItem("searchEngine")
+      : null,
+  shownewtab:
+    typeof localStorage !== "undefined"
+      ? localStorage.getItem("shownewtab") === "true"
+      : false,
 
   tabIsOpen: false,
   tabSelectedIndex: 0,

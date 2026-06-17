@@ -18,76 +18,78 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((request: MessagePayload, _sender, sendResponse) => {
-  switch (request.action) {
-    case "getTabs":
-      chrome.tabs.query({}, (tabs) => {
-        sendResponse({ tabs: tabs });
-      });
-      return true;
+chrome.runtime.onMessage.addListener(
+  (request: MessagePayload, _sender, sendResponse) => {
+    switch (request.action) {
+      case "getTabs":
+        chrome.tabs.query({}, (tabs) => {
+          sendResponse({ tabs: tabs });
+        });
+        return true;
 
-    case "switchTab":
-      if (request.id) {
-        chrome.tabs.update(parseInt(request.id), { active: true });
-      }
-      return true;
+      case "switchTab":
+        if (request.id) {
+          chrome.tabs.update(parseInt(request.id), { active: true });
+        }
+        return true;
 
-    case "getHistory":
-      chrome.history.search(
-        { text: "", startTime: 0, maxResults: 50 },
-        (historyItems) => {
-          sendResponse({ history: historyItems });
-        },
-      );
-      return true;
+      case "getHistory":
+        chrome.history.search(
+          { text: "", startTime: 0, maxResults: 50 },
+          (historyItems) => {
+            sendResponse({ history: historyItems });
+          },
+        );
+        return true;
 
-    case "searchHistory":
-      chrome.history.search(
-        {
-          text: request.query || "",
-          startTime: 0,
-          maxResults: request.maxResults || 8,
-        },
-        (historyItems) => {
-          sendResponse({ history: historyItems });
-        },
-      );
-      return true;
+      case "searchHistory":
+        chrome.history.search(
+          {
+            text: request.query || "",
+            startTime: 0,
+            maxResults: request.maxResults || 8,
+          },
+          (historyItems) => {
+            sendResponse({ history: historyItems });
+          },
+        );
+        return true;
 
-    case "getFavicon": {
-      const pageUrl = request.url;
-      if (!pageUrl) {
-        sendResponse({ status: "error", dataUrl: null });
+      case "getFavicon": {
+        const pageUrl = request.url;
+        if (!pageUrl) {
+          sendResponse({ status: "error", dataUrl: null });
+          return true;
+        }
+        const imgSize = request.size || 32;
+        const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
+
+        fetch(faviconUrl)
+          .then((response) => {
+            if (!response.ok) {
+              throw Error("Failed to fetch favicon");
+            }
+            return response.blob();
+          })
+          .then((blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              sendResponse({ status: "success", dataUrl: reader.result });
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch(() => {
+            sendResponse({ status: "error", dataUrl: null });
+          });
         return true;
       }
-      const imgSize = request.size || 32;
-      const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
 
-      fetch(faviconUrl)
-        .then((response) => {
-          if (!response.ok) {
-            throw Error("Failed to fetch favicon");
-          }
-          return response.blob();
-        })
-        .then((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            sendResponse({ status: "success", dataUrl: reader.result });
-          };
-          reader.readAsDataURL(blob);
-        })
-        .catch(() => {
-          sendResponse({ status: "error", dataUrl: null });
-        });
-      return true;
+      case "createTab":
+        if (request.url) {
+          chrome.tabs.create({ url: request.url, active: true });
+          sendResponse({ success: true });
+        }
+        break;
     }
-
-    case "createTab":
-      if (request.url) {
-        chrome.tabs.create({ url: request.url, active: true });
-        sendResponse({ success: true });
-      }
-      break;
-  }
-});
+  },
+);

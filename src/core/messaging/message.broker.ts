@@ -1,7 +1,13 @@
-import type { MessagePayload, MessageResponseType, MessageAction } from "./message.types";
+import type {
+  MessagePayload,
+  MessageResponseType,
+  MessageAction,
+} from "./message.types";
 
 export const MessageBroker = {
-  send<T extends MessageAction>(payload: MessagePayload & { action: T }): Promise<MessageResponseType<T>> {
+  send<T extends MessageAction>(
+    payload: MessagePayload & { action: T },
+  ): Promise<MessageResponseType<T>> {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage(payload, (response) => {
         if (chrome.runtime.lastError) {
@@ -13,7 +19,10 @@ export const MessageBroker = {
     });
   },
 
-  sendToTab<T extends MessageAction>(tabId: number, payload: MessagePayload & { action: T }): Promise<MessageResponseType<T>> {
+  sendToTab<T extends MessageAction>(
+    tabId: number,
+    payload: MessagePayload & { action: T },
+  ): Promise<MessageResponseType<T>> {
     return new Promise((resolve, reject) => {
       chrome.tabs.sendMessage(tabId, payload, (response) => {
         if (chrome.runtime.lastError) {
@@ -23,5 +32,5 @@ export const MessageBroker = {
         }
       });
     });
-  }
+  },
 };

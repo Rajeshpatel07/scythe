@@ -76,7 +76,11 @@ export function renderListItems(
   const fragment = document.createDocumentFragment();
 
   items.forEach((item) => {
-    const li = createListItem({ title: item.title || item.url, url: item.url, showUrl: item.showUrl });
+    const li = createListItem({
+      title: item.title || item.url,
+      url: item.url,
+      showUrl: item.showUrl,
+    });
     fragment.appendChild(li);
   });
 
