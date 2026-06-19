@@ -161,7 +161,7 @@ export async function openSwitcher(isReverse = false) {
   const items = shadowRoot.querySelectorAll(".tab-item");
   const tabsLen = items.length;
 
-  config.tabIsOpen = true;
+  config.isTabOpen = true;
   overlay.classList.remove("hidden");
 
   if (isReverse) {
@@ -182,7 +182,7 @@ export function closeSwitcher() {
   ) as HTMLDivElement;
 
   setTimeout(() => {
-    config.tabIsOpen = false;
+    config.isTabOpen = false;
     config.modifierPressed = false;
     overlay.classList.add("hidden");
     shadowHost.remove();

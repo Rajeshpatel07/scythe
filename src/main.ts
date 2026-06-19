@@ -29,11 +29,11 @@ function handleGlobalKeys(e: KeyboardEvent) {
     config.modifierPressed = true;
   }
 
-  if (isModifier && e.code === "Space") {
+  if (isModifier && e.code === "Space" && !config.isModelOpen) {
     e.preventDefault();
 
-    if (!config.tabIsOpen) {
-      config.tabIsOpen = true;
+    if (!config.isTabOpen) {
+      config.isTabOpen = true;
       openSwitcher(e.shiftKey);
     } else {
       const shadowRoot = getShadowRoot();
@@ -92,7 +92,7 @@ window.addEventListener(
   (e: KeyboardEvent) => {
     if (e.key === "Meta" || e.key === "Control") {
       config.modifierPressed = false;
-      if (config.tabIsOpen) {
+      if (config.isTabOpen) {
         confirmSelection();
       }
       return;
@@ -137,7 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function showSpotlight() {
-  config.openNewtab = false;
-  config.isModelOpen = true;
-  handleWebSearch();
+  if (!config.isModelOpen && !config.isTabOpen) {
+    config.openNewtab = false;
+    config.isModelOpen = true;
+    handleWebSearch();
+  }
 }

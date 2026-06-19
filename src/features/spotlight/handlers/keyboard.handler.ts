@@ -18,7 +18,8 @@ export function IgnoreKeys(e: KeyboardEvent) {
         e.key === "c" ||
         e.key === "Backspace" ||
         e.key === "ArrowLeft" ||
-        e.key === "ArrowRight"))
+        e.key === "ArrowRight" ||
+        (e.shiftKey && e.key === "Backspace")))
   ) {
     return true;
   }

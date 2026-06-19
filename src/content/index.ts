@@ -1,9 +1,5 @@
 import { config } from "../core/config/config";
-import {
-  getShadowHost,
-  getShadowRoot,
-  getSearchInput,
-} from "../core/utils/dom.utils";
+import { getShadowRoot, getSearchInput } from "../core/utils/dom.utils";
 import { openSwitcher } from "../features/tab-switcher/components/switcher.component";
 import {
   updateSelection,
@@ -27,11 +23,11 @@ function handleGlobalKeys(e: KeyboardEvent) {
     config.modifierPressed = true;
   }
 
-  if (isModifier && e.code === "Space") {
+  if (isModifier && e.code === "Space" && !config.isModelOpen) {
     e.preventDefault();
 
-    if (!config.tabIsOpen) {
-      config.tabIsOpen = true;
+    if (!config.isTabOpen) {
+      config.isTabOpen = true;
       openSwitcher(e.shiftKey);
     } else {
       const shadowRoot = getShadowRoot();
@@ -73,8 +69,7 @@ function handleGlobalKeys(e: KeyboardEvent) {
     hideSpotlight();
   }
 
-  const shadowHost = getShadowHost();
-  if (shadowHost && e.composedPath().includes(shadowHost)) {
+  if (config.isModelOpen) {
     e.stopImmediatePropagation();
     if (IgnoreKeys(e)) {
       return;
@@ -89,16 +84,12 @@ window.addEventListener("keydown", handleGlobalKeys, { capture: true });
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
-    const shadowHost = getShadowHost();
-    if (
-      (shadowHost && e.composedPath().includes(shadowHost)) ||
-      config.tabIsOpen
-    ) {
+    if (config.isModelOpen || config.isTabOpen) {
       e.stopImmediatePropagation();
       e.preventDefault();
       if (e.key === "Meta" || e.key === "Control") {
         config.modifierPressed = false;
-        if (config.tabIsOpen) {
+        if (config.isTabOpen) {
           confirmSelection();
         }
       }
@@ -116,7 +107,7 @@ chrome.storage.sync.get(["searchEngine"], (result) => {
 chrome.runtime.onMessage.addListener(
   async (request, _sender, _sendResponse) => {
     if (request.action === "toggleSpotlight") {
-      if (!config.isModelOpen) {
+      if (!config.isModelOpen && !config.isTabOpen) {
         config.openNewtab = true;
         config.isModelOpen = true;
         handleWebSearch();

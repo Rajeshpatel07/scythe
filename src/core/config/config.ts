@@ -12,7 +12,7 @@ export const config = {
       ? localStorage.getItem("shownewtab") === "true"
       : false,
 
-  tabIsOpen: false,
+  isTabOpen: false,
   tabSelectedIndex: 0,
   modifierPressed: false,
 };
