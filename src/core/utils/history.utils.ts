@@ -10,7 +10,9 @@ export function filterDomainsOnly(url: string): boolean {
 }
 
 export async function getStoredHistory(): Promise<HistoryItem[]> {
-  const result = await chrome.storage.sync.get(["storedHistory"]);
+  const result = await chrome.storage.sync.get<{
+    storedHistory?: HistoryItem[];
+  }>(["storedHistory"]);
   return result.storedHistory || [];
 }
 

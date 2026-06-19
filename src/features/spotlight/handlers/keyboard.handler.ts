@@ -9,23 +9,6 @@ import {
 } from "../../../core/utils/dom.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 
-export function IgnoreKeys(e: KeyboardEvent) {
-  if (
-    e.key === "ArrowLeft" ||
-    e.key === "ArrowRight" ||
-    (e.ctrlKey &&
-      (e.key === "v" ||
-        e.key === "c" ||
-        e.key === "Backspace" ||
-        e.key === "ArrowLeft" ||
-        e.key === "ArrowRight" ||
-        (e.shiftKey && e.key === "Backspace")))
-  ) {
-    return true;
-  }
-  return false;
-}
-
 export function handleEnter() {
   const searchInput = getSearchInput();
   if (!searchInput) return;

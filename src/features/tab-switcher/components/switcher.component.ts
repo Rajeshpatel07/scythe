@@ -3,7 +3,10 @@ import {
   getHighResFallback,
 } from "../../spotlight/services/cache.service";
 import { config } from "../../../core/config/config";
-import type { TabsResponse } from "../../../core/types/domain.types";
+import type {
+  faviconURLInterface,
+  TabsResponse,
+} from "../../../core/types/domain.types";
 import { getShadowHost, getShadowRoot } from "../../../core/utils/dom.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import {
@@ -103,7 +106,9 @@ export async function renderTabs() {
     (async () => {
       try {
         const storageKey = `fav_${hostname}`;
-        const result = await chrome.storage.local.get([storageKey]);
+        const result = await chrome.storage.local.get<faviconURLInterface>([
+          storageKey,
+        ]);
         const cachedDataUrl = result[storageKey];
 
         if (cachedDataUrl && cachedDataUrl !== "null") {

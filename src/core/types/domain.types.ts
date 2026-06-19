@@ -31,3 +31,11 @@ export interface TabItemType {
 export interface TabsResponse {
   tabs: TabItemType[];
 }
+
+export interface searchEngineInterface {
+  searchEngine: string;
+}
+
+export interface faviconURLInterface {
+  [key: string]: string;
+}
