@@ -23,7 +23,7 @@ window.addEventListener(
 );
 
 chrome.storage.sync.get<searchEngineInterface>(["searchEngine"], (result) => {
-  if (result && result.searchEngine) {
+  if (result?.searchEngine) {
     config.searchEngine = result.searchEngine;
   }
 });

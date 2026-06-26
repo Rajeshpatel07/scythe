@@ -84,15 +84,7 @@ export async function renderTabs() {
     //@ts-ignore
     tabItem.setAttribute("data-index", index);
 
-    const tabUrl = newUrl.hostname.split(".");
-    let title = tabUrl[0];
-    if (tabUrl[0] === "www" && tabUrl[1]) {
-      title = tabUrl[1];
-    }
-
-    title = title.charAt(0).toUpperCase() + title.slice(1);
-
-    tabItem.setAttribute("data-title", title);
+    tabItem.setAttribute("data-title", tab.title);
 
     const img = document.createElement("img");
     img.classList.add("tab-icon");
