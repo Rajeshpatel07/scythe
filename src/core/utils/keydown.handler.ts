@@ -17,7 +17,12 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     config.modifierPressed = true;
   }
 
-  if (isModifier && e.code === "Space" && !config.isModelOpen) {
+  if (
+    isModifier &&
+    e.code === "Space" &&
+    !config.isModelOpen &&
+    !config.isGlanceOpen
+  ) {
     e.preventDefault();
 
     if (!config.isTabOpen) {

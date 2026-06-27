@@ -15,4 +15,6 @@ export const config = {
   isTabOpen: false,
   tabSelectedIndex: 0,
   modifierPressed: false,
+
+  isGlanceOpen: false,
 };

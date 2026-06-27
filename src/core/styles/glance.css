@@ -1,0 +1,70 @@
+#glance-extension-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+}
+
+#glance-extension-modal .glance-content-frame {
+  width: 88vw;
+  height: 95vh;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  box-shadow: 0 28px 75px rgba(0, 0, 0, 0.4);
+
+  overflow: auto;
+}
+
+.glance-action-container {
+  position: absolute;
+  top: 3vh;
+  right: 2.5vw;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+.glance-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.15s ease;
+}
+
+.glance-action-btn:hover {
+  transform: scale(1.08);
+  filter: brightness(1.1);
+}
+
+.glance-action-btn:active {
+  transform: scale(0.95);
+}
+
+.glance-btn-primary {
+  background: #2f3542;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glance-btn-danger {
+  background: #ff4757;
+}

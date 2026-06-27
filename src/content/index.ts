@@ -3,6 +3,29 @@ import { confirmSelection } from "../features/tab-switcher/handlers/selection.ha
 import { handleWebSearch } from "../features/spotlight/services/search.service";
 import type { searchEngineInterface } from "../core/types/domain.types";
 import { handleGlobalKeys } from "../core/utils/keydown.handler";
+import { openGlanceModal } from "../features/glance/components/glance.component";
+
+document.addEventListener(
+  "click",
+  (event) => {
+    if (event.altKey) {
+      if (!config.isGlanceOpen && !config.isTabOpen && !config.isModelOpen) {
+        //@ts-ignore
+        const link = event?.target.closest("a");
+
+        if (link?.href) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          config.isGlanceOpen = true;
+          openGlanceModal(link.href);
+          return;
+        }
+      }
+    }
+  },
+  true,
+);
 
 window.addEventListener("keydown", handleGlobalKeys, { capture: true });
 window.addEventListener(
@@ -31,7 +54,7 @@ chrome.storage.sync.get<searchEngineInterface>(["searchEngine"], (result) => {
 chrome.runtime.onMessage.addListener(
   async (request, _sender, _sendResponse) => {
     if (request.action === "toggleSpotlight") {
-      if (!config.isModelOpen && !config.isTabOpen) {
+      if (!config.isModelOpen && !config.isTabOpen && !config.isGlanceOpen) {
         config.openNewtab = true;
         config.isModelOpen = true;
         handleWebSearch();

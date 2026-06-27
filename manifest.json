@@ -3,8 +3,24 @@
   "name": "Scythe",
   "version": "1.0",
   "description": "Cut through the noise. Find instantly.",
-  "permissions": ["storage", "history", "favicon", "tabs"],
+  "permissions": [
+    "storage",
+    "history",
+    "favicon",
+    "tabs",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
+  ],
   "host_permissions": ["<all_urls>"],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
   "background": {
     "service_worker": "src/background/index.js"
   },
@@ -45,6 +61,8 @@
       "resources": [
         "src/core/styles/style.css",
         "src/core/styles/tabs.css",
+        "src/core/styles/glance.css",
+        "rules.json",
         "src/assets/icon48.png",
         "src/assets/search-engine-logos/*"
       ],

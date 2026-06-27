@@ -4,7 +4,10 @@ import { getShadowHost } from "../../../core/utils/dom.utils";
 export function createModelUI() {
   const host = document.createElement("div");
   host.id = "spotlight-host";
-  host.setAttribute("style", "position:fixed;bottom:0;right:0;z-index:9999;");
+  host.setAttribute(
+    "style",
+    "position:fixed;bottom:0;right:0;z-index:2147483647;",
+  );
   document.body.appendChild(host);
   const shadowRoot = host.attachShadow({ mode: "open" });
   const stylesheetLink = document.createElement("link");
