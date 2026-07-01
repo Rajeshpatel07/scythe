@@ -86,4 +86,14 @@ export function openGlanceModal(url: string) {
       hideGlance();
     }
   });
+
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape" && config.isGlanceOpen) {
+        hideGlance();
+      }
+    },
+    { capture: true, once: true },
+  );
 }
