@@ -1,5 +1,8 @@
 import { config } from "../../../core/config/config";
-import { createSpotlightUI, hideSpotlight } from "../components/spotlight.component";
+import {
+  createSpotlightUI,
+  hideSpotlight,
+} from "../components/spotlight.component";
 import { getSpotlightRoot } from "../../../core/utils/dom.utils";
 import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";

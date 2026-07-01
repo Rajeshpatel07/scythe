@@ -155,9 +155,7 @@ export async function openSwitcher(isReverse = false) {
   const root = getSwitcherRoot();
   if (!root) return;
 
-  const overlay = root.getElementById(
-    "switcher-overlay",
-  ) as HTMLDivElement;
+  const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
   const items = root.querySelectorAll(".tab-item");
   const tabsLen = items.length;
 
@@ -177,9 +175,7 @@ export function closeSwitcher() {
 
   if (!root || !host) return;
 
-  const overlay = root.getElementById(
-    "switcher-overlay",
-  ) as HTMLDivElement;
+  const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
 
   setTimeout(() => {
     config.isTabOpen = false;

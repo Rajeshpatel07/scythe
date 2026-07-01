@@ -1,5 +1,16 @@
 import { config } from "../../../core/config/config";
-import { hideSpotlight } from "../../spotlight/components/spotlight.component";
+
+function hideGlance() {
+  const host = document.getElementById("ext-glance-host");
+  if (!host) return;
+
+  document.body.style.overflow = "";
+
+  setTimeout(() => {
+    config.isGlanceOpen = false;
+    host.remove();
+  }, 200);
+}
 
 export function openGlanceModal(url: string) {
   const host = document.createElement("div");
@@ -41,8 +52,7 @@ export function openGlanceModal(url: string) {
     </svg>
   `;
   tabButton.onclick = () => {
-    cleanupGlanceScrollLock();
-    hideSpotlight();
+    hideGlance();
     window.open(url, "_blank");
   };
 
@@ -57,9 +67,7 @@ export function openGlanceModal(url: string) {
     </svg>
   `;
   closeButton.onclick = () => {
-    cleanupGlanceScrollLock();
-    config.isGlanceOpen = false;
-    hideSpotlight();
+    hideGlance();
   };
 
   actionContainer.appendChild(tabButton);
@@ -75,13 +83,7 @@ export function openGlanceModal(url: string) {
 
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) {
-      cleanupGlanceScrollLock();
-      config.isGlanceOpen = false;
-      hideSpotlight();
+      hideGlance();
     }
   });
-}
-
-export function cleanupGlanceScrollLock() {
-  document.body.style.overflow = "";
 }

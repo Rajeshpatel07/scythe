@@ -13,9 +13,7 @@ function getSwitcherRoot(): ShadowRoot | null {
 export function getSearchInput(): HTMLInputElement | null {
   const root = getSpotlightRoot();
   if (!root) return null;
-  return root.getElementById(
-    "spotlight-search-input-ext",
-  ) as HTMLInputElement;
+  return root.getElementById("spotlight-search-input-ext") as HTMLInputElement;
 }
 
 export function getFirstResultItem(): HTMLLIElement | null {
@@ -35,4 +33,3 @@ export function getSelectedResultItem(): HTMLLIElement | null {
 }
 
 export { getSpotlightRoot, getSwitcherRoot };
-

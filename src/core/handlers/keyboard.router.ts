@@ -8,7 +8,7 @@ import {
 import { openSwitcher } from "../../features/tab-switcher/components/switcher.component";
 import { updateSelection } from "../../features/tab-switcher/handlers/selection.handler";
 import { config } from "../config/config";
-import { getSearchInput, getSpotlightRoot } from "../utils/dom.utils";
+import { getSearchInput, getSpotlightRoot, getSwitcherRoot } from "../utils/dom.utils";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
   const isModifier = e.metaKey || e.ctrlKey;
@@ -29,7 +29,7 @@ export function handleGlobalKeys(e: KeyboardEvent) {
       config.isTabOpen = true;
       openSwitcher(e.shiftKey);
     } else {
-      const root = getSpotlightRoot();
+      const root = getSwitcherRoot();
       if (!root) return;
 
       const items = root.querySelectorAll(".tab-item");

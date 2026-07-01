@@ -7,9 +7,7 @@ export function updateSelection(index: number) {
   const root = getSwitcherRoot();
   if (!root) return;
 
-  const tabTitle = root.getElementById(
-    "active-tab-title",
-  ) as HTMLDivElement;
+  const tabTitle = root.getElementById("active-tab-title") as HTMLDivElement;
 
   config.tabSelectedIndex = index;
   const items = root.querySelectorAll(".tab-item");

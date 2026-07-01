@@ -30,10 +30,7 @@ export function resolveUrl(input: string): string {
     return hasProtocol ? trimmedInput : `http://${trimmedInput}`;
   }
 
-  if (
-    LIKELY_URL_REGEX.test(trimmedInput) ||
-    IP_URL_REGEX.test(trimmedInput)
-  ) {
+  if (LIKELY_URL_REGEX.test(trimmedInput) || IP_URL_REGEX.test(trimmedInput)) {
     return hasProtocol ? trimmedInput : `https://${trimmedInput}`;
   }
 

@@ -9,7 +9,11 @@ document.addEventListener(
   "click",
   (event) => {
     if (event.altKey) {
-      if (!config.isGlanceOpen && !config.isTabOpen && !config.isSpotlightOpen) {
+      if (
+        !config.isGlanceOpen &&
+        !config.isTabOpen &&
+        !config.isSpotlightOpen
+      ) {
         //@ts-ignore
         const link = event?.target.closest("a");
 
@@ -54,7 +58,11 @@ chrome.storage.sync.get<searchEngineInterface>(["searchEngine"], (result) => {
 chrome.runtime.onMessage.addListener(
   async (request, _sender, _sendResponse) => {
     if (request.action === "toggleSpotlight") {
-      if (!config.isSpotlightOpen && !config.isTabOpen && !config.isGlanceOpen) {
+      if (
+        !config.isSpotlightOpen &&
+        !config.isTabOpen &&
+        !config.isGlanceOpen
+      ) {
         config.openNewtab = true;
         config.isSpotlightOpen = true;
         handleWebSearch();
