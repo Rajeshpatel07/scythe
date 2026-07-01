@@ -1,4 +1,4 @@
-import { hideSpotlight } from "../../features/spotlight/components/modal.component";
+import { hideSpotlight } from "../../features/spotlight/components/spotlight.component";
 import {
   handleArrowNavigation,
   handleCtrlEnter,

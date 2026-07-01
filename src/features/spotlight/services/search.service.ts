@@ -1,10 +1,10 @@
 import { config } from "../../../core/config/config";
-import { createSpotlightUI, hideSpotlight } from "../components/modal.component";
+import { createSpotlightUI, hideSpotlight } from "../components/spotlight.component";
 import { getSpotlightRoot } from "../../../core/utils/dom.utils";
 import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
-import { createListItem } from "../components/list-item.component";
+import { createListItem } from "../components/result-item.component";
 import { resolveUrl } from "../../../core/services/navigation.service";
 import { WWW_REGEX } from "../../../core/config/constants";
 

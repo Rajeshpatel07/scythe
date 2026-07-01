@@ -5,9 +5,9 @@ import {
   filterDomainsOnly,
   mergeHistory,
   getStoredHistory,
-} from "../../../core/utils/history.utils";
+} from "../../../core/services/history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
-import { renderListItems } from "../components/list-item.component";
+import { renderListItems } from "../components/result-item.component";
 
 export async function populateHistory() {
   const root = getSpotlightRoot();

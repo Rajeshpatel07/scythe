@@ -1,7 +1,7 @@
 import { config } from "../../../core/config/config";
 import { handleSearchSubmit } from "../services/search.service";
-import { navigateResults } from "../components/list-item.component";
-import { hideSpotlight } from "../components/modal.component";
+import { navigateResults } from "../components/result-item.component";
+import { hideSpotlight } from "../components/spotlight.component";
 import {
   getFirstResultItem,
   getSearchInput,

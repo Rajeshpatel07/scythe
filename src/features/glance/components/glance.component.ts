@@ -1,5 +1,5 @@
 import { config } from "../../../core/config/config";
-import { hideSpotlight } from "../../spotlight/components/modal.component";
+import { hideSpotlight } from "../../spotlight/components/spotlight.component";
 
 export function openGlanceModal(url: string) {
   const host = document.createElement("div");

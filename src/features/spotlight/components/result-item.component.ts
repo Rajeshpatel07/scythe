@@ -2,7 +2,7 @@ import { loadFaviconFromCache } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { ListItems } from "../../../core/types/domain.types";
 import { getSpotlightRoot } from "../../../core/utils/dom.utils";
-import { hideSpotlight } from "../components/modal.component";
+import { hideSpotlight } from "../components/spotlight.component";
 
 export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
