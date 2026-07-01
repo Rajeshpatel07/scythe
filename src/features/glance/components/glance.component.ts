@@ -1,6 +1,5 @@
 import { config } from "../../../core/config/config";
 import { hideSpotlight } from "../../spotlight/components/modal.component";
-import { InitiatePageNavigation } from "../../spotlight/services/search.service";
 
 export function openGlanceModal(url: string) {
   const host = document.createElement("div");
@@ -44,8 +43,7 @@ export function openGlanceModal(url: string) {
   tabButton.onclick = () => {
     cleanupGlanceScrollLock();
     hideSpotlight();
-    config.openNewtab = true;
-    InitiatePageNavigation(url);
+    window.open(url, "_blank");
   };
 
   const closeButton = document.createElement("button");

@@ -5,13 +5,8 @@ import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/list-item.component";
-import {
-  WWW_REGEX,
-  LOCALHOST_REGEX,
-  HAS_PROTOCOL_REGEX,
-  LIKELY_URL_REGEX,
-  IP_URL_REGEX,
-} from "../../../core/config/constants";
+import { resolveUrl } from "../../../core/services/navigation.service";
+import { WWW_REGEX } from "../../../core/config/constants";
 
 const suggestionCache = new Map<string, string>();
 
@@ -62,46 +57,13 @@ export function handleSearchSubmit(input: string): void {
   const trimmedInput = input.trim();
   if (trimmedInput.length === 0) return;
 
-  let url = trimmedInput;
-  const hasProtocol = HAS_PROTOCOL_REGEX.test(trimmedInput);
+  const url = resolveUrl(trimmedInput);
 
-  if (LOCALHOST_REGEX.test(trimmedInput)) {
-    url = hasProtocol ? trimmedInput : `http://${trimmedInput}`;
-  } else if (
-    LIKELY_URL_REGEX.test(trimmedInput) ||
-    IP_URL_REGEX.test(trimmedInput)
-  ) {
-    url = hasProtocol ? trimmedInput : `https://${trimmedInput}`;
-  } else {
-    url = getSearchUrl(trimmedInput);
-  }
-
-  InitiatePageNavigation(url);
-}
-
-export function InitiatePageNavigation(url: string): void {
   if (config.openNewtab) {
     hideSpotlight();
     window.open(url);
   } else {
     window.location.href = url;
-  }
-}
-
-export function getSearchUrl(input: string): string {
-  const encodedInput = encodeURIComponent(input);
-
-  switch (config.searchEngine) {
-    case "DuckDuckGo":
-      return `https://duckduckgo.com/?q=${encodedInput}`;
-    case "Brave":
-      return `https://search.brave.com/search?q=${encodedInput}`;
-    case "Bing":
-      return `https://www.bing.com/search?q=${encodedInput}`;
-    case "Unduck":
-      return `https://unduck.link?q=${encodedInput}`;
-    default:
-      return `https://www.google.com/search?q=${encodedInput}`;
   }
 }
 

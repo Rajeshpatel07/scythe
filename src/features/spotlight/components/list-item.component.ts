@@ -1,15 +1,20 @@
-import { loadFaviconFromCache } from "../services/cache.service";
-import { InitiatePageNavigation } from "../services/search.service";
+import { loadFaviconFromCache } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { ListItems } from "../../../core/types/domain.types";
 import { getSpotlightRoot } from "../../../core/utils/dom.utils";
+import { hideSpotlight } from "../components/modal.component";
 
 export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
   li.className = "spotlight-result-item-ext";
   li.setAttribute("data-url", url);
   li.addEventListener("click", () => {
-    InitiatePageNavigation(url);
+    hideSpotlight();
+    if (config.openNewtab) {
+      window.open(url);
+    } else {
+      window.location.href = url;
+    }
   });
 
   const favicon = document.createElement("img");

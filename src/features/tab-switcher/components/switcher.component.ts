@@ -1,7 +1,7 @@
 import {
   loadFaviconFromCache,
   getHighResFallback,
-} from "../../spotlight/services/cache.service";
+} from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type {
   faviconURLInterface,

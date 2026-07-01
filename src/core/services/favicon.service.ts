@@ -1,4 +1,4 @@
-import { MessageBroker } from "../../../core/messaging/message.broker";
+import { MessageBroker } from "../messaging/message.broker";
 
 export function loadFaviconFromCache(
   url: string,
@@ -35,25 +35,19 @@ export async function getHighResFallback(
 ): Promise<{ status: string; dataUrl: string | null }> {
   try {
     const imgUrl = `https://favicon.vemetric.com/${url}?size=128&format=webp`;
-
     const response = await fetch(imgUrl);
     if (!response.ok) {
       return { status: "failed", dataUrl: null };
     }
-
     const blob = await response.blob();
-
     return new Promise((resolve) => {
       const reader = new FileReader();
-
       reader.onloadend = () => {
         resolve({ status: "success", dataUrl: reader.result as string });
       };
-
       reader.onerror = () => {
         resolve({ status: "failed", dataUrl: null });
       };
-
       reader.readAsDataURL(blob);
     });
   } catch (_err) {
