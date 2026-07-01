@@ -3,7 +3,7 @@ import { SidebarSettings } from "./features/new-tab/components/sidebar.component
 import { config } from "./core/config/config";
 import { handleWebSearch } from "./features/spotlight/services/search.service";
 import { confirmSelection } from "./features/tab-switcher/handlers/selection.handler";
-import { handleGlobalKeys } from "./core/utils/keydown.handler";
+import { handleGlobalKeys } from "./core/handlers/keyboard.router";
 
 window.addEventListener(
   "keyup",

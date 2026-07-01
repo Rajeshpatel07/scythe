@@ -8,7 +8,7 @@ import {
 import { openSwitcher } from "../../features/tab-switcher/components/switcher.component";
 import { updateSelection } from "../../features/tab-switcher/handlers/selection.handler";
 import { config } from "../config/config";
-import { getSearchInput, getSpotlightRoot } from "./dom.utils";
+import { getSearchInput, getSpotlightRoot } from "../utils/dom.utils";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
   const isModifier = e.metaKey || e.ctrlKey;

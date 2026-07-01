@@ -2,7 +2,7 @@ import { config } from "../core/config/config";
 import { confirmSelection } from "../features/tab-switcher/handlers/selection.handler";
 import { handleWebSearch } from "../features/spotlight/services/search.service";
 import type { searchEngineInterface } from "../core/types/domain.types";
-import { handleGlobalKeys } from "../core/utils/keydown.handler";
+import { handleGlobalKeys } from "../core/handlers/keyboard.router";
 import { openGlanceModal } from "../features/glance/components/glance.component";
 
 document.addEventListener(
