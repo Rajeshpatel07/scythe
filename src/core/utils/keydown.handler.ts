@@ -20,7 +20,7 @@ export function handleGlobalKeys(e: KeyboardEvent) {
   if (
     isModifier &&
     e.code === "Space" &&
-    !config.isModelOpen &&
+    !config.isSpotlightOpen &&
     !config.isGlanceOpen
   ) {
     e.preventDefault();

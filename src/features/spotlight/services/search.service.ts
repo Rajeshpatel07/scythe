@@ -1,5 +1,5 @@
 import { config } from "../../../core/config/config";
-import { createModelUI, hideSpotlight } from "../components/modal.component";
+import { createSpotlightUI, hideSpotlight } from "../components/modal.component";
 import { getShadowRoot } from "../../../core/utils/dom.utils";
 import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
@@ -16,7 +16,7 @@ import {
 const suggestionCache = new Map<string, string>();
 
 export function handleWebSearch() {
-  createModelUI();
+  createSpotlightUI();
   const shadowRoot = getShadowRoot();
   if (!shadowRoot) return;
 

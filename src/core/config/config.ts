@@ -1,7 +1,7 @@
 export const config = {
   selectedResultIndex: -1,
   currentSuggestion: "",
-  isModelOpen: false,
+  isSpotlightOpen: false,
   openNewtab: false,
   searchEngine:
     typeof localStorage !== "undefined"

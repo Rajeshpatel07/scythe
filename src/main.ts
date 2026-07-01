@@ -23,7 +23,7 @@ document.addEventListener("keydown", handleGlobalKeys, { capture: true });
 document.addEventListener("keydown", (e: KeyboardEvent) => {
   if (e.ctrlKey && e.key === "/") {
     e.preventDefault();
-    if (!config.isModelOpen) {
+    if (!config.isSpotlightOpen) {
       showSpotlight();
     }
   }
@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function showSpotlight() {
-  if (!config.isModelOpen && !config.isTabOpen) {
+  if (!config.isSpotlightOpen && !config.isTabOpen) {
     config.openNewtab = false;
-    config.isModelOpen = true;
+    config.isSpotlightOpen = true;
     handleWebSearch();
   }
 }

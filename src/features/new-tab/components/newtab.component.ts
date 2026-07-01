@@ -60,7 +60,7 @@ function newtabPageContent() {
   searchInput.autocomplete = "off";
 
   searchInput.onfocus = () => {
-    if (!config.isModelOpen) showSpotlight();
+    if (!config.isSpotlightOpen) showSpotlight();
   };
   searchWrapper.appendChild(searchInput);
 

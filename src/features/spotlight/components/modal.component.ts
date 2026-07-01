@@ -1,7 +1,7 @@
 import { config } from "../../../core/config/config";
 import { getShadowHost } from "../../../core/utils/dom.utils";
 
-export function createModelUI() {
+export function createSpotlightUI() {
   const host = document.createElement("div");
   host.id = "spotlight-host";
   host.setAttribute(
@@ -64,7 +64,7 @@ export function hideSpotlight() {
 
   if (shadowHost) {
     setTimeout(() => {
-      config.isModelOpen = false;
+      config.isSpotlightOpen = false;
       shadowHost.remove();
     }, 200);
   }
