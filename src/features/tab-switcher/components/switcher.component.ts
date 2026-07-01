@@ -183,7 +183,6 @@ export function closeSwitcher() {
 
   setTimeout(() => {
     config.isTabOpen = false;
-    config.modifierPressed = false;
     overlay.classList.add("hidden");
     host.remove();
   }, 200);
