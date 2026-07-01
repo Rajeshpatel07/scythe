@@ -1,113 +1,107 @@
 <div align="center">
-  <img src="src/assets/logo.png" alt="Spotlight Logo"/>
-
+  <img src="src/assets/logo.png" alt="Scythe Logo"/>
 </div>
 
 <p align="center">
-  A beautiful and keyboard based search panel for your browser,<br>
-
+  A keyboard-first toolset for faster browsing `search`, `switch`, and `preview` without leaving your flow.
 </p>
 
 ---
-### 🎹 Keyboard Shortcuts
 
-#### 🌐 On Any Website
-- `Ctrl + Shift + K` → Launch **Spotlight** on websites
+## Keyboard Shortcuts
 
-#### 🆕 On New Tab Page
-- `Ctrl + /` → Launch **Spotlight** on new tab
-
-
-## ✨ Features
-
-- ✅ **Instant History Search**: Immediately find and navigate to sites from your browsing history.
-- ✅ **Smart Autocompletion**: Get automatic domain name suggestions as you type and complete them with a press of the Tab key.
-- ✅ **New Tab Homepage**: Replaces the default new tab page with the elegant Spotlight interface, complete with a settings panel to customize your experience.  
-
-  ![New Tab](src/assets/newtab.png)
-- ✅ **In-Website Modal**: Activate the Spotlight search from any webpage using a keyboard shortcut for quick access without leaving your current page.  
-
-  ![spotlight](src/assets/spotlightmodel.png)
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| `Ctrl/Cmd + Shift + K` | Open Spotlight search | Any website |
+| `Ctrl/Cmd + Space` | Open Tab Switcher | Any website |
+| `Alt + Click` | Open link preview (Glance) | Any website |
+| `Escape` | Close active overlay | Any website |
+| `Ctrl + /` | Open Spotlight search | New tab page |
 
 ---
 
-## 🐛 Bugs / To-Do
+## Features
 
-- [ ] **Firefox Support**: Add support for Firefox (currently only works in Chromium-based browsers).
-- <del>[ ] **Fix CSS Conflicts**: On some websites, the page's native CSS can interfere with the Spotlight modal's styling.</del>
-- <del> [ ] **Pathname Autocompletion**: Currently only domain names are suggested. Extend to include full paths (e.g., `github.com/user/repo`).</del>
-- <del> [ ] **Optimized History Filtering**: Improve performance when filtering very large history databases.</del>
-- <del> [ ] **Optimize Favicons**: Improve the speed of favicon display by leveraging caching mechanisms or retrieving them from local browsing history when available.</del>
+### Spotlight Search
+Instant history search with smart autocompletion. Type to find and navigate to sites from your browsing history, or search the web using your preferred search engine.
+
+- History search with domain autocomplete
+- Tab key to complete suggested domain names
+- Search engine selector (Google, DuckDuckGo, Brave, Bing, Unduck)
+- `Ctrl+Enter` to open first result in a new tab
+- Favicon loading with caching and high-resolution fallback
+
+![Spotlight Search](src/assets/images/spotlight.png)
+
+### Tab Switcher
+Visually switch between open tabs using the keyboard. A dock appears in the center of the screen showing tab favicons and page titles.
+
+- Hold Ctrl/Cmd and press Space to cycle forward
+- Add Shift to cycle in reverse
+- Hover with mouse or keep pressing Space to navigate
+- Release Ctrl/Cmd or click to confirm selection
+- High-resolution favicon loading with local caching
+
+![Tab Switcher](src/assets/images/tab-switcher.png)
+
+### Glance
+Preview links in an overlay without leaving the current page. Alt+Click any link to open it in an iframe modal.
+
+- Inline iframe preview with full page rendering
+- Open in new tab button within the preview
+- Close with Escape or click outside the iframe
+- X-Frame-Options and CSP headers are stripped via declarativeNetRequest for compatibility
+
+![Glance](src/assets/images/glance.png)
+
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Requirements
 
-- [Bun](https://bun.sh/): Version `1.2.8` or higher.
-- **Browser**: A Chromium-based browser like Chrome, Brave, or Edge.
+- [Bun](https://bun.sh/) 1.2.8 or higher
+- Chromium-based browser (Chrome, Brave, Edge)
 
 ### Setup
 
-Clone the project:
-
 ```bash
-    git clone https://github.com/Rajeshpatel07/spotlight.git
-    cd spotlight
+git clone https://github.com/Rajeshpatel07/scythe.git
+cd scythe
+bun install
+bun run build
 ```
 
-Install dependencies:
+Build output is written to the `dist/` folder.
 
-```bash
-    bun install
-```
-Build the project:
+### Load in Browser
 
-```bash
-    bun run build
-```
-This will generate a `dist/` folder containing the extension files.
+1. Open `chrome://extensions`.
+2. Enable Developer mode
+3. Click "Load unpacked"
+4. Select the `dist/` directory
 
-### Add to Browser
-- Open your browser and go to: chrome://extensions or brave://extensions
-- Enable Developer mode (top-right corner).
-- Click Load unpacked.
-- Select the `dist/` folder inside the project.
-- follow this link [Add custom extension](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)
+---
 
+## Customization
 
-## Customize
-
-- By default the extension will show it's custom `new tab` page.
-- If you want to remove this behaviour open `manifest.json` file and remove the below lines in the file.
+To disable the custom new tab page, remove this block from `manifest.json` and `build` extension again:
 
 ```json
-  "chrome_url_overrides": {
-    "newtab": "index.html"
-  },
+"chrome_url_overrides": {
+  "newtab": "index.html"
+}
 ```
 
-## 🤝 Contributing
-Contributions are always welcome!
-- If you find any bug/issue or what to add feature please create a issue on it.
+---
 
-To contribute:
-- Fork the repository
+## Contributing
 
-- Create a new feature branch
+Contributions are welcome. Open an issue for bugs or feature requests.
 
-```bash
-    git checkout -b feature/AmazingFeature
-```
-- Commit your changes
-
-```bash
-    git commit -m 'Add some AmazingFeature'
-```
-- Push to GitHub
-
-```bash
-    git push origin feature/AmazingFeature
-```
-Open a pull request
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes
+4. Push to your fork
+5. Open a pull request
