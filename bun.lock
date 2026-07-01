@@ -6,10 +6,10 @@
       "name": "spotlight-extension",
       "devDependencies": {
         "@biomejs/biome": "2.1.1",
-        "@types/chrome": "^0.1.0",
-        "@types/node": "^24.0.13",
+        "@types/chrome": "^0.1.43",
+        "@types/node": "^24.13.2",
         "typescript": "~5.8.3",
-        "vite": "^7.0.4",
+        "vite": "^7.3.5",
         "vite-plugin-chrome-extension": "^0.0.7",
       },
     },
@@ -357,7 +357,7 @@
 
     "uri-js": ["uri-js@4.4.1", "", { "dependencies": { "punycode": "^2.1.0" } }, "sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg=="],
 
-    "vite": ["vite@7.3.5", "", { "dependencies": { "esbuild": "^0.27.0", "fdir": "^6.5.0", "picomatch": "^4.0.3", "postcss": "^8.5.6", "rollup": "^4.43.0", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-KuOaNhcnGFN2zIPGA7wRmzF+lJA1sea7rHq17aiJ++9lzY1WWG6Jpwqwe1KNbRVPIqHmr8GLYx7jbrQcN/7/ww=="],
+    "vite": ["vite@7.3.6", "", { "dependencies": { "esbuild": "^0.27.0 || ^0.28.0", "fdir": "^6.5.0", "picomatch": "^4.0.3", "postcss": "^8.5.6", "rollup": "^4.43.0", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-4XP60spRGjSZFf1qYH+dJIkK2znL3zQfl9KkOV9MkkRR/3Dls0dxaBsQPTloEc5BLXWPL9vsOxopxyKoMmDueg=="],
 
     "vite-plugin-chrome-extension": ["vite-plugin-chrome-extension@0.0.7", "", { "dependencies": { "ajv": "^6.11.0", "array-flat-polyfill": "^1.0.1", "chalk": "^4.1.1", "cheerio": "^1.0.0-rc.3", "convert-source-map": "^1.7.0", "cosmiconfig": "^6.0.0", "fs-extra": "^8.1.0", "glob": "^7.1.6", "jsonpath-plus": "^4.0.0", "lodash.difference": "^4.5.0", "lodash.flatten": "^4.4.0", "lodash.get": "^4.4.2", "mem": "^6.0.1", "prettier": "^1.19.1", "rollup": "^2.38.5", "slash": "^3.0.0", "vite": "^2.2.0", "webextension-polyfill": "^0.6.0" } }, "sha512-AoNcYg04MFpytR5/1NTsgPYDPHGXC0v/3EbCzbdDTNKAK+V5SmAY5ZRmANRXyfsnyb73NFoKrmqW4THjT93l2Q=="],
 

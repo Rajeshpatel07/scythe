@@ -35,8 +35,8 @@ async function registerDNRRules() {
         },
       ],
     });
-  } catch (err) {
-    console.error("Failed to register DNR rules:", err);
+  } catch {
+    // DNR registration failure is non-fatal; iframe may not load
   }
 }
 

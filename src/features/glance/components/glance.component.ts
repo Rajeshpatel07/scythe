@@ -1,6 +1,6 @@
 import { config } from "../../../core/config/config";
 
-function hideGlance() {
+export function hideGlance() {
   const host = document.getElementById("ext-glance-host");
   if (!host) return;
 
@@ -89,13 +89,5 @@ export function openGlanceModal(url: string) {
     }
   });
 
-  document.addEventListener(
-    "keydown",
-    (e) => {
-      if (e.key === "Escape" && config.isGlanceOpen) {
-        hideGlance();
-      }
-    },
-    { capture: true, once: true },
-  );
+
 }

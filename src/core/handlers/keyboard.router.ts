@@ -1,3 +1,4 @@
+import { hideGlance } from "../../features/glance/components/glance.component";
 import { hideSpotlight } from "../../features/spotlight/components/spotlight.component";
 import {
   handleArrowNavigation,
@@ -11,6 +12,13 @@ import { config } from "../config/config";
 import { getSearchInput, getSpotlightRoot, getSwitcherRoot } from "../utils/dom.utils";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
+  if (e.key === "Escape" && config.isGlanceOpen) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    hideGlance();
+    return;
+  }
+
   const isModifier = e.metaKey || e.ctrlKey;
 
   if (isModifier) {
