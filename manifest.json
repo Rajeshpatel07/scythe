@@ -8,19 +8,11 @@
     "history",
     "favicon",
     "tabs",
+    "browsingData",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": ["<all_urls>"],
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "ruleset_1",
-        "enabled": true,
-        "path": "rules.json"
-      }
-    ]
-  },
   "background": {
     "service_worker": "src/background/index.js"
   },
@@ -62,7 +54,6 @@
         "src/core/styles/style.css",
         "src/core/styles/tabs.css",
         "src/core/styles/glance.css",
-        "rules.json",
         "src/assets/icon48.png",
         "src/assets/search-engine-logos/*"
       ],

@@ -73,6 +73,8 @@ export function openGlanceModal(url: string) {
   actionContainer.appendChild(tabButton);
   actionContainer.appendChild(closeButton);
 
+  chrome.runtime.sendMessage({ action: "clearSW", url }).catch(() => {});
+
   const iframe = document.createElement("iframe");
   iframe.className = "glance-content-frame";
   iframe.src = url;

@@ -7,7 +7,8 @@ export type MessageAction =
   | "getHistory"
   | "searchHistory"
   | "getFavicon"
-  | "createTab";
+  | "createTab"
+  | "clearSW";
 
 export interface MessagePayload {
   action: MessageAction;

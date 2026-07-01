@@ -1,5 +1,48 @@
 import type { MessagePayload } from "../core/messaging/message.types";
 
+const DNR_RULE_ID = 1;
+
+async function registerDNRRules() {
+  try {
+    const existing = await chrome.declarativeNetRequest.getDynamicRules();
+    const existingIds = existing.map((r) => r.id);
+
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: existingIds,
+      addRules: [
+        {
+          id: DNR_RULE_ID,
+          priority: 1,
+          action: {
+            type: "modifyHeaders",
+            responseHeaders: [
+              { header: "x-frame-options", operation: "remove" },
+              { header: "content-security-policy", operation: "remove" },
+              {
+                header: "content-security-policy-report-only",
+                operation: "remove",
+              },
+            ],
+          },
+          condition: {
+            resourceTypes: [
+              "main_frame",
+              "sub_frame",
+              "xmlhttprequest",
+              "other",
+            ],
+          },
+        },
+      ],
+    });
+  } catch (err) {
+    console.error("Failed to register DNR rules:", err);
+  }
+}
+
+chrome.runtime.onInstalled.addListener(registerDNRRules);
+chrome.runtime.onStartup.addListener(registerDNRRules);
+
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle-spotlight") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -93,6 +136,23 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ success: true });
         }
         break;
+
+      case "clearSW": {
+        if (!request.url) {
+          sendResponse({ success: false });
+          return true;
+        }
+        try {
+          const origin = new URL(request.url).origin;
+          chrome.browsingData.removeServiceWorkers(
+            { origins: [origin] },
+            () => sendResponse({ success: true }),
+          );
+        } catch {
+          sendResponse({ success: false });
+        }
+        return true;
+      }
     }
   },
 );
