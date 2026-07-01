@@ -2,7 +2,7 @@ import { loadFaviconFromCache } from "../services/cache.service";
 import { InitiatePageNavigation } from "../services/search.service";
 import { config } from "../../../core/config/config";
 import type { ListItems } from "../../../core/types/domain.types";
-import { getShadowRoot } from "../../../core/utils/dom.utils";
+import { getSpotlightRoot } from "../../../core/utils/dom.utils";
 
 export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
@@ -47,10 +47,10 @@ export function createListItem({ title, url, showUrl = true }: ListItems) {
 }
 
 export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSpotlightRoot();
+  if (!root) return;
 
-  const results = shadowRoot.querySelectorAll(".spotlight-result-item-ext");
+  const results = root.querySelectorAll(".spotlight-result-item-ext");
   if (results.length === 0) return;
 
   if (config.selectedResultIndex !== -1) {

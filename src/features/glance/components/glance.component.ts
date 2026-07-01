@@ -4,7 +4,7 @@ import { InitiatePageNavigation } from "../../spotlight/services/search.service"
 
 export function openGlanceModal(url: string) {
   const host = document.createElement("div");
-  host.id = "spotlight-host";
+  host.id = "ext-glance-host";
   host.setAttribute(
     "style",
     "position:fixed; bottom:0; right:0; z-index:2147483647;",

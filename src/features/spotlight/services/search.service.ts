@@ -1,6 +1,6 @@
 import { config } from "../../../core/config/config";
 import { createSpotlightUI, hideSpotlight } from "../components/modal.component";
-import { getShadowRoot } from "../../../core/utils/dom.utils";
+import { getSpotlightRoot } from "../../../core/utils/dom.utils";
 import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
@@ -17,10 +17,10 @@ const suggestionCache = new Map<string, string>();
 
 export function handleWebSearch() {
   createSpotlightUI();
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSpotlightRoot();
+  if (!root) return;
 
-  const searchInput = shadowRoot.getElementById(
+  const searchInput = root.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
 
@@ -106,10 +106,10 @@ export function getSearchUrl(input: string): string {
 }
 
 export async function searchAndSuggest(query: string) {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSpotlightRoot();
+  if (!root) return;
 
-  const resultsList = shadowRoot.getElementById(
+  const resultsList = root.getElementById(
     "spotlight-results-ext",
   ) as HTMLUListElement | null;
   if (!resultsList) return;
@@ -145,10 +145,10 @@ export async function searchAndSuggest(query: string) {
 }
 
 export async function updateSuggestion(query: string) {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSpotlightRoot();
+  if (!root) return;
 
-  const suggestionEl = shadowRoot.getElementById(
+  const suggestionEl = root.getElementById(
     "spotlight-suggestion-ext",
   ) as HTMLLIElement;
 

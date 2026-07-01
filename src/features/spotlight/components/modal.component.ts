@@ -3,7 +3,7 @@ import { getShadowHost } from "../../../core/utils/dom.utils";
 
 export function createSpotlightUI() {
   const host = document.createElement("div");
-  host.id = "spotlight-host";
+  host.id = "ext-spotlight-host";
   host.setAttribute(
     "style",
     "position:fixed;bottom:0;right:0;z-index:2147483647;",
@@ -60,7 +60,7 @@ export function createSpotlightUI() {
 }
 
 export function hideSpotlight() {
-  const shadowHost = getShadowHost();
+  const shadowHost = getShadowHost("ext-spotlight-host");
 
   if (shadowHost) {
     setTimeout(() => {

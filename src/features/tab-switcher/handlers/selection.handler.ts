@@ -1,18 +1,18 @@
 import { config } from "../../../core/config/config";
-import { getShadowRoot } from "../../../core/utils/dom.utils";
+import { getSwitcherRoot } from "../../../core/utils/dom.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { closeSwitcher } from "../components/switcher.component";
 
 export function updateSelection(index: number) {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSwitcherRoot();
+  if (!root) return;
 
-  const tabTitle = shadowRoot.getElementById(
+  const tabTitle = root.getElementById(
     "active-tab-title",
   ) as HTMLDivElement;
 
   config.tabSelectedIndex = index;
-  const items = shadowRoot.querySelectorAll(".tab-item");
+  const items = root.querySelectorAll(".tab-item");
   items.forEach((item, idx) => {
     if (idx === index) {
       item.classList.add("selected");
@@ -30,10 +30,10 @@ export function updateSelection(index: number) {
 }
 
 export function confirmSelection() {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSwitcherRoot();
+  if (!root) return;
 
-  const items = shadowRoot.querySelectorAll(".tab-item");
+  const items = root.querySelectorAll(".tab-item");
   const chosenTab = items[config.tabSelectedIndex];
 
   closeSwitcher();

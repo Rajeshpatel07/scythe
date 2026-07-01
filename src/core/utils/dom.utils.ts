@@ -1,32 +1,38 @@
-export function getShadowHost(): HTMLElement | null {
-  return document.getElementById("spotlight-host");
+export function getShadowHost(id: string): HTMLElement | null {
+  return document.getElementById(id);
 }
 
-export function getShadowRoot(): ShadowRoot | null {
-  const host = getShadowHost();
-  return host?.shadowRoot ?? null;
+function getSpotlightRoot(): ShadowRoot | null {
+  return getShadowHost("ext-spotlight-host")?.shadowRoot ?? null;
+}
+
+function getSwitcherRoot(): ShadowRoot | null {
+  return getShadowHost("ext-switcher-host")?.shadowRoot ?? null;
 }
 
 export function getSearchInput(): HTMLInputElement | null {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return null;
-  return shadowRoot.getElementById(
+  const root = getSpotlightRoot();
+  if (!root) return null;
+  return root.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
 }
 
 export function getFirstResultItem(): HTMLLIElement | null {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return null;
-  return shadowRoot.querySelector(
+  const root = getSpotlightRoot();
+  if (!root) return null;
+  return root.querySelector(
     ".spotlight-result-item-ext",
   ) as HTMLLIElement | null;
 }
 
 export function getSelectedResultItem(): HTMLLIElement | null {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return null;
-  return shadowRoot.querySelector(
+  const root = getSpotlightRoot();
+  if (!root) return null;
+  return root.querySelector(
     ".spotlight-result-item-ext.selected",
   ) as HTMLLIElement | null;
 }
+
+export { getSpotlightRoot, getSwitcherRoot };
+

@@ -7,7 +7,7 @@ import type {
   faviconURLInterface,
   TabsResponse,
 } from "../../../core/types/domain.types";
-import { getShadowHost, getShadowRoot } from "../../../core/utils/dom.utils";
+import { getShadowHost, getSwitcherRoot } from "../../../core/utils/dom.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import {
   updateSelection,
@@ -16,7 +16,7 @@ import {
 
 export function createTabsDock() {
   const host = document.createElement("div");
-  host.id = "spotlight-host";
+  host.id = "ext-switcher-host";
   host.setAttribute(
     "style",
     "position:fixed;bottom:0;right:0;z-index:2147483647;",
@@ -55,10 +55,10 @@ export function createTabsDock() {
 }
 
 export async function renderTabs() {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSwitcherRoot();
+  if (!root) return;
 
-  const container = shadowRoot.getElementById("tab-list") as HTMLDivElement;
+  const container = root.getElementById("tab-list") as HTMLDivElement;
 
   let response: TabsResponse | null;
   try {
@@ -152,13 +152,13 @@ export async function openSwitcher(isReverse = false) {
   createTabsDock();
   await renderTabs();
 
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSwitcherRoot();
+  if (!root) return;
 
-  const overlay = shadowRoot.getElementById(
+  const overlay = root.getElementById(
     "switcher-overlay",
   ) as HTMLDivElement;
-  const items = shadowRoot.querySelectorAll(".tab-item");
+  const items = root.querySelectorAll(".tab-item");
   const tabsLen = items.length;
 
   config.isTabOpen = true;
@@ -172,12 +172,12 @@ export async function openSwitcher(isReverse = false) {
 }
 
 export function closeSwitcher() {
-  const shadowRoot = getShadowRoot();
-  const shadowHost = getShadowHost();
+  const root = getSwitcherRoot();
+  const host = getShadowHost("ext-switcher-host");
 
-  if (!shadowRoot || !shadowHost) return;
+  if (!root || !host) return;
 
-  const overlay = shadowRoot.getElementById(
+  const overlay = root.getElementById(
     "switcher-overlay",
   ) as HTMLDivElement;
 
@@ -185,6 +185,6 @@ export function closeSwitcher() {
     config.isTabOpen = false;
     config.modifierPressed = false;
     overlay.classList.add("hidden");
-    shadowHost.remove();
+    host.remove();
   }, 200);
 }

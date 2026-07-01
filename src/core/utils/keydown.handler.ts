@@ -8,7 +8,7 @@ import {
 import { openSwitcher } from "../../features/tab-switcher/components/switcher.component";
 import { updateSelection } from "../../features/tab-switcher/handlers/selection.handler";
 import { config } from "../config/config";
-import { getSearchInput, getShadowRoot } from "./dom.utils";
+import { getSearchInput, getSpotlightRoot } from "./dom.utils";
 
 export function handleGlobalKeys(e: KeyboardEvent) {
   const isModifier = e.metaKey || e.ctrlKey;
@@ -29,10 +29,10 @@ export function handleGlobalKeys(e: KeyboardEvent) {
       config.isTabOpen = true;
       openSwitcher(e.shiftKey);
     } else {
-      const shadowRoot = getShadowRoot();
-      if (!shadowRoot) return;
+      const root = getSpotlightRoot();
+      if (!root) return;
 
-      const items = shadowRoot.querySelectorAll(".tab-item");
+      const items = root.querySelectorAll(".tab-item");
       const tabsLen = items.length;
 
       let nextIndex: number;
@@ -46,9 +46,9 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     return;
   }
 
-  const shadowRoot = getShadowRoot();
+  const root = getSpotlightRoot();
   const searchInput = getSearchInput();
-  if (!shadowRoot || !searchInput) return;
+  if (!root || !searchInput) return;
 
   if (e.key === "/" || e.key === "Escape" || e.key === "Tab") {
     e.stopPropagation();

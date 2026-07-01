@@ -1,6 +1,6 @@
 import { config } from "../../../core/config/config";
 import type { HistoryResponse } from "../../../core/types/domain.types";
-import { getShadowRoot } from "../../../core/utils/dom.utils";
+import { getSpotlightRoot } from "../../../core/utils/dom.utils";
 import {
   filterDomainsOnly,
   mergeHistory,
@@ -10,10 +10,10 @@ import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/list-item.component";
 
 export async function populateHistory() {
-  const shadowRoot = getShadowRoot();
-  if (!shadowRoot) return;
+  const root = getSpotlightRoot();
+  if (!root) return;
 
-  const resultsList = shadowRoot.getElementById(
+  const resultsList = root.getElementById(
     "spotlight-results-ext",
   ) as HTMLUListElement;
   config.selectedResultIndex = -1;
