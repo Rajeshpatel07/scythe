@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-  A keyboard-first toolset for faster browsing `search`, `switch`, and `preview` without leaving your flow.
+  A keyboard-first toolset for faster browsing <strong>search</strong>, <strong>switch</strong>, and <strong>preview</strong> without leaving your flow.
 </p>
 
 ---
