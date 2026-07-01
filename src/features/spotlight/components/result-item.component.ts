@@ -20,9 +20,7 @@ export function createListItem({ title, url, showUrl = true }: ListItems) {
   const favicon = document.createElement("img");
   favicon.className = "spotlight-favicon-ext";
 
-  const isLikelyURL =
-    /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(url) ||
-    /^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i.test(url);
+  const isLikelyURL = /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(url);
 
   if (isLikelyURL) {
     loadFaviconFromCache(url, favicon);

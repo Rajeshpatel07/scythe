@@ -100,6 +100,8 @@ export async function renderTabs() {
 
     (async () => {
       try {
+        if (!document.getElementById("ext-switcher-host")) return;
+
         const storageKey = `fav_${hostname}`;
         const result = await chrome.storage.local.get<faviconURLInterface>([
           storageKey,
@@ -116,12 +118,18 @@ export async function renderTabs() {
 
         const highResResult = await getHighResFallback(hostname);
 
+        if (!document.getElementById("ext-switcher-host")) return;
+
         if (highResResult.status === "success" && highResResult.dataUrl) {
           if (img.getAttribute("data-loading-url") === currentTargetUrl) {
             img.style.opacity = "0.4";
+            const src = highResResult.dataUrl;
             setTimeout(() => {
-              if (highResResult.dataUrl) {
-                img.src = highResResult.dataUrl;
+              if (
+                src &&
+                document.getElementById("ext-switcher-host")
+              ) {
+                img.src = src;
                 img.style.opacity = "1";
               }
             }, 60);

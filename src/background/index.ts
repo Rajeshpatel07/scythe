@@ -64,21 +64,24 @@ chrome.runtime.onMessage.addListener(
         const imgSize = request.size || 32;
         const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
 
-        fetch(faviconUrl)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        fetch(faviconUrl, { signal: controller.signal })
           .then((response) => {
-            if (!response.ok) {
-              throw Error("Failed to fetch favicon");
-            }
+            if (!response.ok) throw Error("Failed to fetch favicon");
             return response.blob();
           })
           .then((blob) => {
             const reader = new FileReader();
             reader.onloadend = () => {
+              clearTimeout(timeoutId);
               sendResponse({ status: "success", dataUrl: reader.result });
             };
             reader.readAsDataURL(blob);
           })
           .catch(() => {
+            clearTimeout(timeoutId);
             sendResponse({ status: "error", dataUrl: null });
           });
         return true;

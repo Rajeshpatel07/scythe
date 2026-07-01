@@ -45,8 +45,10 @@ export async function populateHistory() {
 
   renderListItems(finalHistory, resultsList);
 
-  const isSame = JSON.stringify(storedHistory) === JSON.stringify(finalHistory);
-  if (!isSame) {
+  if (
+    storedHistory.length !== finalHistory.length ||
+    (storedHistory.length > 0 && storedHistory[0].url !== finalHistory[0].url)
+  ) {
     chrome.storage.local.set({ storedHistory: finalHistory });
   }
 }

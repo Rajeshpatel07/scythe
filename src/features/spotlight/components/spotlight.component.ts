@@ -40,6 +40,7 @@ export function createSpotlightUI() {
   searchInput.type = "text";
   searchInput.placeholder = "Search or enter address";
   searchInput.autocomplete = "off";
+  searchInput.setAttribute("autofocus", "");
 
   const suggestionEl = document.createElement("div");
   suggestionEl.id = "spotlight-suggestion-ext";
@@ -72,20 +73,7 @@ export function hideSpotlight() {
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {
   inputElement.focus();
-
   if (document.activeElement !== inputElement) {
-    let attempts = 0;
-    const maxAttempts = 10;
-
-    function focusLoop() {
-      inputElement.focus();
-      if (document.activeElement === inputElement || attempts >= maxAttempts) {
-        return;
-      }
-      attempts++;
-      requestAnimationFrame(focusLoop);
-    }
-
-    requestAnimationFrame(focusLoop);
+    setTimeout(() => inputElement.focus(), 100);
   }
 }
