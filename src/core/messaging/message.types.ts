@@ -8,7 +8,10 @@ export type MessageAction =
   | "searchHistory"
   | "getFavicon"
   | "createTab"
-  | "clearSW";
+  | "clearSW"
+  | "openGlance"
+  | "closeGlance"
+  | "getGlanceUrl";
 
 export interface MessagePayload {
   action: MessageAction;
@@ -34,4 +37,6 @@ export type MessageResponseType<T extends MessageAction> = T extends "getTabs"
         ? FaviconResponse
         : T extends "createTab"
           ? { success: true }
-          : undefined;
+          : T extends "getGlanceUrl"
+            ? { url: string | null }
+            : undefined;

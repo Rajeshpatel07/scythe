@@ -9,6 +9,7 @@ export function hideGlance() {
   setTimeout(() => {
     config.isGlanceOpen = false;
     host.remove();
+    chrome.runtime.sendMessage({ action: "closeGlance" }).catch(() => {});
   }, 200);
 }
 
@@ -53,7 +54,14 @@ export function openGlanceModal(url: string) {
   `;
   tabButton.onclick = () => {
     hideGlance();
-    window.open(url, "_blank");
+    chrome.runtime
+      .sendMessage({ action: "getGlanceUrl" })
+      .then((response: { url: string | null }) => {
+        window.open(response?.url || url, "_blank");
+      })
+      .catch(() => {
+        window.open(url, "_blank");
+      });
   };
 
   const closeButton = document.createElement("button");
@@ -75,6 +83,8 @@ export function openGlanceModal(url: string) {
 
   const iframe = document.createElement("iframe");
   iframe.className = "glance-content-frame";
+
+  chrome.runtime.sendMessage({ action: "openGlance", url }).catch(() => {});
 
   chrome.runtime
     .sendMessage({ action: "clearSW", url })

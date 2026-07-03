@@ -8,6 +8,7 @@
     "history",
     "favicon",
     "tabs",
+    "webNavigation",
     "browsingData",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess"

@@ -2,6 +2,24 @@ import type { MessagePayload } from "../core/messaging/message.types";
 
 const DNR_RULE_ID = 1;
 
+const glanceUrlByTab = new Map<number, string>();
+
+function onGlanceSubFrameNavigation(
+  details: chrome.webNavigation.WebNavigationTransitionCallbackDetails,
+) {
+  if (details.frameId === 0) return;
+  const origin = details.url ? new URL(details.url).origin : null;
+  if (!origin) return;
+
+  const storedUrl = glanceUrlByTab.get(details.tabId);
+  const storedOrigin = storedUrl ? new URL(storedUrl).origin : null;
+  if (storedOrigin && origin === storedOrigin) {
+    glanceUrlByTab.set(details.tabId, details.url);
+  }
+}
+
+let webNavigationListenerAdded = false;
+
 async function registerDNRRules() {
   try {
     const existing = await chrome.declarativeNetRequest.getDynamicRules();
@@ -138,6 +156,34 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ success: true });
         }
         break;
+
+      case "openGlance":
+        if (request.url && _sender.tab?.id) {
+          glanceUrlByTab.set(_sender.tab.id, request.url);
+          if (!webNavigationListenerAdded) {
+            chrome.webNavigation.onCommitted.addListener(
+              onGlanceSubFrameNavigation,
+            );
+            webNavigationListenerAdded = true;
+          }
+          sendResponse({ success: true });
+        }
+        return true;
+
+      case "closeGlance":
+        if (_sender.tab?.id) {
+          glanceUrlByTab.delete(_sender.tab.id);
+        }
+        sendResponse({ success: true });
+        return true;
+
+      case "getGlanceUrl":
+        if (_sender.tab?.id && glanceUrlByTab.has(_sender.tab.id)) {
+          sendResponse({ url: glanceUrlByTab.get(_sender.tab.id) });
+        } else {
+          sendResponse({ url: null });
+        }
+        return true;
 
       case "clearSW": {
         if (!request.url) {
