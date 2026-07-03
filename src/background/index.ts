@@ -40,6 +40,8 @@ async function registerDNRRules() {
   }
 }
 
+registerDNRRules();
+
 chrome.runtime.onInstalled.addListener(registerDNRRules);
 chrome.runtime.onStartup.addListener(registerDNRRules);
 
@@ -144,9 +146,8 @@ chrome.runtime.onMessage.addListener(
         }
         try {
           const origin = new URL(request.url).origin;
-          chrome.browsingData.removeServiceWorkers(
-            { origins: [origin] },
-            () => sendResponse({ success: true }),
+          chrome.browsingData.removeServiceWorkers({ origins: [origin] }, () =>
+            sendResponse({ success: true }),
           );
         } catch {
           sendResponse({ success: false });

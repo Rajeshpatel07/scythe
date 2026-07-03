@@ -125,10 +125,7 @@ export async function renderTabs() {
             img.style.opacity = "0.4";
             const src = highResResult.dataUrl;
             setTimeout(() => {
-              if (
-                src &&
-                document.getElementById("ext-switcher-host")
-              ) {
+              if (src && document.getElementById("ext-switcher-host")) {
                 img.src = src;
                 img.style.opacity = "1";
               }
