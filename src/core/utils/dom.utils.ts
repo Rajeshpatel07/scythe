@@ -1,13 +1,11 @@
-export function getShadowHost(id: string): HTMLElement | null {
-  return document.getElementById(id);
-}
+import { getHostRoot } from "./host.utils";
 
 function getSpotlightRoot(): ShadowRoot | null {
-  return getShadowHost("ext-spotlight-host")?.shadowRoot ?? null;
+  return getHostRoot();
 }
 
 function getSwitcherRoot(): ShadowRoot | null {
-  return getShadowHost("ext-switcher-host")?.shadowRoot ?? null;
+  return getHostRoot();
 }
 
 export function getSearchInput(): HTMLInputElement | null {

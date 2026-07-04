@@ -1,37 +1,20 @@
 import { config } from "../../../core/config/config";
+import { ensureHost, removeHost } from "../../../core/utils/host.utils";
 
 export function hideGlance() {
-  const host = document.getElementById("ext-glance-host");
-  if (!host) return;
-
   document.body.style.overflow = "";
 
   setTimeout(() => {
     config.isGlanceOpen = false;
-    host.remove();
+    removeHost();
     chrome.runtime.sendMessage({ action: "closeGlance" }).catch(() => {});
   }, 200);
 }
 
 export function openGlanceModal(url: string) {
-  const host = document.createElement("div");
-  host.id = "ext-glance-host";
-  host.setAttribute(
-    "style",
-    "position:fixed; bottom:0; right:0; z-index:2147483647;",
-  );
-  document.body.appendChild(host);
+  const shadowRoot = ensureHost("glance");
 
   document.body.style.overflow = "hidden";
-  const shadowRoot = host.attachShadow({ mode: "open" });
-
-  const stylesheetLink = document.createElement("link");
-  stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute(
-    "href",
-    chrome.runtime.getURL("src/core/styles/glance.css"),
-  );
-  shadowRoot.appendChild(stylesheetLink);
 
   // 3. Screen Overlay Backdrop Component
   const overlay = document.createElement("div");

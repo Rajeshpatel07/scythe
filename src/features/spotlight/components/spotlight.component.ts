@@ -1,22 +1,8 @@
 import { config } from "../../../core/config/config";
-import { getShadowHost } from "../../../core/utils/dom.utils";
+import { ensureHost, removeHost } from "../../../core/utils/host.utils";
 
 export function createSpotlightUI() {
-  const host = document.createElement("div");
-  host.id = "ext-spotlight-host";
-  host.setAttribute(
-    "style",
-    "position:fixed;bottom:0;right:0;z-index:2147483647;",
-  );
-  document.body.appendChild(host);
-  const shadowRoot = host.attachShadow({ mode: "open" });
-  const stylesheetLink = document.createElement("link");
-  stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute(
-    "href",
-    chrome.runtime.getURL("src/core/styles/style.css"),
-  );
-  shadowRoot.appendChild(stylesheetLink);
+  const shadowRoot = ensureHost("spotlight");
 
   const overlay = document.createElement("div");
   overlay.id = "spotlight-overlay-ext";
@@ -61,14 +47,10 @@ export function createSpotlightUI() {
 }
 
 export function hideSpotlight() {
-  const shadowHost = getShadowHost("ext-spotlight-host");
-
-  if (shadowHost) {
-    setTimeout(() => {
-      config.isSpotlightOpen = false;
-      shadowHost.remove();
-    }, 200);
-  }
+  setTimeout(() => {
+    config.isSpotlightOpen = false;
+    removeHost();
+  }, 200);
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {

@@ -7,7 +7,8 @@ import type {
   faviconURLInterface,
   TabsResponse,
 } from "../../../core/types/domain.types";
-import { getShadowHost, getSwitcherRoot } from "../../../core/utils/dom.utils";
+import { getSwitcherRoot } from "../../../core/utils/dom.utils";
+import { ensureHost, removeHost } from "../../../core/utils/host.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import {
   updateSelection,
@@ -15,21 +16,7 @@ import {
 } from "../handlers/selection.handler";
 
 export function createTabsDock() {
-  const host = document.createElement("div");
-  host.id = "ext-switcher-host";
-  host.setAttribute(
-    "style",
-    "position:fixed;bottom:0;right:0;z-index:2147483647;",
-  );
-  document.body.appendChild(host);
-  const shadowRoot = host.attachShadow({ mode: "open" });
-  const stylesheetLink = document.createElement("link");
-  stylesheetLink.setAttribute("rel", "stylesheet");
-  stylesheetLink.setAttribute(
-    "href",
-    chrome.runtime.getURL("src/core/styles/tabs.css"),
-  );
-  shadowRoot.appendChild(stylesheetLink);
+  const shadowRoot = ensureHost("switcher");
 
   const overlay = document.createElement("div");
   overlay.setAttribute("id", "switcher-overlay");
@@ -100,7 +87,7 @@ export async function renderTabs() {
 
     (async () => {
       try {
-        if (!document.getElementById("ext-switcher-host")) return;
+        if (!document.getElementById("scythe-host")) return;
 
         const storageKey = `fav_${hostname}`;
         const result = await chrome.storage.local.get<faviconURLInterface>([
@@ -118,14 +105,14 @@ export async function renderTabs() {
 
         const highResResult = await getHighResFallback(hostname);
 
-        if (!document.getElementById("ext-switcher-host")) return;
+        if (!document.getElementById("scythe-host")) return;
 
         if (highResResult.status === "success" && highResResult.dataUrl) {
           if (img.getAttribute("data-loading-url") === currentTargetUrl) {
             img.style.opacity = "0.4";
             const src = highResResult.dataUrl;
             setTimeout(() => {
-              if (src && document.getElementById("ext-switcher-host")) {
+              if (src && document.getElementById("scythe-host")) {
                 img.src = src;
                 img.style.opacity = "1";
               }
@@ -176,15 +163,13 @@ export async function openSwitcher(isReverse = false) {
 
 export function closeSwitcher() {
   const root = getSwitcherRoot();
-  const host = getShadowHost("ext-switcher-host");
-
-  if (!root || !host) return;
+  if (!root) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
 
   setTimeout(() => {
     config.isTabOpen = false;
     overlay.classList.add("hidden");
-    host.remove();
+    removeHost();
   }, 200);
 }
