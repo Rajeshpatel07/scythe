@@ -6,6 +6,7 @@ import {
   mergeHistory,
   getStoredHistory,
 } from "../../../core/services/history.service";
+import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/result-item.component";
 
@@ -49,6 +50,6 @@ export async function populateHistory() {
     storedHistory.length !== finalHistory.length ||
     (storedHistory.length > 0 && storedHistory[0].url !== finalHistory[0].url)
   ) {
-    chrome.storage.local.set({ storedHistory: finalHistory });
+    storage.local.set({ storedHistory: finalHistory });
   }
 }

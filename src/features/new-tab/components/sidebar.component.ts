@@ -1,4 +1,5 @@
 import { config } from "../../../core/config/config";
+import { storage } from "../../../core/storage/storage.utils";
 import { createNewTabPage } from "./newtab.component";
 
 export function showSidebar(body: HTMLBodyElement) {
@@ -314,7 +315,7 @@ export function SidebarSettings() {
       }
       localStorage.setItem("searchEngine", selectedName);
       config.searchEngine = selectedName;
-      chrome.storage.sync.set({ searchEngine: selectedName });
+      storage.sync.set({ searchEngine: selectedName });
     }
     // Close the dropdown
     engineOptionsList.classList.remove("spotlight-open");

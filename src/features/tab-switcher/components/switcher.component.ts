@@ -3,12 +3,10 @@ import {
   getHighResFallback,
 } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
-import type {
-  faviconURLInterface,
-  TabsResponse,
-} from "../../../core/types/domain.types";
+import type { TabsResponse } from "../../../core/types/domain.types";
 import { getSwitcherRoot } from "../../../core/utils/dom.utils";
 import { ensureHost, removeHost } from "../../../core/utils/host.utils";
+import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import {
   updateSelection,
@@ -90,9 +88,7 @@ export async function renderTabs() {
         if (!document.getElementById("scythe-host")) return;
 
         const storageKey = `fav_${hostname}`;
-        const result = await chrome.storage.local.get<faviconURLInterface>([
-          storageKey,
-        ]);
+        const result = await storage.local.get<string>([storageKey]);
         const cachedDataUrl = result[storageKey];
 
         if (cachedDataUrl && cachedDataUrl !== "null") {
@@ -118,7 +114,7 @@ export async function renderTabs() {
               }
             }, 60);
 
-            await chrome.storage.local.set({
+            await storage.local.set({
               [storageKey]: highResResult.dataUrl,
             });
           }

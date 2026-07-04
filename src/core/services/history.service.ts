@@ -1,4 +1,5 @@
 import type { HistoryItem } from "../types/domain.types";
+import { storage } from "../storage/storage.utils";
 
 export function filterDomainsOnly(url: string): boolean {
   try {
@@ -10,9 +11,7 @@ export function filterDomainsOnly(url: string): boolean {
 }
 
 export async function getStoredHistory(): Promise<HistoryItem[]> {
-  const result = await chrome.storage.local.get<{
-    storedHistory?: HistoryItem[];
-  }>(["storedHistory"]);
+  const result = await storage.local.get<HistoryItem[]>(["storedHistory"]);
   return result.storedHistory || [];
 }
 
