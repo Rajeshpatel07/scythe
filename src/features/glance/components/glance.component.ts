@@ -1,5 +1,7 @@
 import { config } from "../../../core/config/config";
 import { ensureHost, removeHost } from "../../../core/utils/host.utils";
+import { openUrl } from "../../../core/services/navigation.service";
+import { MessageBroker } from "../../../core/messaging/message.broker";
 
 export function hideGlance() {
   document.body.style.overflow = "";
@@ -7,7 +9,7 @@ export function hideGlance() {
   setTimeout(() => {
     config.isGlanceOpen = false;
     removeHost();
-    chrome.runtime.sendMessage({ action: "closeGlance" }).catch(() => {});
+    MessageBroker.send({ action: "closeGlance" }).catch(() => {});
   }, 200);
 }
 
@@ -37,13 +39,12 @@ export function openGlanceModal(url: string) {
   `;
   tabButton.onclick = () => {
     hideGlance();
-    chrome.runtime
-      .sendMessage({ action: "getGlanceUrl" })
-      .then((response: { url: string | null }) => {
-        window.open(response?.url || url, "_blank");
+    MessageBroker.send({ action: "getGlanceUrl" })
+      .then((response) => {
+        openUrl(response?.url || url, true);
       })
       .catch(() => {
-        window.open(url, "_blank");
+        openUrl(url, true);
       });
   };
 
@@ -67,10 +68,9 @@ export function openGlanceModal(url: string) {
   const iframe = document.createElement("iframe");
   iframe.className = "glance-content-frame";
 
-  chrome.runtime.sendMessage({ action: "openGlance", url }).catch(() => {});
+  MessageBroker.send({ action: "openGlance", url }).catch(() => {});
 
-  chrome.runtime
-    .sendMessage({ action: "clearSW", url })
+  MessageBroker.send({ action: "clearSW", url })
     .catch(() => {})
     .then(() => {
       iframe.src = url;

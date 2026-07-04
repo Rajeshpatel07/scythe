@@ -1,6 +1,6 @@
 import { config } from "../../../core/config/config";
 import type { HistoryResponse } from "../../../core/types/domain.types";
-import { getSpotlightRoot } from "../../../core/utils/dom.utils";
+import { getHostRoot } from "../../../core/utils/host.utils";
 import {
   filterDomainsOnly,
   mergeHistory,
@@ -11,7 +11,7 @@ import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/result-item.component";
 
 export async function populateHistory() {
-  const root = getSpotlightRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const resultsList = root.getElementById(

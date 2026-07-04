@@ -1,8 +1,9 @@
 import { loadFaviconFromCache } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { ListItems } from "../../../core/types/domain.types";
-import { getSpotlightRoot } from "../../../core/utils/dom.utils";
+import { getHostRoot } from "../../../core/utils/host.utils";
 import { hideSpotlight } from "../components/spotlight.component";
+import { openUrl } from "../../../core/services/navigation.service";
 
 export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
@@ -10,11 +11,7 @@ export function createListItem({ title, url, showUrl = true }: ListItems) {
   li.setAttribute("data-url", url);
   li.addEventListener("click", () => {
     hideSpotlight();
-    if (config.openNewtab) {
-      window.open(url);
-    } else {
-      window.location.href = url;
-    }
+    openUrl(url, config.openNewtab);
   });
 
   const favicon = document.createElement("img");
@@ -52,7 +49,7 @@ export function createListItem({ title, url, showUrl = true }: ListItems) {
 }
 
 export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
-  const root = getSpotlightRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const results = root.querySelectorAll(".spotlight-result-item-ext");

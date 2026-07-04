@@ -1,10 +1,10 @@
 import { config } from "../../../core/config/config";
-import { getSwitcherRoot } from "../../../core/utils/dom.utils";
+import { getHostRoot } from "../../../core/utils/host.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { closeSwitcher } from "../components/switcher.component";
 
 export function updateSelection(index: number) {
-  const root = getSwitcherRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const tabTitle = root.getElementById("active-tab-title") as HTMLDivElement;
@@ -28,7 +28,7 @@ export function updateSelection(index: number) {
 }
 
 export function confirmSelection() {
-  const root = getSwitcherRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const items = root.querySelectorAll(".tab-item");

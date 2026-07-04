@@ -4,7 +4,7 @@ import {
 } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { TabsResponse } from "../../../core/types/domain.types";
-import { getSwitcherRoot } from "../../../core/utils/dom.utils";
+import { getHostRoot } from "../../../core/utils/host.utils";
 import { ensureHost, removeHost } from "../../../core/utils/host.utils";
 import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
@@ -40,7 +40,7 @@ export function createTabsDock() {
 }
 
 export async function renderTabs() {
-  const root = getSwitcherRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const container = root.getElementById("tab-list") as HTMLDivElement;
@@ -140,7 +140,7 @@ export async function openSwitcher(isReverse = false) {
   createTabsDock();
   await renderTabs();
 
-  const root = getSwitcherRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
@@ -158,7 +158,7 @@ export async function openSwitcher(isReverse = false) {
 }
 
 export function closeSwitcher() {
-  const root = getSwitcherRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;

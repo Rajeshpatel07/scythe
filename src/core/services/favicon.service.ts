@@ -1,4 +1,15 @@
 import { MessageBroker } from "../messaging/message.broker";
+import { HAS_PROTOCOL_REGEX } from "../config/constants";
+
+function getFaviconFallbackUrl(url: string): string {
+  let hostname = "...";
+  const havePrefix = HAS_PROTOCOL_REGEX.test(url);
+  if (!havePrefix) url = `https://${url}`;
+  try {
+    hostname = new URL(url).hostname;
+  } catch (_e) {}
+  return `https://favicon.is/${hostname}`;
+}
 
 export function loadFaviconFromCache(
   url: string,
@@ -10,23 +21,11 @@ export function loadFaviconFromCache(
       if (response && response.status === "success" && response.dataUrl) {
         imgElement.src = response.dataUrl;
       } else {
-        let hostname = "...";
-        const havePrefix = /^https?:\/\//.test(url);
-        if (!havePrefix) url = `https://${url}`;
-        try {
-          hostname = new URL(url).hostname;
-        } catch (_e) {}
-        imgElement.src = `https://favicon.is/${hostname}`;
+        imgElement.src = getFaviconFallbackUrl(url);
       }
     })
     .catch(() => {
-      let hostname = "...";
-      const havePrefix = /^https?:\/\//.test(url);
-      if (!havePrefix) url = `https://${url}`;
-      try {
-        hostname = new URL(url).hostname;
-      } catch (_e) {}
-      imgElement.src = `https://favicon.is/${hostname}`;
+      imgElement.src = getFaviconFallbackUrl(url);
     });
 }
 

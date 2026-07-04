@@ -3,19 +3,19 @@ import {
   createSpotlightUI,
   hideSpotlight,
 } from "../components/spotlight.component";
-import { getSpotlightRoot } from "../../../core/utils/dom.utils";
+import { getHostRoot } from "../../../core/utils/host.utils";
 import { populateHistory } from "./history.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/result-item.component";
-import { resolveUrl } from "../../../core/services/navigation.service";
+import { resolveUrl, openUrl } from "../../../core/services/navigation.service";
 import { WWW_REGEX } from "../../../core/config/constants";
 
 const suggestionCache = new Map<string, string>();
 
 export function handleWebSearch() {
   createSpotlightUI();
-  const root = getSpotlightRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const searchInput = root.getElementById(
@@ -61,17 +61,12 @@ export function handleSearchSubmit(input: string): void {
   if (trimmedInput.length === 0) return;
 
   const url = resolveUrl(trimmedInput);
-
-  if (config.openNewtab) {
-    hideSpotlight();
-    window.open(url);
-  } else {
-    window.location.href = url;
-  }
+  hideSpotlight();
+  openUrl(url, config.openNewtab);
 }
 
 export async function searchAndSuggest(query: string) {
-  const root = getSpotlightRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const resultsList = root.getElementById(
@@ -110,7 +105,7 @@ export async function searchAndSuggest(query: string) {
 }
 
 export async function updateSuggestion(query: string) {
-  const root = getSpotlightRoot();
+  const root = getHostRoot();
   if (!root) return;
 
   const suggestionEl = root.getElementById(
