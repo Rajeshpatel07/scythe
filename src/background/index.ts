@@ -85,7 +85,7 @@ chrome.runtime.onMessage.addListener(
   (request: MessagePayload, _sender, sendResponse) => {
     switch (request.action) {
       case "getTabs":
-        chrome.tabs.query({}, (tabs) => {
+        chrome.tabs.query({ windowId: _sender.tab?.windowId }, (tabs) => {
           sendResponse({ tabs: tabs });
         });
         return true;
