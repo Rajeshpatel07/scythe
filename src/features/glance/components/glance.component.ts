@@ -1,16 +1,19 @@
 import { config } from "../../../core/config/config";
-import { ensureHost, removeHost } from "../../../core/utils/host.utils";
+import { ensureHost, removeHost, getHostRoot } from "../../../core/utils/host.utils";
 import { openUrl } from "../../../core/services/navigation.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 
 export function hideGlance() {
   document.body.style.overflow = "";
 
+  const root = getHostRoot();
+  root?.getElementById("glance-extension-modal")?.classList.add("closing");
+
   setTimeout(() => {
     config.isGlanceOpen = false;
     removeHost();
     MessageBroker.send({ action: "closeGlance" }).catch(() => {});
-  }, 200);
+  }, 280);
 }
 
 export function openGlanceModal(url: string) {

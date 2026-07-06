@@ -1,5 +1,5 @@
 import { config } from "../../../core/config/config";
-import { ensureHost, removeHost } from "../../../core/utils/host.utils";
+import { ensureHost, removeHost, getHostRoot } from "../../../core/utils/host.utils";
 
 export function createSpotlightUI() {
   const shadowRoot = ensureHost("spotlight");
@@ -47,10 +47,13 @@ export function createSpotlightUI() {
 }
 
 export function hideSpotlight() {
+  const root = getHostRoot();
+  root?.getElementById("spotlight-overlay-ext")?.classList.add("closing");
+
   setTimeout(() => {
     config.isSpotlightOpen = false;
     removeHost();
-  }, 200);
+  }, 250);
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {

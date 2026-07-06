@@ -162,10 +162,10 @@ export function closeSwitcher() {
   if (!root) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
+  overlay.classList.add("hidden");
 
   setTimeout(() => {
     config.isTabOpen = false;
-    overlay.classList.add("hidden");
     removeHost();
-  }, 200);
+  }, 280);
 }

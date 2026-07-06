@@ -1,3 +1,51 @@
+@keyframes glance-overlay-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+}
+
+@keyframes glance-overlay-out {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+  }
+}
+
+@keyframes glance-frame-in {
+  from {
+    transform: scale(0.92) translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glance-frame-out {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.92) translateY(15px);
+    opacity: 0;
+  }
+}
+
 #glance-extension-modal {
   position: fixed;
   top: 0;
@@ -5,14 +53,18 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
   z-index: 2147483647;
   display: flex;
   justify-content: center;
   align-items: center;
 
   overflow: hidden;
+
+  animation: glance-overlay-in 0.25s ease forwards;
+}
+
+#glance-extension-modal.closing {
+  animation: glance-overlay-out 0.25s ease forwards;
 }
 
 #glance-extension-modal .glance-content-frame {
@@ -23,6 +75,14 @@
   box-shadow: 0 28px 75px rgba(0, 0, 0, 0.4);
 
   overflow: auto;
+
+  animation: glance-frame-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.05s;
+}
+
+#glance-extension-modal.closing .glance-content-frame {
+  animation: glance-frame-out 0.2s ease forwards;
+  animation-delay: 0s;
 }
 
 .glance-action-container {

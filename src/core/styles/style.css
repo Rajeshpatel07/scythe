@@ -3,6 +3,26 @@
   all: initial !important;
 }
 
+@keyframes spotlight-overlay-in {
+  from { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+}
+
+@keyframes spotlight-overlay-out {
+  from { opacity: 1; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  to { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+}
+
+@keyframes spotlight-modal-in {
+  from { transform: translateY(-20px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes spotlight-modal-out {
+  from { transform: translateY(0) scale(1); opacity: 1; }
+  to { transform: translateY(-20px) scale(0.97); opacity: 0; }
+}
+
 #spotlight-overlay-ext {
   position: fixed;
   top: 0;
@@ -10,13 +30,17 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   z-index: 9999;
   font-family: sans-serif;
+
+  animation: spotlight-overlay-in 0.2s ease forwards;
+}
+
+#spotlight-overlay-ext.closing {
+  animation: spotlight-overlay-out 0.2s ease forwards;
 }
 
 #spotlight-modal-ext {
@@ -29,6 +53,12 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   border: 1px solid #4a4a4a1a;
   overflow: hidden;
+
+  animation: spotlight-modal-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+#spotlight-overlay-ext.closing #spotlight-modal-ext {
+  animation: spotlight-modal-out 0.2s ease forwards;
 }
 
 .spotlight-search-container-ext {

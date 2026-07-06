@@ -1,11 +1,15 @@
+import styleCss from "../styles/style.css?raw";
+import tabsCss from "../styles/tabs.css?raw";
+import glanceCss from "../styles/glance.css?raw";
+
 const HOST_ID = "scythe-host";
 
 type Feature = "spotlight" | "switcher" | "glance";
 
 const featureStyles: Record<Feature, string> = {
-  spotlight: "src/core/styles/style.css",
-  switcher: "src/core/styles/tabs.css",
-  glance: "src/core/styles/glance.css",
+  spotlight: styleCss,
+  switcher: tabsCss,
+  glance: glanceCss,
 };
 
 export function ensureHost(feature: Feature): ShadowRoot {
@@ -19,13 +23,9 @@ export function ensureHost(feature: Feature): ShadowRoot {
     );
     document.body.appendChild(host);
     const root = host.attachShadow({ mode: "open" });
-    const stylesheetLink = document.createElement("link");
-    stylesheetLink.setAttribute("rel", "stylesheet");
-    stylesheetLink.setAttribute(
-      "href",
-      chrome.runtime.getURL(featureStyles[feature]),
-    );
-    root.appendChild(stylesheetLink);
+    const style = document.createElement("style");
+    style.textContent = featureStyles[feature];
+    root.appendChild(style);
     return root;
   }
   return host.shadowRoot!;
