@@ -92,7 +92,7 @@ chrome.runtime.onMessage.addListener(
 
       case "switchTab":
         if (request.id) {
-          chrome.tabs.update(parseInt(request.id), { active: true });
+          chrome.tabs.update(parseInt(request.id, 10), { active: true });
         }
         return true;
 

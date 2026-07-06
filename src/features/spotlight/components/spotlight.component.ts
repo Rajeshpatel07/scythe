@@ -1,5 +1,9 @@
 import { config } from "../../../core/config/config";
-import { ensureHost, removeHost, getHostRoot } from "../../../core/utils/host.utils";
+import {
+  ensureHost,
+  removeHost,
+  getHostRoot,
+} from "../../../core/utils/host.utils";
 
 export function createSpotlightUI() {
   const shadowRoot = ensureHost("spotlight");

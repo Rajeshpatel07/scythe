@@ -28,7 +28,7 @@ export function ensureHost(feature: Feature): ShadowRoot {
     root.appendChild(style);
     return root;
   }
-  return host.shadowRoot!;
+  return host.shadowRoot as ShadowRoot;
 }
 
 export function removeHost(): void {

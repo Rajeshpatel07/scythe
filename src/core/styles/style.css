@@ -1,26 +1,55 @@
 /* Spotlight model */
 :host {
+  /* biome-ignore lint/complexity/noImportantStyles: required to override host page isolation in extensions */
   all: initial !important;
 }
 
 @keyframes spotlight-overlay-in {
-  from { background-color: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-  to { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  from {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 @keyframes spotlight-overlay-out {
-  from { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  to { background-color: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  from {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
 }
 
 @keyframes spotlight-modal-in {
-  from { transform: scale(0.92) translateY(15px); opacity: 0; }
-  to { transform: scale(1) translateY(0); opacity: 1; }
+  from {
+    transform: scale(0.92) translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes spotlight-modal-out {
-  from { transform: scale(1) translateY(0); opacity: 1; }
-  to { transform: scale(0.92) translateY(15px); opacity: 0; }
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.92) translateY(15px);
+    opacity: 0;
+  }
 }
 
 #spotlight-overlay-ext {

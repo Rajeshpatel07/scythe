@@ -52,7 +52,7 @@ export async function renderTabs() {
     response = null;
   }
 
-  if (!response || !response.tabs) {
+  if (!response?.tabs) {
     return;
   }
 
@@ -69,7 +69,7 @@ export async function renderTabs() {
     const tabItem = document.createElement("div");
     tabItem.classList.add("tab-item");
     tabItem.setAttribute("id", tab.id);
-    //@ts-ignore
+    //@ts-expect-error
     tabItem.setAttribute("data-index", index);
 
     tabItem.setAttribute("data-title", tab.title);

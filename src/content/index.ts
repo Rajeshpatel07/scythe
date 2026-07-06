@@ -15,7 +15,7 @@ document.addEventListener(
           !config.isTabOpen &&
           !config.isSpotlightOpen
         ) {
-          //@ts-ignore
+          //@ts-expect-error
           const link = event?.target.closest("a");
 
           if (link?.href) {

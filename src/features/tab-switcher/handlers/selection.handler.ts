@@ -14,7 +14,7 @@ export function updateSelection(index: number) {
   items.forEach((item, idx) => {
     if (idx === index) {
       item.classList.add("selected");
-      //@ts-ignore
+      //@ts-expect-error
       tabTitle.textContent = item.attributes["data-title"].value;
       item.scrollIntoView({
         behavior: "smooth",

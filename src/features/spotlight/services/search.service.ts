@@ -22,8 +22,8 @@ export function handleWebSearch() {
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
 
-  let searchTimeout: NodeJS.Timeout;
-  let suggestTimeout: NodeJS.Timeout;
+  let searchTimeout: ReturnType<typeof setTimeout>;
+  let suggestTimeout: ReturnType<typeof setTimeout>;
 
   searchInput.addEventListener(
     "input",
@@ -83,7 +83,7 @@ export async function searchAndSuggest(query: string) {
     response = null;
   }
 
-  if (!response || !response.history) {
+  if (!response?.history) {
     resultsList.innerHTML =
       "<li class='spotlight-result-item-ext'>Could not search history. Fetching web suggestions...</li>";
     return;
@@ -154,7 +154,7 @@ export async function updateSuggestion(query: string) {
   const hasPath = lowerCaseQuery.includes("/");
 
   for (const res of suggestions) {
-    if (!res.url || !res.url.startsWith("http")) continue;
+    if (!res.url?.startsWith("http")) continue;
 
     let url: URL;
     try {
