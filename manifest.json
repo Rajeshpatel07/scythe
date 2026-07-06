@@ -52,9 +52,6 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "src/core/styles/style.css",
-        "src/core/styles/tabs.css",
-        "src/core/styles/glance.css",
         "src/assets/icon48.png",
         "src/assets/search-engine-logos/*"
       ],
