@@ -53,7 +53,7 @@ export function hideSpotlight() {
   setTimeout(() => {
     config.isSpotlightOpen = false;
     removeHost();
-  }, 250);
+  }, 280);
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {

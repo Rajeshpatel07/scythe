@@ -4,23 +4,23 @@
 }
 
 @keyframes spotlight-overlay-in {
-  from { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-  to { opacity: 1; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  from { background-color: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  to { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 }
 
 @keyframes spotlight-overlay-out {
-  from { opacity: 1; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  to { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  from { background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  to { background-color: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
 }
 
 @keyframes spotlight-modal-in {
-  from { transform: translateY(-20px) scale(0.97); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from { transform: scale(0.92) translateY(15px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 @keyframes spotlight-modal-out {
-  from { transform: translateY(0) scale(1); opacity: 1; }
-  to { transform: translateY(-20px) scale(0.97); opacity: 0; }
+  from { transform: scale(1) translateY(0); opacity: 1; }
+  to { transform: scale(0.92) translateY(15px); opacity: 0; }
 }
 
 #spotlight-overlay-ext {
@@ -29,18 +29,20 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   z-index: 9999;
   font-family: sans-serif;
 
-  animation: spotlight-overlay-in 0.2s ease forwards;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  animation: spotlight-overlay-in 0.25s ease forwards;
 }
 
 #spotlight-overlay-ext.closing {
-  animation: spotlight-overlay-out 0.2s ease forwards;
+  animation: spotlight-overlay-out 0.25s ease forwards;
 }
 
 #spotlight-modal-ext {
@@ -54,7 +56,10 @@
   border: 1px solid #4a4a4a1a;
   overflow: hidden;
 
-  animation: spotlight-modal-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: scale(0.92) translateY(15px);
+  opacity: 0;
+  animation: spotlight-modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.05s;
 }
 
 #spotlight-overlay-ext.closing #spotlight-modal-ext {

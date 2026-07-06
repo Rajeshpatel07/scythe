@@ -1,11 +1,11 @@
 @keyframes glance-overlay-in {
   from {
-    opacity: 0;
+    background-color: rgba(0, 0, 0, 0);
     backdrop-filter: blur(0px) saturate(100%);
     -webkit-backdrop-filter: blur(0px) saturate(100%);
   }
   to {
-    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(8px) saturate(120%);
     -webkit-backdrop-filter: blur(8px) saturate(120%);
   }
@@ -13,12 +13,12 @@
 
 @keyframes glance-overlay-out {
   from {
-    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(8px) saturate(120%);
     -webkit-backdrop-filter: blur(8px) saturate(120%);
   }
   to {
-    opacity: 0;
+    background-color: rgba(0, 0, 0, 0);
     backdrop-filter: blur(0px) saturate(100%);
     -webkit-backdrop-filter: blur(0px) saturate(100%);
   }
@@ -52,7 +52,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0);
   z-index: 2147483647;
   display: flex;
   justify-content: center;
@@ -60,6 +60,8 @@
 
   overflow: hidden;
 
+  backdrop-filter: blur(0px) saturate(100%);
+  -webkit-backdrop-filter: blur(0px) saturate(100%);
   animation: glance-overlay-in 0.25s ease forwards;
 }
 
@@ -76,6 +78,8 @@
 
   overflow: auto;
 
+  transform: scale(0.92) translateY(15px);
+  opacity: 0;
   animation: glance-frame-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 0.05s;
 }
