@@ -9,4 +9,7 @@ export interface ConfigState {
   tabSelectedIndex: number;
   modifierPressed: boolean;
   isGlanceOpen: boolean;
+  isSpotlightEnabled: boolean;
+  isTabEnabled: boolean;
+  isGlanceEnabled: boolean;
 }

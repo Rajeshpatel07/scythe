@@ -141,20 +141,86 @@ export function showSidebar(body: HTMLBodyElement) {
     engineOptionsList.appendChild(optionItem);
   });
 
+  engineSelectWrapper.appendChild(engineOptionsList);
+  searchEngineSettingControl.appendChild(engineSelectWrapper);
+  searchEngineSettingItem.appendChild(searchEngineSettingControl);
+  settingsContent.appendChild(searchEngineSettingItem);
+
   const togglePageSettings = sidebarItem(
     "Toggle content",
     "hide the content in new tab.",
   );
 
-  const toggleNewTabPage = checkBox();
+  const toggleNewTabPage = checkBox(config.hideNewTab, (isChecked) => {
+    if (isChecked) {
+      storage.sync.set({ ["shownewtab"]: true });
+      config.hideNewTab = true;
+      hidePage();
+    } else {
+      const body = document.body as HTMLBodyElement;
+      body.innerHTML = "";
+      storage.sync.set({ ["shownewtab"]: false });
+      config.hideNewTab = false;
+      createNewTabPage();
+      SidebarSettings();
+    }
+  });
 
-
-  engineSelectWrapper.appendChild(engineOptionsList);
-  searchEngineSettingControl.appendChild(engineSelectWrapper);
-  searchEngineSettingItem.appendChild(searchEngineSettingControl);
-  settingsContent.appendChild(searchEngineSettingItem);
   togglePageSettings.appendChild(toggleNewTabPage);
   settingsContent.appendChild(togglePageSettings);
+
+  const toggleSpotlightSettings = sidebarItem(
+    "Toggle Spotlight",
+    "Enable Spotlight Search",
+  );
+
+  const toggleSpotlight = checkBox(config.isSpotlightEnabled, (isChecked) => {
+    if (isChecked) {
+      storage.sync.set({ ["isSpotlightEnabled"]: true });
+      config.isSpotlightEnabled = true;
+    } else {
+      storage.sync.set({ ["isSpotlightEnabled"]: false });
+      config.isSpotlightEnabled = false;
+    }
+  });
+
+  toggleSpotlightSettings.appendChild(toggleSpotlight);
+  settingsContent.appendChild(toggleSpotlightSettings);
+
+  const toggleTabsSettings = sidebarItem(
+    "Toggle Tab Switcher",
+    "Enable Tab Switcher",
+  );
+
+  const toggleTabs = checkBox(config.isTabEnabled, (isChecked) => {
+    if (isChecked) {
+      storage.sync.set({ ["isTabEnabled"]: true });
+      config.isTabEnabled = true;
+    } else {
+      storage.sync.set({ ["isTabEnabled"]: false });
+      config.isTabEnabled = false;
+    }
+  });
+  toggleTabsSettings.appendChild(toggleTabs);
+  settingsContent.appendChild(toggleTabsSettings);
+
+  const toggleGlanceSettings = sidebarItem(
+    "Toggle Glance",
+    "Enable Glance(Link Preview)",
+  );
+
+  const toggleGlance = checkBox(config.isGlanceEnabled, (isChecked) => {
+    if (isChecked) {
+      storage.sync.set({ ["isGlanceEnabled"]: true });
+      config.isGlanceEnabled = true;
+    } else {
+      storage.sync.set({ ["isGlanceEnabled"]: false });
+      config.isGlanceEnabled = false;
+    }
+  });
+  toggleGlanceSettings.appendChild(toggleGlance);
+  settingsContent.appendChild(toggleGlanceSettings);
+
   settingsModal.appendChild(settingsContent);
 
   body.appendChild(settingsModal);
@@ -164,7 +230,10 @@ export function showSidebar(body: HTMLBodyElement) {
   body.appendChild(overlayDiv);
 }
 
-export function checkBox() {
+export function checkBox(
+  isEnabled: boolean,
+  handler: (isChecked: boolean) => void,
+) {
   const toggleControl = document.createElement("div");
   toggleControl.className = "spotlight-setting-control";
   toggleControl.style.display = "flex";
@@ -181,11 +250,11 @@ export function checkBox() {
 
   const toggleCheckbox = document.createElement("input");
   toggleCheckbox.type = "checkbox";
-  toggleCheckbox.id = "spotlight-newtab-toggle";
+  toggleCheckbox.id = "spotlight-toggle";
   toggleCheckbox.style.opacity = "0";
   toggleCheckbox.style.width = "0";
   toggleCheckbox.style.height = "0";
-  toggleCheckbox.checked = config.hideNewTab;
+  toggleCheckbox.checked = isEnabled;
 
   const slider = document.createElement("span");
   slider.style.position = "absolute";
@@ -193,7 +262,7 @@ export function checkBox() {
   slider.style.left = "0";
   slider.style.right = "0";
   slider.style.bottom = "0";
-  slider.style.backgroundColor = config.hideNewTab ? "#10b981" : "#52525b";
+  slider.style.backgroundColor = isEnabled ? "#10b981" : "#52525b";
   slider.style.transition = "background-color 0.25s ease-in-out";
   slider.style.borderRadius = "24px";
   slider.style.boxShadow = "inset 0 1px 2px rgba(0, 0, 0, 0.1)";
@@ -202,7 +271,7 @@ export function checkBox() {
   circle.style.position = "absolute";
   circle.style.height = "18px";
   circle.style.width = "18px";
-  circle.style.left = config.hideNewTab? "23px" : "3px";
+  circle.style.left = isEnabled ? "23px" : "3px";
   circle.style.bottom = "3px";
   circle.style.backgroundColor = "#ffffff";
   circle.style.transition = "left 0.25s ease-in-out, transform 0.25s ease";
@@ -219,21 +288,7 @@ export function checkBox() {
 
     slider.style.backgroundColor = isChecked ? "#10b981" : "#52525b";
     circle.style.left = isChecked ? "23px" : "3px";
-
-    if (isChecked) {
-      // localStorage.setItem("shownewtab", "true");
-      storage.sync.set({ ["shownewtab"]: true });
-      config.hideNewTab= true;
-      hidePage();
-    } else {
-      const body = document.body as HTMLBodyElement;
-      body.innerHTML = "";
-      // localStorage.setItem("shownewtab", "false");
-      storage.sync.set({ ["shownewtab"]: false });
-      config.hideNewTab = false;
-      createNewTabPage();
-      SidebarSettings();
-    }
+    handler(isChecked);
   };
 
   return toggleControl;

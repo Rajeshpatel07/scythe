@@ -1,9 +1,8 @@
-import { config } from "../core/config/config";
+import { config, initializeConfig } from "../core/config/config";
 import { confirmSelection } from "../features/tab-switcher/handlers/selection.handler";
 import { handleWebSearch } from "../features/spotlight/services/search.service";
 import { handleGlobalKeys } from "../core/handlers/keyboard.router";
 import { openGlanceModal } from "../features/glance/components/glance.component";
-import { storage } from "../core/storage/storage.utils";
 
 document.addEventListener(
   "click",
@@ -13,7 +12,8 @@ document.addEventListener(
         if (
           !config.isGlanceOpen &&
           !config.isTabOpen &&
-          !config.isSpotlightOpen
+          !config.isSpotlightOpen &&
+          config.isGlanceEnabled
         ) {
           //@ts-expect-error
           const link = event?.target.closest("a");
@@ -57,11 +57,7 @@ window.addEventListener(
   { capture: true },
 );
 
-storage.sync.get<string>(["searchEngine"]).then((result) => {
-  if (result?.searchEngine) {
-    config.searchEngine = result.searchEngine;
-  }
-});
+initializeConfig();
 
 chrome.runtime.onMessage.addListener(
   async (request, _sender, _sendResponse) => {
@@ -70,7 +66,8 @@ chrome.runtime.onMessage.addListener(
         if (
           !config.isSpotlightOpen &&
           !config.isTabOpen &&
-          !config.isGlanceOpen
+          !config.isGlanceOpen &&
+          config.isSpotlightEnabled
         ) {
           config.openNewtab = true;
           config.isSpotlightOpen = true;

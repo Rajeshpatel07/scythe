@@ -31,7 +31,8 @@ export function handleGlobalKeys(e: KeyboardEvent) {
       isModifier &&
       e.code === "Space" &&
       !config.isSpotlightOpen &&
-      !config.isGlanceOpen
+      !config.isGlanceOpen &&
+      config.isTabEnabled
     ) {
       e.preventDefault();
 

@@ -7,7 +7,7 @@ function getFaviconFallbackUrl(url: string): string {
   if (!havePrefix) url = `https://${url}`;
   try {
     hostname = new URL(url).hostname;
-  } catch (_e) { }
+  } catch (_e) {}
   return `https://www.google.com/s2/favicons?domain_url=https://${hostname}`;
 }
 
