@@ -7,8 +7,8 @@ function getFaviconFallbackUrl(url: string): string {
   if (!havePrefix) url = `https://${url}`;
   try {
     hostname = new URL(url).hostname;
-  } catch (_e) {}
-  return `https://favicon.is/${hostname}`;
+  } catch (_e) { }
+  return `https://www.google.com/s2/favicons?domain_url=https://${hostname}`;
 }
 
 export function loadFaviconFromCache(
@@ -33,7 +33,7 @@ export async function getHighResFallback(
   url: string,
 ): Promise<{ status: string; dataUrl: string | null }> {
   try {
-    const imgUrl = `https://favicon.vemetric.com/${url}?size=128&format=webp`;
+    const imgUrl = `https://www.google.com/s2/favicons?sz=128&domain_url=https://${url}`;
     const response = await fetch(imgUrl);
     if (!response.ok) {
       return { status: "failed", dataUrl: null };
