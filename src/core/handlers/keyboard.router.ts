@@ -12,7 +12,7 @@ import { config } from "../config/config";
 import { getSearchInput } from "../utils/dom.utils";
 import { getHostRoot } from "../utils/host.utils";
 
-export function handleGlobalKeys(e: KeyboardEvent) {
+export function handleGlobalKeys(e: KeyboardEvent): void {
   try {
     if (e.key === "Escape" && config.isGlanceOpen) {
       e.stopImmediatePropagation();
@@ -90,7 +90,8 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     } else if (e.key === "Enter") {
       handleEnter();
     }
-  } catch {
-    // ignore
+  } catch (err) {
+    // biome-ignore lint/suspicious/noConsole: diagnostic logging
+    console.error("handleGlobalKeys error:", err);
   }
 }

@@ -42,7 +42,10 @@ export async function getHighResFallback(
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        resolve({ status: "success", dataUrl: reader.result as string });
+        resolve({
+          status: "success",
+          dataUrl: typeof reader.result === "string" ? reader.result : null,
+        });
       };
       reader.onerror = () => {
         resolve({ status: "failed", dataUrl: null });

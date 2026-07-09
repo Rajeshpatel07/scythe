@@ -82,10 +82,10 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 chrome.runtime.onMessage.addListener(
-  (request: MessagePayload, _sender, sendResponse) => {
+  (request: MessagePayload, sender, sendResponse) => {
     switch (request.action) {
       case "getTabs":
-        chrome.tabs.query({ windowId: _sender.tab?.windowId }, (tabs) => {
+        chrome.tabs.query({ windowId: sender.tab?.windowId }, (tabs) => {
           sendResponse({ tabs: tabs });
         });
         return true;
@@ -158,8 +158,8 @@ chrome.runtime.onMessage.addListener(
         break;
 
       case "openGlance":
-        if (request.url && _sender.tab?.id) {
-          glanceUrlByTab.set(_sender.tab.id, request.url);
+        if (request.url && sender.tab?.id) {
+          glanceUrlByTab.set(sender.tab.id, request.url);
           if (!webNavigationListenerAdded) {
             chrome.webNavigation.onCommitted.addListener(
               onGlanceSubFrameNavigation,
@@ -171,15 +171,15 @@ chrome.runtime.onMessage.addListener(
         return true;
 
       case "closeGlance":
-        if (_sender.tab?.id) {
-          glanceUrlByTab.delete(_sender.tab.id);
+        if (sender.tab?.id) {
+          glanceUrlByTab.delete(sender.tab.id);
         }
         sendResponse({ success: true });
         return true;
 
       case "getGlanceUrl":
-        if (_sender.tab?.id && glanceUrlByTab.has(_sender.tab.id)) {
-          sendResponse({ url: glanceUrlByTab.get(_sender.tab.id) });
+        if (sender.tab?.id && glanceUrlByTab.has(sender.tab.id)) {
+          sendResponse({ url: glanceUrlByTab.get(sender.tab.id) });
         } else {
           sendResponse({ url: null });
         }

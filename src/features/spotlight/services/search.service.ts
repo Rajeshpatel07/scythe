@@ -13,7 +13,7 @@ import { WWW_REGEX } from "../../../core/config/constants";
 
 const suggestionCache = new Map<string, string>();
 
-export function handleWebSearch() {
+export function handleWebSearch(): void {
   createSpotlightUI();
   const root = getHostRoot();
   if (!root) return;
@@ -65,7 +65,7 @@ export function handleSearchSubmit(input: string): void {
   openUrl(url, config.openNewtab);
 }
 
-export async function searchAndSuggest(query: string) {
+export async function searchAndSuggest(query: string): Promise<void> {
   const root = getHostRoot();
   if (!root) return;
 
@@ -104,7 +104,7 @@ export async function searchAndSuggest(query: string) {
   }
 }
 
-export async function updateSuggestion(query: string) {
+export async function updateSuggestion(query: string): Promise<void> {
   const root = getHostRoot();
   if (!root) return;
 

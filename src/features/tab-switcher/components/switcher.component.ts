@@ -13,7 +13,7 @@ import {
   confirmSelection,
 } from "../handlers/selection.handler";
 
-export function createTabsDock() {
+export function createTabsDock(): void {
   const shadowRoot = ensureHost("switcher");
 
   const overlay = document.createElement("div");
@@ -39,7 +39,7 @@ export function createTabsDock() {
   shadowRoot.appendChild(overlay);
 }
 
-export async function renderTabs() {
+export async function renderTabs(): Promise<void> {
   const root = getHostRoot();
   if (!root) return;
 
@@ -69,8 +69,7 @@ export async function renderTabs() {
     const tabItem = document.createElement("div");
     tabItem.classList.add("tab-item");
     tabItem.setAttribute("id", tab.id);
-    //@ts-expect-error
-    tabItem.setAttribute("data-index", index);
+    tabItem.setAttribute("data-index", String(index));
 
     tabItem.setAttribute("data-title", tab.title);
 
@@ -84,9 +83,10 @@ export async function renderTabs() {
     img.setAttribute("data-loading-url", currentTargetUrl);
 
     (async () => {
-      try {
-        if (!document.getElementById("scythe-host")) return;
+      const host = document.getElementById("scythe-host");
+      if (!host) return;
 
+      try {
         const storageKey = `fav_${hostname}`;
         const result = await storage.local.get<string>([storageKey]);
         const cachedDataUrl = result[storageKey];
@@ -119,7 +119,10 @@ export async function renderTabs() {
             });
           }
         }
-      } catch (_error) {}
+      } catch (err) {
+        // biome-ignore lint/suspicious/noConsole: diagnostic logging
+        console.error("Favicon load error:", err);
+      }
     })();
 
     tabItem.appendChild(img);
@@ -136,7 +139,7 @@ export async function renderTabs() {
   config.tabSelectedIndex = activeTabIndex;
 }
 
-export async function openSwitcher(isReverse = false) {
+export async function openSwitcher(isReverse = false): Promise<void> {
   createTabsDock();
   await renderTabs();
 
@@ -157,7 +160,7 @@ export async function openSwitcher(isReverse = false) {
   }
 }
 
-export function closeSwitcher() {
+export function closeSwitcher(): void {
   const root = getHostRoot();
   if (!root) return;
 

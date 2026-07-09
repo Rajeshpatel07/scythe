@@ -17,10 +17,6 @@ export interface ListItems {
   showUrl?: boolean;
 }
 
-export interface StorageResult {
-  storedHistory?: HistoryItem[];
-}
-
 export interface TabItemType {
   id: string;
   url: string;
@@ -30,12 +26,4 @@ export interface TabItemType {
 
 export interface TabsResponse {
   tabs: TabItemType[];
-}
-
-export interface searchEngineInterface {
-  searchEngine: string;
-}
-
-export interface faviconURLInterface {
-  [key: string]: string;
 }

@@ -5,7 +5,7 @@ import {
   getHostRoot,
 } from "../../../core/utils/host.utils";
 
-export function createSpotlightUI() {
+export function createSpotlightUI(): void {
   const shadowRoot = ensureHost("spotlight");
 
   const overlay = document.createElement("div");
@@ -50,7 +50,7 @@ export function createSpotlightUI() {
   forceFocusOnInput(searchInput);
 }
 
-export function hideSpotlight() {
+export function hideSpotlight(): void {
   const root = getHostRoot();
   root?.getElementById("spotlight-overlay-ext")?.classList.add("closing");
 

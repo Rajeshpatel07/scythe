@@ -44,11 +44,15 @@ export async function initializeConfig(): Promise<void> {
       "isGlanceEnabled",
     ]);
 
-    if (result.showNewTab !== undefined) config.hideNewTab = result.showNewTab as boolean;
+    if (result.showNewTab !== undefined)
+      config.hideNewTab = result.showNewTab as boolean;
     config.searchEngine = (result.searchEngine as string) ?? "Google";
-    if (result.isSpotlightEnabled !== undefined) config.isSpotlightEnabled = result.isSpotlightEnabled as boolean;
-    if (result.isTabEnabled !== undefined) config.isTabEnabled = result.isTabEnabled as boolean;
-    if (result.isGlanceEnabled !== undefined) config.isGlanceEnabled = result.isGlanceEnabled as boolean;
+    if (result.isSpotlightEnabled !== undefined)
+      config.isSpotlightEnabled = result.isSpotlightEnabled as boolean;
+    if (result.isTabEnabled !== undefined)
+      config.isTabEnabled = result.isTabEnabled as boolean;
+    if (result.isGlanceEnabled !== undefined)
+      config.isGlanceEnabled = result.isGlanceEnabled as boolean;
   } catch {
     // Storage unavailable; defaults remain
   }

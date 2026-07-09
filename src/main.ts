@@ -1,5 +1,5 @@
 import { createNewTabPage } from "./features/new-tab/components/newtab.component";
-import { SidebarSettings } from "./features/new-tab/components/sidebar.component";
+import { sidebarSettings } from "./features/new-tab/components/sidebar.component";
 import { config, initializeConfig } from "./core/config/config";
 import { handleWebSearch } from "./features/spotlight/services/search.service";
 import { confirmSelection } from "./features/tab-switcher/handlers/selection.handler";
@@ -52,10 +52,10 @@ document.addEventListener("click", (event: MouseEvent) => {
 document.addEventListener("DOMContentLoaded", async () => {
   await initializeConfig();
   createNewTabPage();
-  SidebarSettings();
+  sidebarSettings();
 });
 
-export function showSpotlight() {
+export function showSpotlight(): void {
   if (
     !config.isSpotlightOpen &&
     !config.isTabOpen &&

@@ -6,30 +6,24 @@ import { openGlanceModal } from "../features/glance/components/glance.component"
 
 document.addEventListener(
   "click",
-  (event) => {
-    try {
-      if (event.altKey) {
-        if (
-          !config.isGlanceOpen &&
-          !config.isTabOpen &&
-          !config.isSpotlightOpen &&
-          config.isGlanceEnabled
-        ) {
-          const link = (event.target as Element).closest("a");
-
-          if (link?.href) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            config.isGlanceOpen = true;
-            openGlanceModal(link.href);
-            return;
-          }
-        }
-      }
-    } catch {
-      // ignore
+  (event: MouseEvent) => {
+    if (!event.altKey) return;
+    if (
+      config.isGlanceOpen ||
+      config.isTabOpen ||
+      config.isSpotlightOpen ||
+      !config.isGlanceEnabled
+    ) {
+      return;
     }
+
+    const link = (event.target as Element | null)?.closest("a");
+    if (!link?.href) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    config.isGlanceOpen = true;
+    openGlanceModal(link.href);
   },
   true,
 );
@@ -38,19 +32,15 @@ window.addEventListener("keydown", handleGlobalKeys, { capture: true });
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
-    try {
-      if (config.isSpotlightOpen || config.isTabOpen) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        if (e.key === "Meta" || e.key === "Control") {
-          config.modifierPressed = false;
-          if (config.isTabOpen) {
-            confirmSelection();
-          }
-        }
+    if (!config.isSpotlightOpen && !config.isTabOpen) return;
+
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    if (e.key === "Meta" || e.key === "Control") {
+      config.modifierPressed = false;
+      if (config.isTabOpen) {
+        confirmSelection();
       }
-    } catch {
-      // ignore
     }
   },
   { capture: true },
@@ -58,24 +48,17 @@ window.addEventListener(
 
 initializeConfig();
 
-chrome.runtime.onMessage.addListener(
-  async (request, _sender, _sendResponse) => {
-    try {
-      if (request.action === "toggleSpotlight") {
-        if (
-          !config.isSpotlightOpen &&
-          !config.isTabOpen &&
-          !config.isGlanceOpen &&
-          config.isSpotlightEnabled
-        ) {
-          config.openNewtab = true;
-          config.isSpotlightOpen = true;
-          handleWebSearch();
-        }
-        return;
-      }
-    } catch {
-      // ignore
+chrome.runtime.onMessage.addListener((request) => {
+  if (request.action === "toggleSpotlight") {
+    if (
+      !config.isSpotlightOpen &&
+      !config.isTabOpen &&
+      !config.isGlanceOpen &&
+      config.isSpotlightEnabled
+    ) {
+      config.openNewtab = true;
+      config.isSpotlightOpen = true;
+      handleWebSearch();
     }
-  },
-);
+  }
+});

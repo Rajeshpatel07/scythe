@@ -3,19 +3,21 @@ import { getHostRoot } from "../../../core/utils/host.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { closeSwitcher } from "../components/switcher.component";
 
-export function updateSelection(index: number) {
+export function updateSelection(index: number): void {
   const root = getHostRoot();
   if (!root) return;
 
-  const tabTitle = root.getElementById("active-tab-title") as HTMLDivElement;
+  const tabTitle = root.getElementById(
+    "active-tab-title",
+  ) as HTMLDivElement | null;
+  if (!tabTitle) return;
 
   config.tabSelectedIndex = index;
   const items = root.querySelectorAll(".tab-item");
   items.forEach((item, idx) => {
     if (idx === index) {
       item.classList.add("selected");
-      //@ts-expect-error
-      tabTitle.textContent = item.attributes["data-title"].value;
+      tabTitle.textContent = item.getAttribute("data-title");
       item.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
@@ -27,7 +29,7 @@ export function updateSelection(index: number) {
   });
 }
 
-export function confirmSelection() {
+export function confirmSelection(): void {
   const root = getHostRoot();
   if (!root) return;
 

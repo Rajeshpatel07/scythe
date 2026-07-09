@@ -9,7 +9,7 @@ import {
 } from "../../../core/utils/dom.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 
-export function handleEnter() {
+export function handleEnter(): void {
   const searchInput = getSearchInput();
   if (!searchInput) return;
 
@@ -26,13 +26,11 @@ export function handleEnter() {
   }
 }
 
-export function handleArrowNavigation(key: string) {
-  if (key === "ArrowUp" || key === "ArrowDown") {
-    navigateResults(key);
-  }
+export function handleArrowNavigation(key: "ArrowUp" | "ArrowDown"): void {
+  navigateResults(key);
 }
 
-export function handleCtrlEnter() {
+export function handleCtrlEnter(): void {
   const firstItem = getFirstResultItem();
   if (!firstItem) return;
   const url = firstItem.getAttribute("data-url");
@@ -46,7 +44,7 @@ export function handleCtrlEnter() {
   }
 }
 
-export function handleTab() {
+export function handleTab(): void {
   if (!config.currentSuggestion) return;
 
   const searchInput = getSearchInput();

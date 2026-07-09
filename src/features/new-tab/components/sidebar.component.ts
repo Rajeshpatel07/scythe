@@ -2,7 +2,7 @@ import { config } from "../../../core/config/config";
 import { storage } from "../../../core/storage/storage.utils";
 import { createNewTabPage } from "./newtab.component";
 
-export function showSidebar(body: HTMLBodyElement) {
+export function showSidebar(body: HTMLBodyElement): void {
   const header = document.createElement("header");
   header.id = "spotlight-header";
 
@@ -153,25 +153,40 @@ export function showSidebar(body: HTMLBodyElement) {
 
   const toggleNewTabPage = createToggle(config.hideNewTab, (isChecked) => {
     if (isChecked) {
-      storage.sync.set({ "showNewTab": true });
+      storage.sync.set({ showNewTab: true });
       config.hideNewTab = true;
       hidePage();
     } else {
       const body = document.body as HTMLBodyElement;
       body.innerHTML = "";
-      storage.sync.set({ "showNewTab": false });
+      storage.sync.set({ showNewTab: false });
       config.hideNewTab = false;
       createNewTabPage();
-      SidebarSettings();
+      sidebarSettings();
     }
   });
 
   togglePageSettings.appendChild(toggleNewTabPage);
   settingsContent.appendChild(togglePageSettings);
 
-  addFeatureToggle(settingsContent, "Spotlight", "Quick search web", "isSpotlightEnabled");
-  addFeatureToggle(settingsContent, "Tab Switcher", "Quickly switch between open tabs", "isTabEnabled");
-  addFeatureToggle(settingsContent, "Glance", "Preview links without leaving the page", "isGlanceEnabled");
+  addFeatureToggle(
+    settingsContent,
+    "Spotlight",
+    "Quick search web",
+    "isSpotlightEnabled",
+  );
+  addFeatureToggle(
+    settingsContent,
+    "Tab Switcher",
+    "Quickly switch between open tabs",
+    "isTabEnabled",
+  );
+  addFeatureToggle(
+    settingsContent,
+    "Glance",
+    "Preview links without leaving the page",
+    "isGlanceEnabled",
+  );
 
   settingsModal.appendChild(settingsContent);
 
@@ -250,7 +265,7 @@ export function createToggle(
   switchLabel.appendChild(slider);
   toggleControl.appendChild(switchLabel);
 
-  toggleCheckbox.onchange = (e) => {
+  toggleCheckbox.onchange = (e: Event) => {
     const isChecked = (e.target as HTMLInputElement).checked;
 
     slider.style.backgroundColor = isChecked ? "#10b981" : "#52525b";
@@ -276,7 +291,7 @@ export function sidebarItem(label: string, txt: string): HTMLDivElement {
   return host;
 }
 
-export function SidebarSettings() {
+export function sidebarSettings(): void {
   const settingsButton = document.getElementById(
     "spotlight-settings-button",
   ) as HTMLButtonElement;
@@ -324,7 +339,7 @@ export function SidebarSettings() {
   });
 
   // Event Delegation for better performance
-  engineOptionsList?.addEventListener("click", (event) => {
+  engineOptionsList?.addEventListener("click", (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     const option = target.closest(
       ".spotlight-engine-option-item",
@@ -344,7 +359,6 @@ export function SidebarSettings() {
         triggerImg.alt = selectedName;
         triggerSpan.textContent = selectedName;
       }
-      localStorage.setItem("searchEngine", selectedName);
       config.searchEngine = selectedName;
       storage.sync.set({ searchEngine: selectedName });
     }
@@ -353,7 +367,7 @@ export function SidebarSettings() {
   });
 }
 
-export function hidePage() {
+export function hidePage(): void {
   const mainContent = document.getElementById(
     "spotlight-page-container",
   ) as HTMLElement;

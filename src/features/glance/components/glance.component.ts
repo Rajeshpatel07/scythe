@@ -7,7 +7,18 @@ import {
 import { openUrl } from "../../../core/services/navigation.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 
-export function hideGlance() {
+function silenceError(err: unknown): void {
+  if (
+    err instanceof Error &&
+    err.message !==
+      "Could not establish connection. Receiving end does not exist."
+  ) {
+    // biome-ignore lint/suspicious/noConsole: diagnostic logging
+    console.error("glance error:", err);
+  }
+}
+
+export function hideGlance(): void {
   document.body.style.overflow = "";
 
   const root = getHostRoot();
@@ -16,11 +27,11 @@ export function hideGlance() {
   setTimeout(() => {
     config.isGlanceOpen = false;
     removeHost();
-    MessageBroker.send({ action: "closeGlance" }).catch(() => {});
+    MessageBroker.send({ action: "closeGlance" }).catch(silenceError);
   }, 280);
 }
 
-export function openGlanceModal(url: string) {
+export function openGlanceModal(url: string): void {
   const shadowRoot = ensureHost("glance");
 
   document.body.style.overflow = "hidden";
@@ -75,10 +86,10 @@ export function openGlanceModal(url: string) {
   const iframe = document.createElement("iframe");
   iframe.className = "glance-content-frame";
 
-  MessageBroker.send({ action: "openGlance", url }).catch(() => {});
+  MessageBroker.send({ action: "openGlance", url }).catch(silenceError);
 
   MessageBroker.send({ action: "clearSW", url })
-    .catch(() => {})
+    .catch(silenceError)
     .then(() => {
       iframe.src = url;
     });
