@@ -34,27 +34,22 @@ function createConfig(): ConfigState {
 
 export const config = createConfig();
 
-export async function initializeConfig() {
-  await new Promise<void>(async (resolve, _reject) => {
-    try {
-      const newtab = await storage.sync.get<boolean>(["shownewtab"]);
-      config.hideNewTab = newtab.shownewtab;
+export async function initializeConfig(): Promise<void> {
+  try {
+    const result = await storage.sync.get<boolean | string>([
+      "showNewTab",
+      "searchEngine",
+      "isSpotlightEnabled",
+      "isTabEnabled",
+      "isGlanceEnabled",
+    ]);
 
-      const searchEngine = await storage.sync.get<string>(["searchEngine"]);
-      config.searchEngine = searchEngine.searchEngine;
-
-      const spotlight = await storage.sync.get<boolean>(["isSpotlightEnabled"]);
-      config.isSpotlightEnabled = spotlight.isSpotlightEnabled;
-
-      const tabs = await storage.sync.get<boolean>(["isTabEnabled"]);
-      config.isTabEnabled = tabs.isTabEnabled;
-
-      const glance = await storage.sync.get<boolean>(["isGlanceEnabled"]);
-      config.isGlanceEnabled = glance.isGlanceEnabled;
-
-      resolve();
-    } catch (_e) {
-      _reject();
-    }
-  });
+    if (result.showNewTab !== undefined) config.hideNewTab = result.showNewTab as boolean;
+    config.searchEngine = (result.searchEngine as string) ?? "Google";
+    if (result.isSpotlightEnabled !== undefined) config.isSpotlightEnabled = result.isSpotlightEnabled as boolean;
+    if (result.isTabEnabled !== undefined) config.isTabEnabled = result.isTabEnabled as boolean;
+    if (result.isGlanceEnabled !== undefined) config.isGlanceEnabled = result.isGlanceEnabled as boolean;
+  } catch {
+    // Storage unavailable; defaults remain
+  }
 }

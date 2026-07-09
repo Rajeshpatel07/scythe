@@ -2,13 +2,13 @@ import { MessageBroker } from "../messaging/message.broker";
 import { HAS_PROTOCOL_REGEX } from "../config/constants";
 
 function getFaviconFallbackUrl(url: string): string {
-  let hostname = "...";
-  const havePrefix = HAS_PROTOCOL_REGEX.test(url);
-  if (!havePrefix) url = `https://${url}`;
+  const prefixed = HAS_PROTOCOL_REGEX.test(url) ? url : `https://${url}`;
   try {
-    hostname = new URL(url).hostname;
-  } catch (_e) {}
-  return `https://www.google.com/s2/favicons?domain_url=https://${hostname}`;
+    const hostname = new URL(prefixed).hostname;
+    return `https://www.google.com/s2/favicons?domain_url=https://${hostname}`;
+  } catch {
+    return `https://www.google.com/s2/favicons?domain_url=https://${url}`;
+  }
 }
 
 export function loadFaviconFromCache(

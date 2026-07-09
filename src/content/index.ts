@@ -15,8 +15,7 @@ document.addEventListener(
           !config.isSpotlightOpen &&
           config.isGlanceEnabled
         ) {
-          //@ts-expect-error
-          const link = event?.target.closest("a");
+          const link = (event.target as Element).closest("a");
 
           if (link?.href) {
             event.preventDefault();

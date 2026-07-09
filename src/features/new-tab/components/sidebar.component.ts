@@ -147,19 +147,19 @@ export function showSidebar(body: HTMLBodyElement) {
   settingsContent.appendChild(searchEngineSettingItem);
 
   const togglePageSettings = sidebarItem(
-    "Toggle content",
-    "hide the content in new tab.",
+    "Page Content",
+    "Show or hide content on the new tab page",
   );
 
-  const toggleNewTabPage = checkBox(config.hideNewTab, (isChecked) => {
+  const toggleNewTabPage = createToggle(config.hideNewTab, (isChecked) => {
     if (isChecked) {
-      storage.sync.set({ ["shownewtab"]: true });
+      storage.sync.set({ "showNewTab": true });
       config.hideNewTab = true;
       hidePage();
     } else {
       const body = document.body as HTMLBodyElement;
       body.innerHTML = "";
-      storage.sync.set({ ["shownewtab"]: false });
+      storage.sync.set({ "showNewTab": false });
       config.hideNewTab = false;
       createNewTabPage();
       SidebarSettings();
@@ -169,57 +169,9 @@ export function showSidebar(body: HTMLBodyElement) {
   togglePageSettings.appendChild(toggleNewTabPage);
   settingsContent.appendChild(togglePageSettings);
 
-  const toggleSpotlightSettings = sidebarItem(
-    "Toggle Spotlight",
-    "Enable Spotlight Search",
-  );
-
-  const toggleSpotlight = checkBox(config.isSpotlightEnabled, (isChecked) => {
-    if (isChecked) {
-      storage.sync.set({ ["isSpotlightEnabled"]: true });
-      config.isSpotlightEnabled = true;
-    } else {
-      storage.sync.set({ ["isSpotlightEnabled"]: false });
-      config.isSpotlightEnabled = false;
-    }
-  });
-
-  toggleSpotlightSettings.appendChild(toggleSpotlight);
-  settingsContent.appendChild(toggleSpotlightSettings);
-
-  const toggleTabsSettings = sidebarItem(
-    "Toggle Tab Switcher",
-    "Enable Tab Switcher",
-  );
-
-  const toggleTabs = checkBox(config.isTabEnabled, (isChecked) => {
-    if (isChecked) {
-      storage.sync.set({ ["isTabEnabled"]: true });
-      config.isTabEnabled = true;
-    } else {
-      storage.sync.set({ ["isTabEnabled"]: false });
-      config.isTabEnabled = false;
-    }
-  });
-  toggleTabsSettings.appendChild(toggleTabs);
-  settingsContent.appendChild(toggleTabsSettings);
-
-  const toggleGlanceSettings = sidebarItem(
-    "Toggle Glance",
-    "Enable Glance(Link Preview)",
-  );
-
-  const toggleGlance = checkBox(config.isGlanceEnabled, (isChecked) => {
-    if (isChecked) {
-      storage.sync.set({ ["isGlanceEnabled"]: true });
-      config.isGlanceEnabled = true;
-    } else {
-      storage.sync.set({ ["isGlanceEnabled"]: false });
-      config.isGlanceEnabled = false;
-    }
-  });
-  toggleGlanceSettings.appendChild(toggleGlance);
-  settingsContent.appendChild(toggleGlanceSettings);
+  addFeatureToggle(settingsContent, "Spotlight", "Quick search web", "isSpotlightEnabled");
+  addFeatureToggle(settingsContent, "Tab Switcher", "Quickly switch between open tabs", "isTabEnabled");
+  addFeatureToggle(settingsContent, "Glance", "Preview links without leaving the page", "isGlanceEnabled");
 
   settingsModal.appendChild(settingsContent);
 
@@ -230,10 +182,25 @@ export function showSidebar(body: HTMLBodyElement) {
   body.appendChild(overlayDiv);
 }
 
-export function checkBox(
+function addFeatureToggle(
+  container: HTMLElement,
+  label: string,
+  description: string,
+  configKey: "isSpotlightEnabled" | "isTabEnabled" | "isGlanceEnabled",
+): void {
+  const settingsItem = sidebarItem(label, description);
+  const toggle = createToggle(config[configKey], (isChecked) => {
+    storage.sync.set({ [configKey]: isChecked });
+    config[configKey] = isChecked;
+  });
+  settingsItem.appendChild(toggle);
+  container.appendChild(settingsItem);
+}
+
+export function createToggle(
   isEnabled: boolean,
   handler: (isChecked: boolean) => void,
-) {
+): HTMLDivElement {
   const toggleControl = document.createElement("div");
   toggleControl.className = "spotlight-setting-control";
   toggleControl.style.display = "flex";
@@ -294,7 +261,7 @@ export function checkBox(
   return toggleControl;
 }
 
-export function sidebarItem(label: string, txt: string) {
+export function sidebarItem(label: string, txt: string): HTMLDivElement {
   const host = document.createElement("div");
   host.className = "spotlight-setting-item";
   const settingDetails = document.createElement("div");

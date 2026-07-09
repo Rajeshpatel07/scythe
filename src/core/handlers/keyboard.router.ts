@@ -62,7 +62,6 @@ export function handleGlobalKeys(e: KeyboardEvent) {
     if (!root || !searchInput) return;
 
     if (e.key === "/" || e.key === "Escape" || e.key === "Tab") {
-      e.stopPropagation();
       e.stopImmediatePropagation();
       e.preventDefault();
 
@@ -82,7 +81,6 @@ export function handleGlobalKeys(e: KeyboardEvent) {
       searchInput.focus();
     }
 
-    e.stopPropagation();
     e.stopImmediatePropagation();
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault();
