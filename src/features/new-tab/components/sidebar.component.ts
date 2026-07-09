@@ -146,6 +146,25 @@ export function showSidebar(body: HTMLBodyElement) {
     "hide the content in new tab.",
   );
 
+  const toggleNewTabPage = checkBox();
+
+
+  engineSelectWrapper.appendChild(engineOptionsList);
+  searchEngineSettingControl.appendChild(engineSelectWrapper);
+  searchEngineSettingItem.appendChild(searchEngineSettingControl);
+  settingsContent.appendChild(searchEngineSettingItem);
+  togglePageSettings.appendChild(toggleNewTabPage);
+  settingsContent.appendChild(togglePageSettings);
+  settingsModal.appendChild(settingsContent);
+
+  body.appendChild(settingsModal);
+
+  const overlayDiv = document.createElement("div");
+  overlayDiv.id = "spotlight-overlay";
+  body.appendChild(overlayDiv);
+}
+
+export function checkBox() {
   const toggleControl = document.createElement("div");
   toggleControl.className = "spotlight-setting-control";
   toggleControl.style.display = "flex";
@@ -166,7 +185,7 @@ export function showSidebar(body: HTMLBodyElement) {
   toggleCheckbox.style.opacity = "0";
   toggleCheckbox.style.width = "0";
   toggleCheckbox.style.height = "0";
-  toggleCheckbox.checked = config.shownewtab;
+  toggleCheckbox.checked = config.hideNewTab;
 
   const slider = document.createElement("span");
   slider.style.position = "absolute";
@@ -174,7 +193,7 @@ export function showSidebar(body: HTMLBodyElement) {
   slider.style.left = "0";
   slider.style.right = "0";
   slider.style.bottom = "0";
-  slider.style.backgroundColor = config.shownewtab ? "#10b981" : "#52525b";
+  slider.style.backgroundColor = config.hideNewTab ? "#10b981" : "#52525b";
   slider.style.transition = "background-color 0.25s ease-in-out";
   slider.style.borderRadius = "24px";
   slider.style.boxShadow = "inset 0 1px 2px rgba(0, 0, 0, 0.1)";
@@ -183,7 +202,7 @@ export function showSidebar(body: HTMLBodyElement) {
   circle.style.position = "absolute";
   circle.style.height = "18px";
   circle.style.width = "18px";
-  circle.style.left = config.shownewtab ? "23px" : "3px";
+  circle.style.left = config.hideNewTab? "23px" : "3px";
   circle.style.bottom = "3px";
   circle.style.backgroundColor = "#ffffff";
   circle.style.transition = "left 0.25s ease-in-out, transform 0.25s ease";
@@ -202,32 +221,22 @@ export function showSidebar(body: HTMLBodyElement) {
     circle.style.left = isChecked ? "23px" : "3px";
 
     if (isChecked) {
-      localStorage.setItem("shownewtab", "true");
-      config.shownewtab = true;
+      // localStorage.setItem("shownewtab", "true");
+      storage.sync.set({ ["shownewtab"]: true });
+      config.hideNewTab= true;
       hidePage();
     } else {
       const body = document.body as HTMLBodyElement;
       body.innerHTML = "";
-      localStorage.setItem("shownewtab", "false");
-      config.shownewtab = false;
+      // localStorage.setItem("shownewtab", "false");
+      storage.sync.set({ ["shownewtab"]: false });
+      config.hideNewTab = false;
       createNewTabPage();
       SidebarSettings();
     }
   };
 
-  engineSelectWrapper.appendChild(engineOptionsList);
-  searchEngineSettingControl.appendChild(engineSelectWrapper);
-  searchEngineSettingItem.appendChild(searchEngineSettingControl);
-  settingsContent.appendChild(searchEngineSettingItem);
-  togglePageSettings.appendChild(toggleControl);
-  settingsContent.appendChild(togglePageSettings);
-  settingsModal.appendChild(settingsContent);
-
-  body.appendChild(settingsModal);
-
-  const overlayDiv = document.createElement("div");
-  overlayDiv.id = "spotlight-overlay";
-  body.appendChild(overlayDiv);
+  return toggleControl;
 }
 
 export function sidebarItem(label: string, txt: string) {

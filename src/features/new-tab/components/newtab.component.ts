@@ -6,7 +6,7 @@ export function createNewTabPage() {
   const body = document.body as HTMLBodyElement;
   body.id = "spotlight-body";
 
-  if (!config.shownewtab) {
+  if (!config.hideNewTab) {
     const pageContainer = newtabPageContent();
     showSidebar(body);
     body.appendChild(pageContainer);

@@ -6,14 +6,8 @@ function createConfig(): ConfigState {
     currentSuggestion: "",
     isSpotlightOpen: false,
     openNewtab: false,
-    searchEngine:
-      typeof localStorage !== "undefined"
-        ? localStorage.getItem("searchEngine")
-        : null,
-    shownewtab:
-      typeof localStorage !== "undefined"
-        ? localStorage.getItem("shownewtab") === "true"
-        : false,
+    searchEngine: "Google",
+    hideNewTab: false,
     isTabOpen: false,
     tabSelectedIndex: 0,
     modifierPressed: false,
