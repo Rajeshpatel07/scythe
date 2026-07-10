@@ -1,6 +1,6 @@
 import { config } from "../../../core/config/config";
 import { storage } from "../../../core/storage/storage.utils";
-import { createNewTabPage } from "./newtab.component";
+
 
 export function showSidebar(body: HTMLBodyElement): void {
   const header = document.createElement("header");
@@ -157,14 +157,15 @@ export function showSidebar(body: HTMLBodyElement): void {
       config.hideNewTab = true;
       hidePage();
     } else {
-      const body = document.body as HTMLBodyElement;
-      body.innerHTML = "";
       storage.sync.set({ showNewTab: false });
       config.hideNewTab = false;
-      createNewTabPage();
-      sidebarSettings();
+      const pageContainer = document.getElementById("spotlight-page-container");
+      if (pageContainer) {
+        pageContainer.style.display = "";
+      }
     }
   });
+
 
   togglePageSettings.appendChild(toggleNewTabPage);
   settingsContent.appendChild(togglePageSettings);

@@ -6,12 +6,12 @@ export function createNewTabPage() {
   const body = document.body as HTMLBodyElement;
   body.id = "spotlight-body";
 
-  if (!config.hideNewTab) {
-    const pageContainer = newtabPageContent();
-    showSidebar(body);
-    body.appendChild(pageContainer);
-  } else {
-    showSidebar(body);
+  const pageContainer = newtabPageContent();
+  showSidebar(body);
+  body.appendChild(pageContainer);
+
+  if (config.hideNewTab) {
+    pageContainer.style.display = "none";
   }
 }
 
