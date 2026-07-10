@@ -95,17 +95,19 @@ export function showSidebar(body: HTMLBodyElement): void {
   engineSelectTrigger.id = "spotlight-engine-trigger";
 
   const defaultEngineImg = document.createElement("img");
-  const engine = engines.find((e) => config.searchEngine === e.name);
+  const currentEngineVal = config.searchEngine?.toLowerCase() || "google";
+  const engine = engines.find((e) => currentEngineVal === e.value);
 
   defaultEngineImg.src = engine
     ? engine.favicon
-    : "https://svgl.app/library/google.svg";
+    : "src/assets/search-engine-logos/google.svg";
   defaultEngineImg.alt = engine ? engine.name : "Google";
   engineSelectTrigger.appendChild(defaultEngineImg);
 
   const defaultEngineSpan = document.createElement("span");
-  defaultEngineSpan.textContent = config.searchEngine || "Google";
+  defaultEngineSpan.textContent = engine ? engine.name : "Google";
   engineSelectTrigger.appendChild(defaultEngineSpan);
+
 
   const dropdownArrow = document.createElement("svg");
   dropdownArrow.setAttribute("xmlns", "http://www.w3.org/2000/svg");
@@ -354,10 +356,11 @@ export function sidebarSettings(): void {
 
     if (!option) return;
 
+    const selectedVal = option.getAttribute("data-value");
     const selectedImgSrc = option.querySelector("img")?.src;
     const selectedName = option.querySelector("span")?.textContent;
 
-    if (selectedName && selectedImgSrc) {
+    if (selectedVal && selectedName && selectedImgSrc) {
       // Update the trigger button's content
       const triggerImg = engineTrigger.querySelector("img");
       const triggerSpan = engineTrigger.querySelector("span");
@@ -366,8 +369,8 @@ export function sidebarSettings(): void {
         triggerImg.alt = selectedName;
         triggerSpan.textContent = selectedName;
       }
-      config.searchEngine = selectedName;
-      storage.sync.set({ searchEngine: selectedName });
+      config.searchEngine = selectedVal;
+      storage.sync.set({ searchEngine: selectedVal });
     }
     // Close the dropdown
     engineOptionsList.classList.remove("spotlight-open");

@@ -7,7 +7,7 @@ function createConfig(): ConfigState {
     currentSuggestion: "",
     isSpotlightOpen: false,
     openNewtab: false,
-    searchEngine: "Google",
+    searchEngine: "google",
     hideNewTab: false,
     isTabOpen: false,
     tabSelectedIndex: 0,
@@ -46,7 +46,7 @@ export async function initializeConfig(): Promise<void> {
 
     if (result.showNewTab !== undefined)
       config.hideNewTab = result.showNewTab as boolean;
-    config.searchEngine = (result.searchEngine as string) ?? "Google";
+    config.searchEngine = (result.searchEngine as string)?.toLowerCase() ?? "google";
     if (result.isSpotlightEnabled !== undefined)
       config.isSpotlightEnabled = result.isSpotlightEnabled as boolean;
     if (result.isTabEnabled !== undefined)
@@ -57,3 +57,4 @@ export async function initializeConfig(): Promise<void> {
     // Storage unavailable; defaults remain
   }
 }
+

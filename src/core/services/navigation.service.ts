@@ -8,19 +8,21 @@ import {
 
 export function getSearchUrl(input: string): string {
   const encodedInput = encodeURIComponent(input);
-  switch (config.searchEngine) {
-    case "DuckDuckGo":
+  const engine = config.searchEngine?.toLowerCase() || "google";
+  switch (engine) {
+    case "duckduckgo":
       return `https://duckduckgo.com/?q=${encodedInput}`;
-    case "Brave":
+    case "brave":
       return `https://search.brave.com/search?q=${encodedInput}`;
-    case "Bing":
+    case "bing":
       return `https://www.bing.com/search?q=${encodedInput}`;
-    case "Unduck":
+    case "unduck":
       return `https://unduck.link?q=${encodedInput}`;
     default:
       return `https://www.google.com/search?q=${encodedInput}`;
   }
 }
+
 
 export function resolveUrl(input: string): string {
   const trimmedInput = input.trim();
