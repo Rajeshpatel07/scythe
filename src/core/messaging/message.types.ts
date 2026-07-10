@@ -7,6 +7,7 @@ export type MessageAction =
   | "getHistory"
   | "searchHistory"
   | "getFavicon"
+  | "getHighResFavicon"
   | "createTab"
   | "clearSW"
   | "openGlance"
@@ -35,7 +36,9 @@ export type MessageResponseType<T extends MessageAction> = T extends "getTabs"
       ? HistoryResponse
       : T extends "getFavicon"
         ? FaviconResponse
-        : T extends "createTab"
+        : T extends "getHighResFavicon"
+          ? FaviconResponse
+          : T extends "createTab"
           ? { success: true }
           : T extends "getGlanceUrl"
             ? { url: string | null }

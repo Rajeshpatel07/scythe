@@ -33,26 +33,15 @@ export async function getHighResFallback(
   url: string,
 ): Promise<{ status: string; dataUrl: string | null }> {
   try {
-    const imgUrl = `https://www.google.com/s2/favicons?sz=128&domain_url=https://${url}`;
-    const response = await fetch(imgUrl);
-    if (!response.ok) {
-      return { status: "failed", dataUrl: null };
-    }
-    const blob = await response.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve({
-          status: "success",
-          dataUrl: typeof reader.result === "string" ? reader.result : null,
-        });
-      };
-      reader.onerror = () => {
-        resolve({ status: "failed", dataUrl: null });
-      };
-      reader.readAsDataURL(blob);
+    const response = await MessageBroker.send({
+      action: "getHighResFavicon",
+      url: url,
     });
-  } catch (_err) {
+    return {
+      status: response.status,
+      dataUrl: response.dataUrl,
+    };
+  } catch {
     return { status: "error", dataUrl: null };
   }
 }

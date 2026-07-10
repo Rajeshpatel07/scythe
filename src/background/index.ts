@@ -150,6 +150,37 @@ chrome.runtime.onMessage.addListener(
         return true;
       }
 
+      case "getHighResFavicon": {
+        const hostname = request.url;
+        if (!hostname) {
+          sendResponse({ status: "error", dataUrl: null });
+          return true;
+        }
+        const imgUrl = `https://www.google.com/s2/favicons?sz=128&domain_url=https://${hostname}`;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        fetch(imgUrl, { signal: controller.signal })
+          .then((response) => {
+            if (!response.ok) throw Error("Failed to fetch high-res favicon");
+            return response.blob();
+          })
+          .then((blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              clearTimeout(timeoutId);
+              sendResponse({ status: "success", dataUrl: reader.result as string });
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch(() => {
+            clearTimeout(timeoutId);
+            sendResponse({ status: "error", dataUrl: null });
+          });
+        return true;
+      }
+
       case "createTab":
         if (request.url) {
           chrome.tabs.create({ url: request.url, active: true });
