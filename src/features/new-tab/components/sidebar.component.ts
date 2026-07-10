@@ -158,6 +158,7 @@ export function showSidebar(body: HTMLBodyElement): void {
       storage.sync.set({ showNewTab: true });
       config.hideNewTab = true;
       hidePage();
+      document.body.classList.add("minimal-empty");
     } else {
       storage.sync.set({ showNewTab: false });
       config.hideNewTab = false;
@@ -165,8 +166,10 @@ export function showSidebar(body: HTMLBodyElement): void {
       if (pageContainer) {
         pageContainer.style.display = "";
       }
+      document.body.classList.remove("minimal-empty");
     }
   });
+
 
 
   togglePageSettings.appendChild(toggleNewTabPage);
@@ -220,48 +223,21 @@ export function createToggle(
   handler: (isChecked: boolean) => void,
 ): HTMLDivElement {
   const toggleControl = document.createElement("div");
-  toggleControl.className = "spotlight-setting-control";
-  toggleControl.style.display = "flex";
-  toggleControl.style.alignItems = "center";
-  toggleControl.style.justifyContent = "flex-end";
+  toggleControl.className = "spotlight-toggle-container";
 
   const switchLabel = document.createElement("label");
-  switchLabel.style.position = "relative";
-  switchLabel.style.display = "inline-block";
-  switchLabel.style.width = "44px";
-  switchLabel.style.height = "24px";
-  switchLabel.style.flexShrink = "0";
-  switchLabel.style.cursor = "pointer";
+  switchLabel.className = "spotlight-switch";
 
   const toggleCheckbox = document.createElement("input");
   toggleCheckbox.type = "checkbox";
-  toggleCheckbox.id = "spotlight-toggle";
-  toggleCheckbox.style.opacity = "0";
-  toggleCheckbox.style.width = "0";
-  toggleCheckbox.style.height = "0";
+  toggleCheckbox.className = "spotlight-switch-input";
   toggleCheckbox.checked = isEnabled;
 
   const slider = document.createElement("span");
-  slider.style.position = "absolute";
-  slider.style.top = "0";
-  slider.style.left = "0";
-  slider.style.right = "0";
-  slider.style.bottom = "0";
-  slider.style.backgroundColor = isEnabled ? "#10b981" : "#52525b";
-  slider.style.transition = "background-color 0.25s ease-in-out";
-  slider.style.borderRadius = "24px";
-  slider.style.boxShadow = "inset 0 1px 2px rgba(0, 0, 0, 0.1)";
+  slider.className = "spotlight-switch-slider";
 
   const circle = document.createElement("span");
-  circle.style.position = "absolute";
-  circle.style.height = "18px";
-  circle.style.width = "18px";
-  circle.style.left = isEnabled ? "23px" : "3px";
-  circle.style.bottom = "3px";
-  circle.style.backgroundColor = "#ffffff";
-  circle.style.transition = "left 0.25s ease-in-out, transform 0.25s ease";
-  circle.style.borderRadius = "50%";
-  circle.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.3)";
+  circle.className = "spotlight-switch-thumb";
 
   slider.appendChild(circle);
   switchLabel.appendChild(toggleCheckbox);
@@ -270,9 +246,6 @@ export function createToggle(
 
   toggleCheckbox.onchange = (e: Event) => {
     const isChecked = (e.target as HTMLInputElement).checked;
-
-    slider.style.backgroundColor = isChecked ? "#10b981" : "#52525b";
-    circle.style.left = isChecked ? "23px" : "3px";
     handler(isChecked);
   };
 
