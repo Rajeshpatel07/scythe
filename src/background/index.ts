@@ -12,15 +12,27 @@ function onGlanceSubFrameNavigation(
   details: chrome.webNavigation.WebNavigationTransitionCallbackDetails,
 ) {
   if (details.frameId === 0) return;
-  const origin = details.url ? new URL(details.url).origin : null;
+  let origin: string | null = null;
+  try {
+    origin = details.url ? new URL(details.url).origin : null;
+  } catch {
+    return;
+  }
   if (!origin) return;
 
   const storedUrl = glanceUrlByTab.get(details.tabId);
-  const storedOrigin = storedUrl ? new URL(storedUrl).origin : null;
+  let storedOrigin: string | null = null;
+  try {
+    storedOrigin = storedUrl ? new URL(storedUrl).origin : null;
+  } catch {
+    // Ignore invalid stored URLs
+  }
+
   if (storedOrigin && origin === storedOrigin) {
     glanceUrlByTab.set(details.tabId, details.url);
   }
 }
+
 
 let webNavigationListenerAdded = false;
 

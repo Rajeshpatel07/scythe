@@ -90,7 +90,19 @@ export async function renderTabs(): Promise<void> {
       activeTabIndex = index;
     }
 
-    const newUrl = new URL(tab.url);
+    const currentTargetUrl = tab.url;
+    let hostname = "";
+    let isChromeSchema = false;
+    try {
+      if (currentTargetUrl) {
+        const parsedUrl = new URL(currentTargetUrl);
+        hostname = parsedUrl.hostname;
+        isChromeSchema = parsedUrl.protocol === "chrome:";
+      }
+    } catch {
+      // safe fallback for invalid or empty URLs
+    }
+
     const tabItem = document.createElement("div");
     tabItem.classList.add("tab-item");
     tabItem.setAttribute("id", tab.id);
@@ -101,8 +113,6 @@ export async function renderTabs(): Promise<void> {
     img.classList.add("tab-icon");
     img.alt = tab.title || "";
 
-    const hostname = newUrl.hostname;
-    const currentTargetUrl = tab.url;
     img.setAttribute("data-loading-url", currentTargetUrl);
 
     // Retrieve from our batched cache read
@@ -115,7 +125,7 @@ export async function renderTabs(): Promise<void> {
       // Load fallback extension icon/default favicon first
       loadFaviconFromCache(tab.url, img, 128);
 
-      if (hostname && newUrl.protocol !== "chrome:") {
+      if (hostname && !isChromeSchema) {
         // Fetch high resolution favicon asynchronously
         (async () => {
           try {
