@@ -198,16 +198,18 @@ export async function openSwitcher(isReverse = false): Promise<void> {
 }
 
 export function closeSwitcher(): void {
+  // Disable input routing immediately to prevent race conditions during animation
+  config.isTabOpen = false;
+
   const root = getHostRoot();
   if (!root) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
-  overlay.classList.add("hidden");
+  overlay?.classList.add("hidden");
 
   clearCachedTabItems();
 
   setTimeout(() => {
-    config.isTabOpen = false;
     removeHost();
   }, 280);
 }
