@@ -61,6 +61,29 @@ export async function renderTabs(): Promise<void> {
   container.innerHTML = "";
   const fragment = document.createDocumentFragment();
 
+  // 1. Gather storage keys for all tab hostnames to perform a single batched local storage read
+  const tabHostnames = response.tabs.map((tab) => {
+    try {
+      return new URL(tab.url).hostname;
+    } catch {
+      return "";
+    }
+  });
+
+  const storageKeys = tabHostnames
+    .filter((hostname) => hostname !== "")
+    .map((hostname) => `fav_${hostname}`);
+
+  let cachedFavicons: Record<string, string> = {};
+  if (storageKeys.length > 0) {
+    try {
+      cachedFavicons = await storage.local.get<string>(storageKeys);
+    } catch (err) {
+      console.error("Failed to read storage keys:", err);
+    }
+  }
+
+  // 2. Loop through tabs and construct elements using batched cache
   let activeTabIndex = 0;
   response.tabs.forEach((tab, index) => {
     if (tab.active) {
@@ -72,7 +95,6 @@ export async function renderTabs(): Promise<void> {
     tabItem.classList.add("tab-item");
     tabItem.setAttribute("id", tab.id);
     tabItem.setAttribute("data-index", String(index));
-
     tabItem.setAttribute("data-title", tab.title);
 
     const img = document.createElement("img");
@@ -80,52 +102,49 @@ export async function renderTabs(): Promise<void> {
     img.alt = tab.title || "";
 
     const hostname = newUrl.hostname;
-
     const currentTargetUrl = tab.url;
     img.setAttribute("data-loading-url", currentTargetUrl);
 
-    (async () => {
-      const host = document.getElementById("scythe-host");
-      if (!host) return;
+    // Retrieve from our batched cache read
+    const storageKey = hostname ? `fav_${hostname}` : "";
+    const cachedDataUrl = storageKey ? cachedFavicons[storageKey] : undefined;
 
-      try {
-        const storageKey = `fav_${hostname}`;
-        const result = await storage.local.get<string>([storageKey]);
-        const cachedDataUrl = result[storageKey];
+    if (cachedDataUrl && cachedDataUrl !== "null") {
+      img.src = cachedDataUrl;
+    } else {
+      // Load fallback extension icon/default favicon first
+      loadFaviconFromCache(tab.url, img, 128);
 
-        if (cachedDataUrl && cachedDataUrl !== "null") {
-          img.src = cachedDataUrl;
-          return;
-        }
+      if (hostname && newUrl.protocol !== "chrome:") {
+        // Fetch high resolution favicon asynchronously
+        (async () => {
+          try {
+            const highResResult = await getHighResFallback(hostname);
+            if (!document.getElementById("scythe-host")) return;
 
-        loadFaviconFromCache(tab.url, img, 128);
-        if (newUrl.protocol === "chrome:") return;
+            if (highResResult.status === "success" && highResResult.dataUrl) {
+              if (img.getAttribute("data-loading-url") === currentTargetUrl) {
+                img.style.opacity = "0.4";
+                const src = highResResult.dataUrl;
+                setTimeout(() => {
+                  if (src && document.getElementById("scythe-host")) {
+                     img.src = src;
+                     img.style.opacity = "1";
+                  }
+                }, 60);
 
-        const highResResult = await getHighResFallback(hostname);
-
-        if (!document.getElementById("scythe-host")) return;
-
-        if (highResResult.status === "success" && highResResult.dataUrl) {
-          if (img.getAttribute("data-loading-url") === currentTargetUrl) {
-            img.style.opacity = "0.4";
-            const src = highResResult.dataUrl;
-            setTimeout(() => {
-              if (src && document.getElementById("scythe-host")) {
-                img.src = src;
-                img.style.opacity = "1";
+                // Cache it asynchronously
+                await storage.local.set({
+                  [storageKey]: highResResult.dataUrl,
+                });
               }
-            }, 60);
-
-            await storage.local.set({
-              [storageKey]: highResResult.dataUrl,
-            });
+            }
+          } catch (err) {
+            console.error("High-res favicon load error:", err);
           }
-        }
-      } catch (err) {
-        // biome-ignore lint/suspicious/noConsole: diagnostic logging
-        console.error("Favicon load error:", err);
+         })();
       }
-    })();
+    }
 
     tabItem.appendChild(img);
 
