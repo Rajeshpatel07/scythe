@@ -11,6 +11,8 @@ import { MessageBroker } from "../../../core/messaging/message.broker";
 import {
   updateSelection,
   confirmSelection,
+  setCachedTabItems,
+  clearCachedTabItems,
 } from "../handlers/selection.handler";
 
 export function createTabsDock(): void {
@@ -136,6 +138,12 @@ export async function renderTabs(): Promise<void> {
   });
 
   container.appendChild(fragment);
+
+  const rootForCache = getHostRoot();
+  if (rootForCache) {
+    setCachedTabItems(rootForCache.querySelectorAll(".tab-item"));
+  }
+
   config.tabSelectedIndex = activeTabIndex;
 }
 
@@ -166,6 +174,8 @@ export function closeSwitcher(): void {
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
   overlay.classList.add("hidden");
+
+  clearCachedTabItems();
 
   setTimeout(() => {
     config.isTabOpen = false;

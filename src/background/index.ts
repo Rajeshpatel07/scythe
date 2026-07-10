@@ -3,6 +3,10 @@ import type { MessagePayload } from "../core/messaging/message.types";
 const DNR_RULE_ID = 1;
 
 const glanceUrlByTab = new Map<number, string>();
+const pendingHighResFavicon = new Map<
+  string,
+  Promise<{ status: string; dataUrl: string | null }>
+>();
 
 function onGlanceSubFrameNavigation(
   details: chrome.webNavigation.WebNavigationTransitionCallbackDetails,
@@ -81,6 +85,65 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
+async function fetchFaviconData(
+  pageUrl: string,
+  imgSize: number,
+): Promise<{ status: string; dataUrl: string | null }> {
+  const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(faviconUrl, { signal: controller.signal });
+    if (!response.ok) throw Error();
+    const blob = await response.blob();
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        clearTimeout(timeoutId);
+        resolve(reader.result as string);
+      };
+      reader.onerror = () => {
+        clearTimeout(timeoutId);
+        reject();
+      };
+      reader.readAsDataURL(blob);
+    });
+    return { status: "success", dataUrl };
+  } catch {
+    clearTimeout(timeoutId);
+    return { status: "error", dataUrl: null };
+  }
+}
+
+async function fetchHighResFaviconData(
+  hostname: string,
+): Promise<{ status: string; dataUrl: string | null }> {
+  const imgUrl = `https://www.google.com/s2/favicons?sz=128&domain_url=https://${hostname}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(imgUrl, { signal: controller.signal });
+    if (!response.ok) throw Error();
+    const blob = await response.blob();
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        clearTimeout(timeoutId);
+        resolve(reader.result as string);
+      };
+      reader.onerror = () => {
+        clearTimeout(timeoutId);
+        reject();
+      };
+      reader.readAsDataURL(blob);
+    });
+    return { status: "success", dataUrl };
+  } catch {
+    clearTimeout(timeoutId);
+    return { status: "error", dataUrl: null };
+  }
+}
+
 chrome.runtime.onMessage.addListener(
   (request: MessagePayload, sender, sendResponse) => {
     switch (request.action) {
@@ -125,28 +188,7 @@ chrome.runtime.onMessage.addListener(
           return true;
         }
         const imgSize = request.size || 32;
-        const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        fetch(faviconUrl, { signal: controller.signal })
-          .then((response) => {
-            if (!response.ok) throw Error("Failed to fetch favicon");
-            return response.blob();
-          })
-          .then((blob) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              clearTimeout(timeoutId);
-              sendResponse({ status: "success", dataUrl: reader.result });
-            };
-            reader.readAsDataURL(blob);
-          })
-          .catch(() => {
-            clearTimeout(timeoutId);
-            sendResponse({ status: "error", dataUrl: null });
-          });
+        fetchFaviconData(pageUrl, imgSize).then(sendResponse);
         return true;
       }
 
@@ -156,28 +198,15 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ status: "error", dataUrl: null });
           return true;
         }
-        const imgUrl = `https://www.google.com/s2/favicons?sz=128&domain_url=https://${hostname}`;
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        fetch(imgUrl, { signal: controller.signal })
-          .then((response) => {
-            if (!response.ok) throw Error("Failed to fetch high-res favicon");
-            return response.blob();
-          })
-          .then((blob) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              clearTimeout(timeoutId);
-              sendResponse({ status: "success", dataUrl: reader.result as string });
-            };
-            reader.readAsDataURL(blob);
-          })
-          .catch(() => {
-            clearTimeout(timeoutId);
-            sendResponse({ status: "error", dataUrl: null });
-          });
+        if (!pendingHighResFavicon.has(hostname)) {
+          pendingHighResFavicon.set(
+            hostname,
+            fetchHighResFaviconData(hostname).finally(() =>
+              pendingHighResFavicon.delete(hostname),
+            ),
+          );
+        }
+        pendingHighResFavicon.get(hostname)?.then(sendResponse);
         return true;
       }
 

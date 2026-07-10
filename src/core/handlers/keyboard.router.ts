@@ -7,7 +7,10 @@ import {
   handleTab,
 } from "../../features/spotlight/handlers/keyboard.handler";
 import { openSwitcher } from "../../features/tab-switcher/components/switcher.component";
-import { updateSelection } from "../../features/tab-switcher/handlers/selection.handler";
+import {
+  updateSelection,
+  getTabItemsCount,
+} from "../../features/tab-switcher/handlers/selection.handler";
 import { config } from "../config/config";
 import { getSearchInput } from "../utils/dom.utils";
 import { getHostRoot } from "../utils/host.utils";
@@ -40,11 +43,7 @@ export function handleGlobalKeys(e: KeyboardEvent): void {
         config.isTabOpen = true;
         openSwitcher(e.shiftKey);
       } else {
-        const root = getHostRoot();
-        if (!root) return;
-
-        const items = root.querySelectorAll(".tab-item");
-        const tabsLen = items.length;
+        const tabsLen = getTabItemsCount();
 
         let nextIndex: number;
         if (e.shiftKey) {
@@ -56,6 +55,8 @@ export function handleGlobalKeys(e: KeyboardEvent): void {
       }
       return;
     }
+
+    if (!config.isSpotlightOpen) return;
 
     const root = getHostRoot();
     const searchInput = getSearchInput();

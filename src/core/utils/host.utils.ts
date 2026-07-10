@@ -12,6 +12,8 @@ const featureStyles: Record<Feature, string> = {
   glance: glanceCss,
 };
 
+let cachedRoot: ShadowRoot | null = null;
+
 export function ensureHost(feature: Feature): ShadowRoot {
   let host = document.getElementById(HOST_ID) as HTMLElement | null;
   if (!host) {
@@ -26,9 +28,11 @@ export function ensureHost(feature: Feature): ShadowRoot {
     const style = document.createElement("style");
     style.textContent = featureStyles[feature];
     root.appendChild(style);
+    cachedRoot = root;
     return root;
   }
-  return host.shadowRoot as ShadowRoot;
+  cachedRoot = host.shadowRoot as ShadowRoot;
+  return cachedRoot;
 }
 
 export function removeHost(): void {
@@ -36,9 +40,11 @@ export function removeHost(): void {
   if (host) {
     host.remove();
   }
+  cachedRoot = null;
 }
 
 export function getHostRoot(): ShadowRoot | null {
+  if (cachedRoot) return cachedRoot;
   const host = document.getElementById(HOST_ID);
   return host?.shadowRoot ?? null;
 }

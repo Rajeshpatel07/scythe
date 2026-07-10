@@ -291,6 +291,8 @@ export function sidebarItem(label: string, txt: string): HTMLDivElement {
   return host;
 }
 
+let sidebarKeydownAdded = false;
+
 export function sidebarSettings(): void {
   const settingsButton = document.getElementById(
     "spotlight-settings-button",
@@ -317,14 +319,18 @@ export function sidebarSettings(): void {
 
   closeButton?.addEventListener("click", closeSettings);
   overlay?.addEventListener("click", closeSettings);
-  document.addEventListener("keydown", (event) => {
-    if (
-      settingsModal.classList.contains("spotlight-modal-visible") &&
-      event.key === "Escape"
-    ) {
-      closeSettings();
-    }
-  });
+
+  if (!sidebarKeydownAdded) {
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      const modal = document.getElementById("spotlight-settings-modal");
+      if (!modal?.classList.contains("spotlight-modal-visible")) return;
+      modal.classList.remove("spotlight-modal-visible");
+      const overlayEl = document.getElementById("spotlight-overlay");
+      overlayEl?.classList.remove("spotlight-modal-visible");
+    });
+    sidebarKeydownAdded = true;
+  }
 
   // --- Custom Search Engine Dropdown Logic ---
   const engineTrigger = document.getElementById(
