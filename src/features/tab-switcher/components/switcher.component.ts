@@ -78,8 +78,8 @@ export async function renderTabs(): Promise<void> {
   if (storageKeys.length > 0) {
     try {
       cachedFavicons = await storage.local.get<string>(storageKeys);
-    } catch (err) {
-      console.error("Failed to read storage keys:", err);
+    } catch {
+      // Ignore storage read failures
     }
   }
 
@@ -149,8 +149,8 @@ export async function renderTabs(): Promise<void> {
                 });
               }
             }
-          } catch (err) {
-            console.error("High-res favicon load error:", err);
+          } catch {
+            // Ignore high-res favicon load failures
           }
          })();
       }
