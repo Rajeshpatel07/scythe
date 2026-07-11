@@ -23,7 +23,6 @@ export function getSearchUrl(input: string): string {
   }
 }
 
-
 export function resolveUrl(input: string): string {
   const trimmedInput = input.trim();
   const hasProtocol = HAS_PROTOCOL_REGEX.test(trimmedInput);

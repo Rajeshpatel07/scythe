@@ -21,6 +21,7 @@ export interface MessagePayload {
   maxResults?: number;
   url?: string;
   size?: number;
+  active?: boolean;
 }
 
 export interface FaviconResponse {
@@ -39,7 +40,7 @@ export type MessageResponseType<T extends MessageAction> = T extends "getTabs"
         : T extends "getHighResFavicon"
           ? FaviconResponse
           : T extends "createTab"
-          ? { success: true }
-          : T extends "getGlanceUrl"
-            ? { url: string | null }
-            : undefined;
+            ? { success: true; tabId: number | undefined }
+            : T extends "getGlanceUrl"
+              ? { url: string | null }
+              : undefined;

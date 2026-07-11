@@ -138,8 +138,8 @@ export async function renderTabs(): Promise<void> {
                 const src = highResResult.dataUrl;
                 setTimeout(() => {
                   if (src && document.getElementById("scythe-host")) {
-                     img.src = src;
-                     img.style.opacity = "1";
+                    img.src = src;
+                    img.style.opacity = "1";
                   }
                 }, 60);
 
@@ -152,7 +152,7 @@ export async function renderTabs(): Promise<void> {
           } catch {
             // Ignore high-res favicon load failures
           }
-         })();
+        })();
       }
     }
 

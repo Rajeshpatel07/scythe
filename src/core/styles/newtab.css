@@ -15,14 +15,15 @@ body {
 
 #spotlight-body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   background-color: var(--spotlight-bg);
   color: var(--spotlight-text-primary);
   overflow: hidden;
   position: relative;
   transition: background-color 0.3s ease;
 }
-
 
 #spotlight-body.minimal-empty {
   background-color: #000000;
@@ -126,7 +127,6 @@ body {
   border-color: #3f3f46;
 }
 
-
 #spotlight-search-input::placeholder {
   color: var(--spotlight-text-secondary);
   opacity: 0.8;
@@ -134,7 +134,9 @@ body {
 
 #spotlight-search-input:focus {
   border-color: var(--spotlight-accent);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--spotlight-accent);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 1px var(--spotlight-accent);
   background-color: #1c1c21;
 }
 
@@ -151,7 +153,6 @@ body {
 #spotlight-search-input:focus + .spotlight-search-icon-left {
   color: var(--spotlight-accent);
 }
-
 
 /* Settings Modal Panel */
 #spotlight-settings-modal {
@@ -391,7 +392,9 @@ body {
   background-color: var(--spotlight-accent);
 }
 
-.spotlight-switch-input:checked + .spotlight-switch-slider .spotlight-switch-thumb {
+.spotlight-switch-input:checked
+  + .spotlight-switch-slider
+  .spotlight-switch-thumb {
   transform: translateX(20px);
 }
 

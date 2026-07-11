@@ -43,26 +43,26 @@ export function openGlanceModal(url: string): void {
 
   const actionContainer = document.createElement("div");
   actionContainer.className = "glance-action-container";
+  actionContainer.id = "glance-action-container";
 
   const tabButton = document.createElement("button");
   tabButton.id = "glance-tab-btn";
   tabButton.className = "glance-action-btn glance-btn-primary";
   tabButton.title = "Open in New Tab";
   tabButton.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-      <polyline points="15 3 21 3 21 9"></polyline>
-      <line x1="10" y1="14" x2="21" y2="3"></line>
-    </svg>
+    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 10L21 3M21 3H15M21 3V9M10 14L3 21M3 21H9M3 21L3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+   </svg>
   `;
   tabButton.onclick = () => {
-    hideGlance();
     MessageBroker.send({ action: "getGlanceUrl" })
       .then((response) => {
-        openUrl(response?.url || url, true);
+        openUrlInBackground(response.url || url);
+        // openUrl(response?.url || url, true);
       })
       .catch(() => {
-        openUrl(url, true);
+        // openUrl(url, true);
+        openUrlInBackground(url);
       });
   };
 
@@ -71,10 +71,9 @@ export function openGlanceModal(url: string): void {
   closeButton.className = "glance-action-btn glance-btn-danger";
   closeButton.title = "Close Modal";
   closeButton.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
+<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <path d="M17 7L7 17M7 7L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+ </svg>
   `;
   closeButton.onclick = () => {
     hideGlance();
@@ -85,6 +84,7 @@ export function openGlanceModal(url: string): void {
 
   const iframe = document.createElement("iframe");
   iframe.className = "glance-content-frame";
+  iframe.id = "glance-content-frame";
 
   MessageBroker.send({ action: "openGlance", url }).catch(silenceError);
 
@@ -103,4 +103,43 @@ export function openGlanceModal(url: string): void {
       hideGlance();
     }
   });
+}
+
+export async function openUrlInBackground(url: string) {
+  const root = getHostRoot();
+  const actionContainer = root?.getElementById(
+    "glance-action-container",
+  ) as HTMLDivElement;
+  const iframe = root?.getElementById(
+    "glance-content-frame",
+  ) as HTMLIFrameElement;
+
+  if (actionContainer) {
+    actionContainer.style.display = "none";
+  }
+  if (iframe) {
+    iframe.style.width = "100vw";
+    iframe.style.height = "100vh";
+  }
+
+  try {
+    const response = await MessageBroker.send({
+      action: "createTab",
+      url: url,
+      active: false,
+    });
+
+    if (response?.success && response.tabId) {
+      const tabId = response.tabId;
+      hideGlance();
+      MessageBroker.send({
+        action: "switchTab",
+        id: tabId.toString(),
+      }).catch(silenceError);
+    } else {
+      openUrl(url);
+    }
+  } catch (_e) {
+    openUrl(url);
+  }
 }

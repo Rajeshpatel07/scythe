@@ -46,7 +46,8 @@ export async function initializeConfig(): Promise<void> {
 
     if (result.showNewTab !== undefined)
       config.hideNewTab = result.showNewTab as boolean;
-    config.searchEngine = (result.searchEngine as string)?.toLowerCase() ?? "google";
+    config.searchEngine =
+      (result.searchEngine as string)?.toLowerCase() ?? "google";
     if (result.isSpotlightEnabled !== undefined)
       config.isSpotlightEnabled = result.isSpotlightEnabled as boolean;
     if (result.isTabEnabled !== undefined)
@@ -57,4 +58,3 @@ export async function initializeConfig(): Promise<void> {
     // Storage unavailable; defaults remain
   }
 }
-

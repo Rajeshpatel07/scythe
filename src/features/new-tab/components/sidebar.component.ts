@@ -1,7 +1,6 @@
 import { config } from "../../../core/config/config";
 import { storage } from "../../../core/storage/storage.utils";
 
-
 export function showSidebar(body: HTMLBodyElement): void {
   const header = document.createElement("header");
   header.id = "spotlight-header";
@@ -108,7 +107,6 @@ export function showSidebar(body: HTMLBodyElement): void {
   defaultEngineSpan.textContent = engine ? engine.name : "Google";
   engineSelectTrigger.appendChild(defaultEngineSpan);
 
-
   const dropdownArrow = document.createElement("svg");
   dropdownArrow.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   dropdownArrow.setAttribute("width", "16");
@@ -169,8 +167,6 @@ export function showSidebar(body: HTMLBodyElement): void {
       document.body.classList.remove("minimal-empty");
     }
   });
-
-
 
   togglePageSettings.appendChild(toggleNewTabPage);
   settingsContent.appendChild(togglePageSettings);

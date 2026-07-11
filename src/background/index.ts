@@ -33,7 +33,6 @@ function onGlanceSubFrameNavigation(
   }
 }
 
-
 let webNavigationListenerAdded = false;
 
 async function registerDNRRules() {
@@ -224,8 +223,59 @@ chrome.runtime.onMessage.addListener(
 
       case "createTab":
         if (request.url) {
-          chrome.tabs.create({ url: request.url, active: true });
-          sendResponse({ success: true });
+          chrome.tabs
+            .create({
+              url: request.url,
+              active: request.active,
+            })
+            .then((tab) => {
+              const tabId = tab.id;
+              if (tabId === undefined) {
+                sendResponse({ success: false, tabId: undefined });
+                return;
+              }
+
+              if (request.active) {
+                sendResponse({ success: true, tabId: tabId });
+                return;
+              }
+
+              let resolved = false;
+              const listener = (
+                updatedTabId: number,
+                changeInfo: { status?: string },
+              ) => {
+                if (
+                  updatedTabId === tabId &&
+                  changeInfo.status === "complete"
+                ) {
+                  cleanup();
+                  if (!resolved) {
+                    resolved = true;
+                    sendResponse({ success: true, tabId: tabId });
+                  }
+                }
+              };
+
+              const timeoutId = setTimeout(() => {
+                cleanup();
+                if (!resolved) {
+                  resolved = true;
+                  sendResponse({ success: true, tabId: tabId });
+                }
+              }, 5000);
+
+              const cleanup = () => {
+                chrome.tabs.onUpdated.removeListener(listener);
+                clearTimeout(timeoutId);
+              };
+
+              chrome.tabs.onUpdated.addListener(listener);
+            })
+            .catch(() => {
+              sendResponse({ success: false, tabId: undefined });
+            });
+          return true;
         }
         break;
 
@@ -234,6 +284,12 @@ chrome.runtime.onMessage.addListener(
           glanceUrlByTab.set(sender.tab.id, request.url);
           if (!webNavigationListenerAdded) {
             chrome.webNavigation.onCommitted.addListener(
+              onGlanceSubFrameNavigation,
+            );
+            chrome.webNavigation.onHistoryStateUpdated.addListener(
+              onGlanceSubFrameNavigation,
+            );
+            chrome.webNavigation.onReferenceFragmentUpdated.addListener(
               onGlanceSubFrameNavigation,
             );
             webNavigationListenerAdded = true;
