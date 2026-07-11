@@ -78,7 +78,7 @@ export function handleGlobalKeys(e: KeyboardEvent): void {
       return;
     }
 
-    if (document.activeElement !== searchInput) {
+    if (root.activeElement !== searchInput) {
       searchInput.focus();
     }
 

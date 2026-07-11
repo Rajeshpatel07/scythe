@@ -12,6 +12,9 @@ function onGlanceSubFrameNavigation(
   details: chrome.webNavigation.WebNavigationTransitionCallbackDetails,
 ) {
   if (details.frameId === 0) return;
+  const storedUrl = glanceUrlByTab.get(details.tabId);
+  if (!storedUrl) return;
+
   let origin: string | null = null;
   try {
     origin = details.url ? new URL(details.url).origin : null;
@@ -20,10 +23,9 @@ function onGlanceSubFrameNavigation(
   }
   if (!origin) return;
 
-  const storedUrl = glanceUrlByTab.get(details.tabId);
   let storedOrigin: string | null = null;
   try {
-    storedOrigin = storedUrl ? new URL(storedUrl).origin : null;
+    storedOrigin = new URL(storedUrl).origin;
   } catch {
     // Ignore invalid stored URLs
   }
@@ -33,7 +35,17 @@ function onGlanceSubFrameNavigation(
   }
 }
 
-let webNavigationListenerAdded = false;
+chrome.webNavigation.onCommitted.addListener(onGlanceSubFrameNavigation);
+chrome.webNavigation.onHistoryStateUpdated.addListener(
+  onGlanceSubFrameNavigation,
+);
+chrome.webNavigation.onReferenceFragmentUpdated.addListener(
+  onGlanceSubFrameNavigation,
+);
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  glanceUrlByTab.delete(tabId);
+});
 
 async function registerDNRRules() {
   try {
@@ -282,18 +294,6 @@ chrome.runtime.onMessage.addListener(
       case "openGlance":
         if (request.url && sender.tab?.id) {
           glanceUrlByTab.set(sender.tab.id, request.url);
-          if (!webNavigationListenerAdded) {
-            chrome.webNavigation.onCommitted.addListener(
-              onGlanceSubFrameNavigation,
-            );
-            chrome.webNavigation.onHistoryStateUpdated.addListener(
-              onGlanceSubFrameNavigation,
-            );
-            chrome.webNavigation.onReferenceFragmentUpdated.addListener(
-              onGlanceSubFrameNavigation,
-            );
-            webNavigationListenerAdded = true;
-          }
           sendResponse({ success: true });
         }
         return true;
