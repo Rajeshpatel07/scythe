@@ -34,9 +34,9 @@ window.addEventListener(
   (e: KeyboardEvent) => {
     if (!config.isSpotlightOpen && !config.isTabOpen) return;
 
+    e.stopImmediatePropagation();
+    e.preventDefault();
     if (e.key === "Meta" || e.key === "Control") {
-      e.stopImmediatePropagation();
-      e.preventDefault();
       config.modifierPressed = false;
       if (config.isTabOpen) {
         confirmSelection();
