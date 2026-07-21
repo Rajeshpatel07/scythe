@@ -11,11 +11,11 @@
     "lint": "bunx biome lint --write src/"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.3",
+    "@biomejs/biome": "2.5.4",
     "@types/chrome": "^0.2.2",
     "@types/node": "^26.1.1",
     "typescript": "~7.0.2",
-    "vite": "^8.1.4",
+    "vite": "^8.1.5",
     "vite-plugin-chrome-extension": "^0.0.7"
   }
 }
