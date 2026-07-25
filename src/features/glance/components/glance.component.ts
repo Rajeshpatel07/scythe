@@ -24,11 +24,9 @@ export function hideGlance(): void {
   const root = getHostRoot();
   root?.getElementById("glance-extension-modal")?.classList.add("closing");
 
-  setTimeout(() => {
-    config.isGlanceOpen = false;
-    removeHost();
-    MessageBroker.send({ action: "closeGlance" }).catch(silenceError);
-  }, 280);
+  config.isGlanceOpen = false;
+  removeHost();
+  MessageBroker.send({ action: "closeGlance" }).catch(silenceError);
 }
 
 export function openGlanceModal(url: string): void {

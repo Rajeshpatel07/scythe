@@ -13,8 +13,14 @@ const featureStyles: Record<Feature, string> = {
 };
 
 let cachedRoot: ShadowRoot | null = null;
+let pendingRemoveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export function ensureHost(feature: Feature): ShadowRoot {
+  if (pendingRemoveTimeout !== null) {
+    clearTimeout(pendingRemoveTimeout);
+    pendingRemoveTimeout = null;
+  }
+
   let host = document.getElementById(HOST_ID) as HTMLElement | null;
   if (!host) {
     host = document.createElement("div");
@@ -31,16 +37,48 @@ export function ensureHost(feature: Feature): ShadowRoot {
     cachedRoot = root;
     return root;
   }
+
   cachedRoot = host.shadowRoot as ShadowRoot;
+
+  // Clear any existing DOM nodes from other/previous features to avoid leaks and layout pollution
+  const children = Array.from(cachedRoot.childNodes);
+  for (const child of children) {
+    if (child.nodeName.toLowerCase() !== "style") {
+      child.remove();
+    }
+  }
+
+  // Update stylesheet to match the current feature
+  const style = cachedRoot.querySelector("style");
+  if (style) {
+    style.textContent = featureStyles[feature];
+  }
+
   return cachedRoot;
 }
 
-export function removeHost(): void {
-  const host = document.getElementById(HOST_ID);
-  if (host) {
-    host.remove();
+export function removeHost(immediate = false): void {
+  if (pendingRemoveTimeout !== null) {
+    clearTimeout(pendingRemoveTimeout);
+    pendingRemoveTimeout = null;
   }
-  cachedRoot = null;
+
+  if (immediate) {
+    const host = document.getElementById(HOST_ID);
+    if (host) {
+      host.remove();
+    }
+    cachedRoot = null;
+  } else {
+    pendingRemoveTimeout = setTimeout(() => {
+      const host = document.getElementById(HOST_ID);
+      if (host) {
+        host.remove();
+      }
+      cachedRoot = null;
+      pendingRemoveTimeout = null;
+    }, 280);
+  }
 }
 
 export function getHostRoot(): ShadowRoot | null {

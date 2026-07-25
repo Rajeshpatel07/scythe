@@ -209,7 +209,5 @@ export function closeSwitcher(): void {
 
   clearCachedTabItems();
 
-  setTimeout(() => {
-    removeHost();
-  }, 280);
+  removeHost();
 }
