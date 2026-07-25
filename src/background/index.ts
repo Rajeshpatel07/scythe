@@ -184,7 +184,7 @@ chrome.runtime.onMessage.addListener(
 
       case "getHistory":
         chrome.history.search(
-          { text: "", startTime: 0, maxResults: 50 },
+          { text: "", startTime: 0, maxResults: request.maxResults || 50 },
           (historyItems) => {
             sendResponse({ history: historyItems });
           },
