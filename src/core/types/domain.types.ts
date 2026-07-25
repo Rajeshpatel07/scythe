@@ -4,7 +4,7 @@ export interface HistoryResponse {
 
 export interface HistoryItem {
   id: string;
-  lastVisitTime: Date;
+  lastVisitTime: number;
   title: string;
   typedCount: number;
   url: string;

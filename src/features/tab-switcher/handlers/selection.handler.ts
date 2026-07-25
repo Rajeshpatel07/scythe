@@ -61,6 +61,7 @@ export function confirmSelection(): void {
 
   const items = cachedTabItems ?? root.querySelectorAll(".tab-item");
   const chosenTab = items[config.tabSelectedIndex];
+  if (!chosenTab?.id) return;
 
   closeSwitcher();
 

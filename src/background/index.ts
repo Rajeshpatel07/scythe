@@ -71,10 +71,7 @@ async function registerDNRRules() {
           },
           condition: {
             resourceTypes: [
-              "main_frame",
               "sub_frame",
-              "xmlhttprequest",
-              "other",
             ],
           },
         },
