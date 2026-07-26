@@ -29,7 +29,11 @@ export function hideGlance(): void {
   MessageBroker.send({ action: "closeGlance" }).catch(silenceError);
 }
 
+let glanceVersion = 0;
+
 export function openGlanceModal(url: string): void {
+  glanceVersion++;
+  const currentVersion = glanceVersion;
   const shadowRoot = ensureHost("glance");
 
   document.body.style.overflow = "hidden";
@@ -89,7 +93,9 @@ export function openGlanceModal(url: string): void {
   MessageBroker.send({ action: "clearSW", url })
     .catch(silenceError)
     .then(() => {
-      iframe.src = url;
+      if (currentVersion === glanceVersion) {
+        iframe.src = url;
+      }
     });
 
   overlay.appendChild(actionContainer);

@@ -41,9 +41,13 @@ export function createTabsDock(): void {
   shadowRoot.appendChild(overlay);
 }
 
+let renderVersion = 0;
+
 export async function renderTabs(): Promise<void> {
   const root = getHostRoot();
   if (!root) return;
+  renderVersion++;
+  const currentVersion = renderVersion;
 
   const container = root.getElementById("tab-list") as HTMLDivElement;
 
@@ -126,33 +130,24 @@ export async function renderTabs(): Promise<void> {
       loadFaviconFromCache(tab.url, img, 128);
 
       if (hostname && !isChromeSchema) {
-        // Fetch high resolution favicon asynchronously
-        (async () => {
-          try {
-            const highResResult = await getHighResFallback(hostname);
-            if (!document.getElementById("scythe-host")) return;
-
-            if (highResResult.status === "success" && highResResult.dataUrl) {
-              if (img.getAttribute("data-loading-url") === currentTargetUrl) {
-                img.style.opacity = "0.4";
-                const src = highResResult.dataUrl;
-                setTimeout(() => {
-                  if (src && document.getElementById("scythe-host")) {
-                    img.src = src;
-                    img.style.opacity = "1";
-                  }
-                }, 60);
-
-                // Cache it asynchronously
-                await storage.local.set({
-                  [storageKey]: highResResult.dataUrl,
-                });
-              }
+        getHighResFallback(hostname).then((highResResult) => {
+          if (currentVersion !== renderVersion) return;
+          if (highResResult.status === "success" && highResResult.dataUrl) {
+            if (img.getAttribute("data-loading-url") === currentTargetUrl) {
+              img.style.opacity = "0.4";
+              const src = highResResult.dataUrl;
+              setTimeout(() => {
+                if (currentVersion === renderVersion && src) {
+                  img.src = src;
+                  img.style.opacity = "1";
+                }
+              }, 60);
+              storage.local.set({
+                [storageKey]: highResResult.dataUrl,
+              }).catch(() => {});
             }
-          } catch {
-            // Ignore high-res favicon load failures
           }
-        })();
+        }).catch(() => {});
       }
     }
 

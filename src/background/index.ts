@@ -177,7 +177,7 @@ chrome.runtime.onMessage.addListener(
         if (request.id) {
           chrome.tabs.update(parseInt(request.id, 10), { active: true });
         }
-        return true;
+        return;
 
       case "getHistory":
         chrome.history.search(
@@ -293,14 +293,14 @@ chrome.runtime.onMessage.addListener(
           glanceUrlByTab.set(sender.tab.id, request.url);
           sendResponse({ success: true });
         }
-        return true;
+        return;
 
       case "closeGlance":
         if (sender.tab?.id) {
           glanceUrlByTab.delete(sender.tab.id);
         }
         sendResponse({ success: true });
-        return true;
+        return;
 
       case "getGlanceUrl":
         if (sender.tab?.id && glanceUrlByTab.has(sender.tab.id)) {
@@ -308,7 +308,7 @@ chrome.runtime.onMessage.addListener(
         } else {
           sendResponse({ url: null });
         }
-        return true;
+        return;
 
       case "clearSW": {
         if (!request.url) {
