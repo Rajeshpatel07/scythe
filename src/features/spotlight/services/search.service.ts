@@ -13,6 +13,7 @@ import { WWW_REGEX } from "../../../core/config/constants";
 
 const suggestionCache = new Map<string, string>();
 let searchVersion = 0;
+let suggestVersion = 0;
 
 export function handleWebSearch(): void {
   createSpotlightUI();
@@ -113,6 +114,9 @@ export async function searchAndSuggest(query: string): Promise<void> {
 }
 
 export async function updateSuggestion(query: string): Promise<void> {
+  suggestVersion++;
+  const currentVersion = suggestVersion;
+
   const root = getHostRoot();
   if (!root) return;
 
@@ -139,7 +143,6 @@ export async function updateSuggestion(query: string): Promise<void> {
 
   let response: HistoryResponse | null = null;
   try {
-    // Fetch a larger pool to ensure highly visited sites aren't buried by recent obscure ones
     response = await MessageBroker.send({
       action: "searchHistory",
       query,
@@ -149,19 +152,16 @@ export async function updateSuggestion(query: string): Promise<void> {
     response = null;
   }
 
+  if (currentVersion !== suggestVersion) return;
+
   const suggestions = response?.history || [];
 
-  // Sort suggestions to prioritize frequently typed and highly visited URLs
-  suggestions.sort((a, b) => {
-    const aScore = (a.typedCount || 0) * 10 + (a.visitCount || 0);
-    const bScore = (b.typedCount || 0) * 10 + (b.visitCount || 0);
-    return bScore - aScore;
-  });
-
-  let potentialSuggestion = "";
+  let bestScore = -1;
+  let bestSuggestion = "";
   const hasPath = lowerCaseQuery.includes("/");
 
-  for (const res of suggestions) {
+  for (let i = 0; i < suggestions.length; i++) {
+    const res = suggestions[i];
     if (!res.url?.startsWith("http")) continue;
 
     let url: URL;
@@ -172,30 +172,34 @@ export async function updateSuggestion(query: string): Promise<void> {
     }
 
     const host = url.hostname.replace(WWW_REGEX, "");
+    let candidate = "";
+    let matched = false;
 
     if (hasPath) {
-      // Retain full path for matching if the user explicitly typed a slash
       const fullUrlPath = host + url.pathname + url.search + url.hash;
       if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
-        potentialSuggestion = query + fullUrlPath.slice(query.length);
-        break;
+        candidate = query + fullUrlPath.slice(query.length);
+        matched = true;
       }
-    } else {
-      // Suggest just the naked hostname if no slash is present for cleaner UX
-      if (host.toLowerCase().startsWith(lowerCaseQuery)) {
-        potentialSuggestion = query + host.slice(query.length);
-        break;
-      }
+    } else if (host.toLowerCase().startsWith(lowerCaseQuery)) {
+      candidate = query + host.slice(query.length);
+      matched = true;
+    }
+
+    if (!matched) continue;
+    if (candidate.toLowerCase() === lowerCaseQuery) continue;
+
+    const score = (res.typedCount || 0) * 10 + (res.visitCount || 0);
+    if (score > bestScore) {
+      bestScore = score;
+      bestSuggestion = candidate;
     }
   }
 
-  if (
-    potentialSuggestion &&
-    potentialSuggestion.toLowerCase() !== lowerCaseQuery
-  ) {
-    suggestionEl.innerText = potentialSuggestion;
-    config.currentSuggestion = potentialSuggestion;
-    suggestionCache.set(lowerCaseQuery, potentialSuggestion);
+  if (bestSuggestion) {
+    suggestionEl.innerText = bestSuggestion;
+    config.currentSuggestion = bestSuggestion;
+    suggestionCache.set(lowerCaseQuery, bestSuggestion);
   } else {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
