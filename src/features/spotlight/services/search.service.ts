@@ -12,6 +12,7 @@ import { resolveUrl, openUrl } from "../../../core/services/navigation.service";
 import { WWW_REGEX } from "../../../core/config/constants";
 
 const suggestionCache = new Map<string, string>();
+let searchVersion = 0;
 
 export function handleWebSearch(): void {
   createSpotlightUI();
@@ -66,6 +67,9 @@ export function handleSearchSubmit(input: string): void {
 }
 
 export async function searchAndSuggest(query: string): Promise<void> {
+  searchVersion++;
+  const currentVersion = searchVersion;
+
   const root = getHostRoot();
   if (!root) return;
 
@@ -83,11 +87,15 @@ export async function searchAndSuggest(query: string): Promise<void> {
     response = null;
   }
 
+  if (currentVersion !== searchVersion) return;
+
   if (!response?.history) {
     resultsList.innerHTML =
       "<li class='spotlight-result-item-ext'>Could not search history. Fetching web suggestions...</li>";
     return;
   }
+
+  if (currentVersion !== searchVersion) return;
 
   resultsList.innerHTML = "";
   if (response.history.length === 0 && query.length > 0) {

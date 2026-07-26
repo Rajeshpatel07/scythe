@@ -10,7 +10,12 @@ import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/result-item.component";
 
+let historyVersion = 0;
+
 export async function populateHistory(): Promise<void> {
+  historyVersion++;
+  const currentVersion = historyVersion;
+
   const root = getHostRoot();
   if (!root) return;
 
@@ -32,12 +37,16 @@ export async function populateHistory(): Promise<void> {
   }
 
   const recentResponse = await freshPromise;
+  if (currentVersion !== historyVersion) return;
+
   const recentItems = recentResponse?.history || [];
 
   if (recentItems.length === 0 && storedHistory.length === 0) {
     resultsList.innerHTML = "<li>No recent history.</li>";
     return;
   }
+
+  if (currentVersion !== historyVersion) return;
 
   const filteredFresh = recentItems.filter((item) =>
     filterDomainsOnly(item.url),

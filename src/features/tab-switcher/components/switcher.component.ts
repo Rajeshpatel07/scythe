@@ -130,24 +130,28 @@ export async function renderTabs(): Promise<void> {
       loadFaviconFromCache(tab.url, img, 128);
 
       if (hostname && !isChromeSchema) {
-        getHighResFallback(hostname).then((highResResult) => {
-          if (currentVersion !== renderVersion) return;
-          if (highResResult.status === "success" && highResResult.dataUrl) {
-            if (img.getAttribute("data-loading-url") === currentTargetUrl) {
-              img.style.opacity = "0.4";
-              const src = highResResult.dataUrl;
-              setTimeout(() => {
-                if (currentVersion === renderVersion && src) {
-                  img.src = src;
-                  img.style.opacity = "1";
-                }
-              }, 60);
-              storage.local.set({
-                [storageKey]: highResResult.dataUrl,
-              }).catch(() => {});
+        getHighResFallback(hostname)
+          .then((highResResult) => {
+            if (currentVersion !== renderVersion) return;
+            if (highResResult.status === "success" && highResResult.dataUrl) {
+              if (img.getAttribute("data-loading-url") === currentTargetUrl) {
+                img.style.opacity = "0.4";
+                const src = highResResult.dataUrl;
+                setTimeout(() => {
+                  if (currentVersion === renderVersion && src) {
+                    img.src = src;
+                    img.style.opacity = "1";
+                  }
+                }, 60);
+                storage.local
+                  .set({
+                    [storageKey]: highResResult.dataUrl,
+                  })
+                  .catch(() => {});
+              }
             }
-          }
-        }).catch(() => {});
+          })
+          .catch(() => {});
       }
     }
 

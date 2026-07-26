@@ -70,9 +70,7 @@ async function registerDNRRules() {
             ],
           },
           condition: {
-            resourceTypes: [
-              "sub_frame",
-            ],
+            resourceTypes: ["sub_frame"],
           },
         },
       ],
@@ -177,6 +175,7 @@ chrome.runtime.onMessage.addListener(
         if (request.id) {
           chrome.tabs.update(parseInt(request.id, 10), { active: true });
         }
+        sendResponse({ success: true });
         return;
 
       case "getHistory":
@@ -291,8 +290,8 @@ chrome.runtime.onMessage.addListener(
       case "openGlance":
         if (request.url && sender.tab?.id) {
           glanceUrlByTab.set(sender.tab.id, request.url);
-          sendResponse({ success: true });
         }
+        sendResponse({ success: true });
         return;
 
       case "closeGlance":
