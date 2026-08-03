@@ -57,28 +57,20 @@ export function ensureHost(feature: Feature): ShadowRoot {
   return cachedRoot;
 }
 
-export function removeHost(immediate = false): void {
+export function removeHost(): void {
   if (pendingRemoveTimeout !== null) {
     clearTimeout(pendingRemoveTimeout);
     pendingRemoveTimeout = null;
   }
 
-  if (immediate) {
+  pendingRemoveTimeout = setTimeout(() => {
     const host = document.getElementById(HOST_ID);
     if (host) {
       host.remove();
     }
     cachedRoot = null;
-  } else {
-    pendingRemoveTimeout = setTimeout(() => {
-      const host = document.getElementById(HOST_ID);
-      if (host) {
-        host.remove();
-      }
-      cachedRoot = null;
-      pendingRemoveTimeout = null;
-    }, 280);
-  }
+    pendingRemoveTimeout = null;
+  }, 280);
 }
 
 export function getHostRoot(): ShadowRoot | null {

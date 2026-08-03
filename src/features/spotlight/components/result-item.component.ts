@@ -1,6 +1,7 @@
 import { loadFaviconFromCache } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { ListItems } from "../../../core/types/domain.types";
+import { LIKELY_URL_REGEX } from "../../../core/config/constants";
 import { getHostRoot } from "../../../core/utils/host.utils";
 import { hideSpotlight } from "../components/spotlight.component";
 import { openUrl } from "../../../core/services/navigation.service";
@@ -11,17 +12,13 @@ export function createListItem({ title, url, showUrl = true }: ListItems) {
   li.setAttribute("data-url", url);
   li.addEventListener("click", () => {
     hideSpotlight();
-    openUrl(url, config.openNewtab);
+    openUrl(url, config.openInNewTab);
   });
 
   const favicon = document.createElement("img");
   favicon.className = "spotlight-favicon-ext";
 
-  const isLikelyURL = /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^\s]*)?$/i.test(
-    url,
-  );
-
-  if (isLikelyURL) {
+  if (LIKELY_URL_REGEX.test(url)) {
     loadFaviconFromCache(url, favicon);
   } else {
     favicon.src = chrome.runtime.getURL("src/assets/icon48.png");
@@ -72,7 +69,7 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
 }
 
 export function renderListItems(
-  items: { title: string; url: string; showUrl?: boolean }[],
+  items: ListItems[],
   resultList: HTMLUListElement,
 ) {
   const fragment = document.createDocumentFragment();

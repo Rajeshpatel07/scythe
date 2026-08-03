@@ -8,7 +8,6 @@ window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
     if (e.key === "Meta" || e.key === "Control") {
-      config.modifierPressed = false;
       if (config.isTabOpen) {
         confirmSelection();
       }
@@ -39,7 +38,7 @@ export function showSpotlight(): void {
     !config.isTabOpen &&
     config.isSpotlightEnabled
   ) {
-    config.openNewtab = false;
+    config.openInNewTab = false;
     config.isSpotlightOpen = true;
     handleWebSearch();
   }

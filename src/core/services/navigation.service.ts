@@ -2,11 +2,10 @@ import { config } from "../config/config";
 import {
   LOCALHOST_REGEX,
   LIKELY_URL_REGEX,
-  IP_URL_REGEX,
   HAS_PROTOCOL_REGEX,
 } from "../config/constants";
 
-export function getSearchUrl(input: string): string {
+function getSearchUrl(input: string): string {
   const encodedInput = encodeURIComponent(input);
   const engine = config.searchEngine?.toLowerCase() || "google";
   switch (engine) {
@@ -31,7 +30,7 @@ export function resolveUrl(input: string): string {
     return hasProtocol ? trimmedInput : `http://${trimmedInput}`;
   }
 
-  if (LIKELY_URL_REGEX.test(trimmedInput) || IP_URL_REGEX.test(trimmedInput)) {
+  if (LIKELY_URL_REGEX.test(trimmedInput)) {
     return hasProtocol ? trimmedInput : `https://${trimmedInput}`;
   }
 

@@ -18,19 +18,4 @@ export const MessageBroker = {
       });
     });
   },
-
-  sendToTab<T extends MessageAction>(
-    tabId: number,
-    payload: MessagePayload & { action: T },
-  ): Promise<MessageResponseType<T>> {
-    return new Promise((resolve, reject) => {
-      chrome.tabs.sendMessage(tabId, payload, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(response);
-        }
-      });
-    });
-  },
 };

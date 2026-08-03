@@ -1,11 +1,11 @@
 import { hideGlance } from "../../features/glance/components/glance.component";
 import { hideSpotlight } from "../../features/spotlight/components/spotlight.component";
 import {
-  handleArrowNavigation,
   handleCtrlEnter,
   handleEnter,
   handleTab,
 } from "../../features/spotlight/handlers/keyboard.handler";
+import { navigateResults } from "../../features/spotlight/components/result-item.component";
 import { openSwitcher } from "../../features/tab-switcher/components/switcher.component";
 import {
   updateSelection,
@@ -25,10 +25,6 @@ export function handleGlobalKeys(e: KeyboardEvent): void {
     }
 
     const isModifier = e.metaKey || e.ctrlKey;
-
-    if (isModifier) {
-      config.modifierPressed = true;
-    }
 
     if (
       isModifier &&
@@ -85,7 +81,7 @@ export function handleGlobalKeys(e: KeyboardEvent): void {
     e.stopImmediatePropagation();
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
       e.preventDefault();
-      handleArrowNavigation(e.key);
+      navigateResults(e.key);
     } else if (e.ctrlKey && e.key === "Enter") {
       handleCtrlEnter();
     } else if (e.key === "Enter") {

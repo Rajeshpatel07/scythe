@@ -4,7 +4,7 @@ import {
   hideSpotlight,
 } from "../components/spotlight.component";
 import { getHostRoot } from "../../../core/utils/host.utils";
-import { populateHistory } from "./history.service";
+import { populateHistory } from "./history.spotlight.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/result-item.component";
@@ -12,6 +12,17 @@ import { resolveUrl, openUrl } from "../../../core/services/navigation.service";
 import { WWW_REGEX } from "../../../core/config/constants";
 
 const suggestionCache = new Map<string, string>();
+const MAX_SUGGESTION_CACHE_SIZE = 200;
+
+function cacheSuggestion(query: string, suggestion: string): void {
+  if (suggestionCache.size >= MAX_SUGGESTION_CACHE_SIZE) {
+    const oldestKey = suggestionCache.keys().next().value;
+    if (oldestKey !== undefined) {
+      suggestionCache.delete(oldestKey);
+    }
+  }
+  suggestionCache.set(query, suggestion);
+}
 let searchVersion = 0;
 let suggestVersion = 0;
 
@@ -36,6 +47,7 @@ export function handleWebSearch(): void {
       clearTimeout(suggestTimeout);
 
       if (searchInput.value.length === 0) {
+        searchVersion++;
         populateHistory();
         updateSuggestion("");
         return;
@@ -64,10 +76,10 @@ export function handleSearchSubmit(input: string): void {
 
   const url = resolveUrl(trimmedInput);
   hideSpotlight();
-  openUrl(url, config.openNewtab);
+  openUrl(url, config.openInNewTab);
 }
 
-export async function searchAndSuggest(query: string): Promise<void> {
+async function searchAndSuggest(query: string): Promise<void> {
   searchVersion++;
   const currentVersion = searchVersion;
 
@@ -113,7 +125,7 @@ export async function searchAndSuggest(query: string): Promise<void> {
   }
 }
 
-export async function updateSuggestion(query: string): Promise<void> {
+async function updateSuggestion(query: string): Promise<void> {
   suggestVersion++;
   const currentVersion = suggestVersion;
 
@@ -199,10 +211,10 @@ export async function updateSuggestion(query: string): Promise<void> {
   if (bestSuggestion) {
     suggestionEl.innerText = bestSuggestion;
     config.currentSuggestion = bestSuggestion;
-    suggestionCache.set(lowerCaseQuery, bestSuggestion);
+    cacheSuggestion(lowerCaseQuery, bestSuggestion);
   } else {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
-    suggestionCache.set(lowerCaseQuery, "");
+    cacheSuggestion(lowerCaseQuery, "");
   }
 }

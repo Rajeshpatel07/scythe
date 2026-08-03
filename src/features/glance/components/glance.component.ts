@@ -38,7 +38,6 @@ export function openGlanceModal(url: string): void {
 
   document.body.style.overflow = "hidden";
 
-  // 3. Screen Overlay Backdrop Component
   const overlay = document.createElement("div");
   overlay.id = "glance-extension-modal";
   overlay.className = "glance-overlay";
@@ -60,10 +59,8 @@ export function openGlanceModal(url: string): void {
     MessageBroker.send({ action: "getGlanceUrl" })
       .then((response) => {
         openUrlInBackground(response.url || url);
-        // openUrl(response?.url || url, true);
       })
       .catch(() => {
-        // openUrl(url, true);
         openUrlInBackground(url);
       });
   };

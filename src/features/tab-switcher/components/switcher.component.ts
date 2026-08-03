@@ -4,8 +4,11 @@ import {
 } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { TabsResponse } from "../../../core/types/domain.types";
-import { getHostRoot } from "../../../core/utils/host.utils";
-import { ensureHost, removeHost } from "../../../core/utils/host.utils";
+import {
+  ensureHost,
+  getHostRoot,
+  removeHost,
+} from "../../../core/utils/host.utils";
 import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import {

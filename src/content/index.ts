@@ -37,7 +37,6 @@ window.addEventListener(
     e.stopImmediatePropagation();
     e.preventDefault();
     if (e.key === "Meta" || e.key === "Control") {
-      config.modifierPressed = false;
       if (config.isTabOpen) {
         confirmSelection();
       }
@@ -56,7 +55,7 @@ chrome.runtime.onMessage.addListener((request) => {
       !config.isGlanceOpen &&
       config.isSpotlightEnabled
     ) {
-      config.openNewtab = true;
+      config.openInNewTab = true;
       config.isSpotlightOpen = true;
       handleWebSearch();
     }

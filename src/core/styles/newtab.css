@@ -26,7 +26,6 @@ body {
 
 #spotlight-body.minimal-empty {
   background-color: #000000;
-  background-image: none;
 }
 
 /* Main Page Container */
@@ -124,10 +123,6 @@ body {
   color: var(--spotlight-text-secondary);
   pointer-events: none;
   transition: color 0.25s ease;
-}
-
-#spotlight-search-input:focus + .spotlight-search-icon-left {
-  color: var(--spotlight-accent);
 }
 
 @media (width <= 550px) {

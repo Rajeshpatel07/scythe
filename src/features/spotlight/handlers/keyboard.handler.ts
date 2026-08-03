@@ -1,6 +1,5 @@
 import { config } from "../../../core/config/config";
 import { handleSearchSubmit } from "../services/search.service";
-import { navigateResults } from "../components/result-item.component";
 import { hideSpotlight } from "../components/spotlight.component";
 import {
   getFirstResultItem,
@@ -16,18 +15,13 @@ export function handleEnter(): void {
   const selectedItem = getSelectedResultItem();
   if (selectedItem) {
     selectedItem.click();
-  } else {
-    const query = searchInput.value.trim();
-    if (query.length) {
-      handleSearchSubmit(searchInput.value);
-    } else {
-      searchInput.value = "";
-    }
+    return;
   }
-}
 
-export function handleArrowNavigation(key: "ArrowUp" | "ArrowDown"): void {
-  navigateResults(key);
+  const query = searchInput.value.trim();
+  if (query.length) {
+    handleSearchSubmit(searchInput.value);
+  }
 }
 
 export function handleCtrlEnter(): void {
@@ -36,7 +30,7 @@ export function handleCtrlEnter(): void {
   const url = firstItem.getAttribute("data-url");
   if (url) {
     hideSpotlight();
-    if (config.openNewtab) {
+    if (config.openInNewTab) {
       MessageBroker.send({ action: "createTab", url: url, active: true });
     } else {
       window.location.href = url;
