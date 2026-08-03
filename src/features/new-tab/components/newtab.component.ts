@@ -1,19 +1,32 @@
 import { config } from "../../../core/config/config";
-import { showSidebar } from "./sidebar.component";
 import { showSpotlight } from "../../../main";
+
+let pageContainer: HTMLDivElement;
 
 export function createNewTabPage() {
   const body = document.body as HTMLBodyElement;
   body.id = "spotlight-body";
 
-  const pageContainer = newtabPageContent();
-  showSidebar(body);
+  pageContainer = newtabPageContent();
   body.appendChild(pageContainer);
 
+  applyPageVisibility();
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === "sync" && changes.showNewTab !== undefined) {
+      config.hideNewTab = changes.showNewTab.newValue as boolean;
+      applyPageVisibility();
+    }
+  });
+}
+
+function applyPageVisibility(): void {
+  const body = document.body as HTMLBodyElement;
   if (config.hideNewTab) {
     pageContainer.style.display = "none";
     body.classList.add("minimal-empty");
   } else {
+    pageContainer.style.display = "";
     body.classList.remove("minimal-empty");
   }
 }

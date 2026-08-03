@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         manifest: resolve(__dirname, "manifest.json"),
         main: resolve(__dirname, "./src/main.ts"),
+        popup: resolve(__dirname, "./src/popup/index.ts"),
       },
     },
   },
