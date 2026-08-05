@@ -9,7 +9,6 @@
     "favicon",
     "tabs",
     "webNavigation",
-    "browsingData",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess"
   ],

@@ -309,21 +309,6 @@ chrome.runtime.onMessage.addListener(
         }
         return;
 
-      case "clearSW": {
-        if (!request.url) {
-          sendResponse({ success: false });
-          return true;
-        }
-        try {
-          const origin = new URL(request.url).origin;
-          chrome.browsingData.removeServiceWorkers({ origins: [origin] }, () =>
-            sendResponse({ success: true }),
-          );
-        } catch {
-          sendResponse({ success: false });
-        }
-        return true;
-      }
     }
   },
 );

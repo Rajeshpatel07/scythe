@@ -87,13 +87,9 @@ export function openGlanceModal(url: string): void {
 
   MessageBroker.send({ action: "openGlance", url }).catch(silenceError);
 
-  MessageBroker.send({ action: "clearSW", url })
-    .catch(silenceError)
-    .then(() => {
-      if (currentVersion === glanceVersion) {
-        iframe.src = url;
-      }
-    });
+  if (currentVersion === glanceVersion) {
+    iframe.src = url;
+  }
 
   overlay.appendChild(actionContainer);
   overlay.appendChild(iframe);
