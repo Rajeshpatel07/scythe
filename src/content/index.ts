@@ -52,7 +52,6 @@ chrome.runtime.onMessage.addListener((request) => {
     if (
       !config.isSpotlightOpen &&
       !config.isTabOpen &&
-      !config.isGlanceOpen &&
       config.isSpotlightEnabled
     ) {
       config.openInNewTab = true;

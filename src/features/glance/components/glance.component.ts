@@ -25,7 +25,7 @@ export function hideGlance(): void {
   root?.getElementById("glance-extension-modal")?.classList.add("closing");
 
   config.isGlanceOpen = false;
-  removeHost();
+  removeHost("glance");
   MessageBroker.send({ action: "closeGlance" }).catch(silenceError);
 }
 

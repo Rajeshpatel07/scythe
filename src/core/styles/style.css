@@ -62,7 +62,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  z-index: 9999;
+  z-index: 2147483647;
   font-family: sans-serif;
 
   backdrop-filter: blur(0px);

@@ -211,5 +211,5 @@ export function closeSwitcher(): void {
 
   clearCachedTabItems();
 
-  removeHost();
+  removeHost("switcher");
 }

@@ -55,7 +55,7 @@ export function hideSpotlight(): void {
   root?.getElementById("spotlight-overlay-ext")?.classList.add("closing");
 
   config.isSpotlightOpen = false;
-  removeHost();
+  removeHost("spotlight");
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {

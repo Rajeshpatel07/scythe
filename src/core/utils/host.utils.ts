@@ -12,14 +12,18 @@ const featureStyles: Record<Feature, string> = {
   glance: glanceCss,
 };
 
+const featureRootIds: Record<Feature, string> = {
+  spotlight: "spotlight-overlay-ext",
+  switcher: "switcher-overlay",
+  glance: "glance-extension-modal",
+};
+
 let cachedRoot: ShadowRoot | null = null;
 let pendingRemoveTimeout: ReturnType<typeof setTimeout> | null = null;
+const activeFeatures = new Set<Feature>();
 
-export function ensureHost(feature: Feature): ShadowRoot {
-  if (pendingRemoveTimeout !== null) {
-    clearTimeout(pendingRemoveTimeout);
-    pendingRemoveTimeout = null;
-  }
+function getOrCreateHost(): ShadowRoot {
+  if (cachedRoot) return cachedRoot;
 
   let host = document.getElementById(HOST_ID) as HTMLElement | null;
   if (!host) {
@@ -30,47 +34,69 @@ export function ensureHost(feature: Feature): ShadowRoot {
       "position:fixed;bottom:0;right:0;z-index:2147483647;",
     );
     document.body.appendChild(host);
-    const root = host.attachShadow({ mode: "open" });
-    const style = document.createElement("style");
-    style.textContent = featureStyles[feature];
-    root.appendChild(style);
-    cachedRoot = root;
-    return root;
+    host.attachShadow({ mode: "open" });
   }
 
   cachedRoot = host.shadowRoot as ShadowRoot;
-
-  // Clear any existing DOM nodes from other/previous features to avoid leaks and layout pollution
-  const children = Array.from(cachedRoot.childNodes);
-  for (const child of children) {
-    if (child.nodeName.toLowerCase() !== "style") {
-      child.remove();
-    }
-  }
-
-  // Update stylesheet to match the current feature
-  const style = cachedRoot.querySelector("style");
-  if (style) {
-    style.textContent = featureStyles[feature];
-  }
-
   return cachedRoot;
 }
 
-export function removeHost(): void {
+function ensureStyle(root: ShadowRoot, feature: Feature): void {
+  if (root.querySelector(`style[data-feature="${feature}"]`)) return;
+  const style = document.createElement("style");
+  style.setAttribute("data-feature", feature);
+  style.textContent = featureStyles[feature];
+  root.appendChild(style);
+}
+
+export function ensureHost(feature: Feature): ShadowRoot {
   if (pendingRemoveTimeout !== null) {
     clearTimeout(pendingRemoveTimeout);
     pendingRemoveTimeout = null;
   }
 
-  pendingRemoveTimeout = setTimeout(() => {
-    const host = document.getElementById(HOST_ID);
-    if (host) {
-      host.remove();
+  const root = getOrCreateHost();
+  activeFeatures.add(feature);
+
+  // Drop a stale instance of this feature's root node so rapid reopen cycles
+  // never produce duplicate ids inside the shared shadow root.
+  root.getElementById(featureRootIds[feature])?.remove();
+
+  ensureStyle(root, feature);
+  return root;
+}
+
+export function removeHost(feature: Feature): void {
+  activeFeatures.delete(feature);
+
+  const root = getHostRoot();
+  const style = root?.querySelector(`style[data-feature="${feature}"]`);
+
+  const cleanup = () => {
+    const currentRoot = getHostRoot();
+    currentRoot?.getElementById(featureRootIds[feature])?.remove();
+    style?.remove();
+  };
+
+  if (activeFeatures.size === 0) {
+    if (pendingRemoveTimeout !== null) {
+      clearTimeout(pendingRemoveTimeout);
     }
-    cachedRoot = null;
-    pendingRemoveTimeout = null;
-  }, 280);
+    pendingRemoveTimeout = setTimeout(() => {
+      cleanup();
+      const host = document.getElementById(HOST_ID);
+      if (host) {
+        host.remove();
+      }
+      cachedRoot = null;
+      pendingRemoveTimeout = null;
+    }, 280);
+    return;
+  }
+
+  // Other features are still open: only tear down this feature's nodes after
+  // its closing animation, leaving the shared host and siblings untouched.
+  setTimeout(cleanup, 280);
 }
 
 export function getHostRoot(): ShadowRoot | null {
