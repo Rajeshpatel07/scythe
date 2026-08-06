@@ -1,9 +1,9 @@
 import { config, initializeConfig } from "../core/config/config";
 import { storage } from "../core/storage/storage.utils";
-import googleLogo from "../assets/search-engine-logos/google.svg";
-import duckduckgoLogo from "../assets/search-engine-logos/duckduckgo.svg";
-import braveLogo from "../assets/search-engine-logos/brave.svg";
-import bingLogo from "../assets/search-engine-logos/bing.svg";
+import googleLogo from "../assets/search-engine-logos/google.svg?inline";
+import duckduckgoLogo from "../assets/search-engine-logos/duckduckgo.svg?inline";
+import braveLogo from "../assets/search-engine-logos/brave.svg?inline";
+import bingLogo from "../assets/search-engine-logos/bing.svg?inline";
 import unduckLogo from "../assets/search-engine-logos/unduck.png";
 
 interface SearchEngine {
