@@ -212,4 +212,11 @@ export function closeSwitcher(): void {
   clearCachedTabItems();
 
   removeHost("switcher");
+
+  if (config.isGlanceOpen) {
+    const glanceFrame = root.getElementById(
+      "glance-content-frame",
+    ) as HTMLIFrameElement | null;
+    glanceFrame?.focus();
+  }
 }

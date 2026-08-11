@@ -85,21 +85,37 @@ registerDNRRules();
 chrome.runtime.onInstalled.addListener(registerDNRRules);
 chrome.runtime.onStartup.addListener(registerDNRRules);
 
+function sendToActiveTab(payload: { action: string; reverse?: boolean }): void {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tab = tabs[0];
+    if (!tab?.id) return;
+
+    const extensionRoot = chrome.runtime.getURL("");
+    if (tab.url?.startsWith(extensionRoot)) {
+      // Broadcast targeted at extension pages only. Content scripts use the
+      // `*Page`-suffixed action so a broadcast never leaks into other tabs.
+      chrome.runtime
+        .sendMessage({ ...payload, action: `${payload.action}Page` })
+        .catch(() => {
+          // Ignore if no extension page is listening (e.g. popup only)
+        });
+      return;
+    }
+
+    chrome.tabs.sendMessage(tab.id, payload, () => {
+      // Ignore error if content script not loaded
+      void chrome.runtime.lastError;
+    });
+  });
+}
+
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle-spotlight") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          { action: "toggleSpotlight" },
-          (_response) => {
-            if (chrome.runtime.lastError) {
-              // Ignore error if content script not loaded
-            }
-          },
-        );
-      }
-    });
+    sendToActiveTab({ action: "toggleSpotlight" });
+  } else if (command === "toggle-tab-switcher") {
+    sendToActiveTab({ action: "toggleTabSwitcher", reverse: false });
+  } else if (command === "toggle-tab-switcher-reverse") {
+    sendToActiveTab({ action: "toggleTabSwitcher", reverse: true });
   }
 });
 
@@ -165,11 +181,16 @@ async function fetchHighResFaviconData(
 chrome.runtime.onMessage.addListener(
   (request: MessagePayload, sender, sendResponse) => {
     switch (request.action) {
-      case "getTabs":
-        chrome.tabs.query({ windowId: sender.tab?.windowId }, (tabs) => {
+      case "getTabs": {
+        const windowId = sender.tab?.windowId;
+        // Extension pages (e.g. the newtab page) broadcast via
+        // runtime.sendMessage, so sender.tab is absent. Query without a
+        // windowId filter in that case instead of passing an undefined value.
+        chrome.tabs.query(windowId ? { windowId } : {}, (tabs) => {
           sendResponse({ tabs: tabs });
         });
         return true;
+      }
 
       case "switchTab":
         if (request.id) {
@@ -324,7 +345,6 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ url: null });
         }
         return;
-
     }
   },
 );

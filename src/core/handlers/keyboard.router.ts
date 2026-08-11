@@ -6,7 +6,10 @@ import {
   handleTab,
 } from "../../features/spotlight/handlers/keyboard.handler";
 import { navigateResults } from "../../features/spotlight/components/result-item.component";
-import { openSwitcher, closeSwitcher } from "../../features/tab-switcher/components/switcher.component";
+import {
+  openSwitcher,
+  closeSwitcher,
+} from "../../features/tab-switcher/components/switcher.component";
 import {
   updateSelection,
   getTabItemsCount,
@@ -14,6 +17,44 @@ import {
 import { config } from "../config/config";
 import { getSearchInput } from "../utils/dom.utils";
 import { getHostRoot } from "../utils/host.utils";
+
+let lastDomTabShortcutAt = 0;
+const COMMAND_DEDUP_WINDOW_MS = 1000;
+
+function blurFocusedFrame(): void {
+  const root = getHostRoot();
+  const candidates = [document.activeElement, root?.activeElement];
+  for (const el of candidates) {
+    if (el && el.tagName === "IFRAME") {
+      (el as HTMLElement).blur();
+      return;
+    }
+  }
+}
+
+export function openOrCycleTabSwitcher(isReverse: boolean): void {
+  if (config.isSpotlightOpen || !config.isTabEnabled) return;
+
+  if (!config.isTabOpen) {
+    config.isTabOpen = true;
+    openSwitcher(isReverse);
+    blurFocusedFrame();
+    return;
+  }
+
+  const tabsLen = getTabItemsCount();
+  const nextIndex = isReverse
+    ? (config.tabSelectedIndex - 1 + tabsLen) % tabsLen
+    : (config.tabSelectedIndex + 1) % tabsLen;
+  updateSelection(nextIndex);
+}
+
+export function handleTabSwitcherCommand(isReverse: boolean): void {
+  if (performance.now() - lastDomTabShortcutAt < COMMAND_DEDUP_WINDOW_MS) {
+    return;
+  }
+  openOrCycleTabSwitcher(isReverse);
+}
 
 export function handleGlobalKeys(e: KeyboardEvent): void {
   try {
@@ -30,21 +71,8 @@ export function handleGlobalKeys(e: KeyboardEvent): void {
       config.isTabEnabled
     ) {
       e.preventDefault();
-
-      if (!isTabOpen) {
-        config.isTabOpen = true;
-        openSwitcher(e.shiftKey);
-      } else {
-        const tabsLen = getTabItemsCount();
-
-        let nextIndex: number;
-        if (e.shiftKey) {
-          nextIndex = (config.tabSelectedIndex - 1 + tabsLen) % tabsLen;
-        } else {
-          nextIndex = (config.tabSelectedIndex + 1) % tabsLen;
-        }
-        updateSelection(nextIndex);
-      }
+      lastDomTabShortcutAt = performance.now();
+      openOrCycleTabSwitcher(e.shiftKey);
       return;
     }
 

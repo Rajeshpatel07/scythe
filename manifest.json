@@ -48,6 +48,20 @@
         "mac": "Command+Shift+K"
       },
       "description": "Open Spotlight Search"
+    },
+    "toggle-tab-switcher": {
+      "suggested_key": {
+        "default": "Ctrl+Space",
+        "mac": "MacCtrl+Space"
+      },
+      "description": "Open Tab Switcher"
+    },
+    "toggle-tab-switcher-reverse": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Space",
+        "mac": "MacCtrl+Shift+Space"
+      },
+      "description": "Open Tab Switcher (Reverse)"
     }
   },
   "web_accessible_resources": [

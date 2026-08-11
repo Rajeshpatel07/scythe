@@ -1,7 +1,10 @@
 import { config, initializeConfig } from "../core/config/config";
 import { confirmSelection } from "../features/tab-switcher/handlers/selection.handler";
 import { handleWebSearch } from "../features/spotlight/services/search.service";
-import { handleGlobalKeys } from "../core/handlers/keyboard.router";
+import {
+  handleGlobalKeys,
+  handleTabSwitcherCommand,
+} from "../core/handlers/keyboard.router";
 import { openGlanceModal } from "../features/glance/components/glance.component";
 
 document.addEventListener(
@@ -58,5 +61,12 @@ chrome.runtime.onMessage.addListener((request) => {
       config.isSpotlightOpen = true;
       handleWebSearch();
     }
+    return;
+  }
+
+  if (request.action === "toggleTabSwitcher") {
+    // Tab-scoped messages only reach this content script via tabs.sendMessage;
+    // the extension-page broadcast uses the "toggleTabSwitcherPage" action.
+    handleTabSwitcherCommand(Boolean(request.reverse));
   }
 });

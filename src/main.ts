@@ -2,7 +2,28 @@ import { createNewTabPage } from "./features/new-tab/components/newtab.component
 import { config, initializeConfig } from "./core/config/config";
 import { handleWebSearch } from "./features/spotlight/services/search.service";
 import { confirmSelection } from "./features/tab-switcher/handlers/selection.handler";
-import { handleGlobalKeys } from "./core/handlers/keyboard.router";
+import {
+  handleGlobalKeys,
+  handleTabSwitcherCommand,
+} from "./core/handlers/keyboard.router";
+
+chrome.runtime.onMessage.addListener((request) => {
+  // Handle both the extension-page broadcast (toggleTabSwitcherPage) and the
+  // tab-scoped action (toggleTabSwitcher) so the newtab page responds to the
+  // background regardless of which variant is delivered.
+  if (
+    request.action === "toggleTabSwitcherPage" ||
+    request.action === "toggleTabSwitcher"
+  ) {
+    handleTabSwitcherCommand(Boolean(request.reverse));
+  }
+  if (
+    request.action === "toggleSpotlightPage" ||
+    request.action === "toggleSpotlight"
+  ) {
+    showSpotlight();
+  }
+});
 
 window.addEventListener(
   "keyup",

@@ -2,6 +2,7 @@ import type { HistoryResponse, TabsResponse } from "../types/domain.types";
 
 export type MessageAction =
   | "toggleSpotlight"
+  | "toggleSpotlightPage"
   | "getTabs"
   | "switchTab"
   | "getHistory"
@@ -12,7 +13,9 @@ export type MessageAction =
   | "clearSW"
   | "openGlance"
   | "closeGlance"
-  | "getGlanceUrl";
+  | "getGlanceUrl"
+  | "toggleTabSwitcher"
+  | "toggleTabSwitcherPage";
 
 export interface MessagePayload {
   action: MessageAction;
@@ -22,6 +25,7 @@ export interface MessagePayload {
   url?: string;
   size?: number;
   active?: boolean;
+  reverse?: boolean;
 }
 
 export interface FaviconResponse {
