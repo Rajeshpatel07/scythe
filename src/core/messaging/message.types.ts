@@ -9,6 +9,7 @@ export type MessageAction =
   | "getFavicon"
   | "getHighResFavicon"
   | "createTab"
+  | "clearSW"
   | "openGlance"
   | "closeGlance"
   | "getGlanceUrl";
