@@ -258,9 +258,8 @@ function toggleContainer(input: HTMLInputElement): HTMLElement {
 
 function render(): void {
   const current =
-    ENGINES.find(
-      (e) => e.value === config.searchEngine?.toLowerCase(),
-    ) ?? ENGINES[0];
+    ENGINES.find((e) => e.value === config.searchEngine?.toLowerCase()) ??
+    ENGINES[0];
 
   engineTriggerImg.src = current.favicon;
   engineTriggerImg.alt = current.name;
