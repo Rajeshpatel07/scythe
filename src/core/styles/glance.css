@@ -70,8 +70,8 @@
 }
 
 #glance-extension-modal .glance-content-frame {
-  width: min(88vw, calc(100vw - 120px));
-  height: 95vh;
+  width: min(82vw, calc(100vw - 120px));
+  height: 98vh;
   border: 1px solid #3b3b3b;
   border-radius: 5px;
   box-shadow: 0 28px 75px rgba(0, 0, 0, 0.4);
@@ -92,7 +92,7 @@
 .glance-action-container {
   position: absolute;
   top: 3vh;
-  right: 2.5vw;
+  right: calc(max(7vw, 60px) - 23px);
   display: flex;
   flex-direction: column;
   gap: 12px;
