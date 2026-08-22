@@ -197,7 +197,7 @@ export async function openSwitcher(isReverse = false): Promise<void> {
   }
 }
 
-export function closeSwitcher(): void {
+export function closeSwitcher(immediate = false): void {
   // Disable input routing immediately to prevent race conditions during animation
   config.isTabOpen = false;
 
@@ -209,7 +209,7 @@ export function closeSwitcher(): void {
 
   clearCachedTabItems();
 
-  removeHost("switcher");
+  removeHost("switcher", immediate);
 
   if (config.isGlanceOpen) {
     const glanceFrame = root.getElementById(

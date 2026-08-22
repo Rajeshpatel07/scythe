@@ -63,7 +63,9 @@ export function confirmSelection(): void {
   const chosenTab = items[config.tabSelectedIndex];
   if (!chosenTab?.id) return;
 
-  closeSwitcher();
+  // Tear down synchronously: the user is leaving this page, so the animated
+  // fade would only survive as a stale frame when they return to the tab.
+  closeSwitcher(true);
 
   MessageBroker.send({
     action: "switchTab",

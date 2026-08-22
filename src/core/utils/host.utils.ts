@@ -71,17 +71,32 @@ export function ensureHost(feature: Feature): ShadowRoot {
   return root;
 }
 
-export function removeHost(feature: Feature): void {
+export function removeHost(feature: Feature, immediate = false): void {
   activeFeatures.delete(feature);
 
   const existing = pendingCleanups.get(feature);
   if (existing !== undefined) {
     clearTimeout(existing);
+    pendingCleanups.delete(feature);
   }
 
   const style = getHostRoot()?.querySelector(
     `style[data-feature="${feature}"]`,
   );
+
+  // Skip the closing-animation window when the page is being left anyway
+  // (e.g. confirming a tab switch); background tabs throttle timers, which
+  // would otherwise leave stale frames behind on return.
+  if (immediate) {
+    getHostRoot()?.getElementById(featureRootIds[feature])?.remove();
+    style?.remove();
+
+    if (activeFeatures.size === 0 && pendingCleanups.size === 0) {
+      document.getElementById(HOST_ID)?.remove();
+      cachedRoot = null;
+    }
+    return;
+  }
 
   const timer = setTimeout(() => {
     pendingCleanups.delete(feature);
