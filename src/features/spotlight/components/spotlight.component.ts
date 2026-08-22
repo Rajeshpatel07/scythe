@@ -59,8 +59,15 @@ export function hideSpotlight(): void {
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {
-  inputElement.focus();
+  if (!document.hasFocus()) window.focus();
+  inputElement.focus({ preventScroll: true });
   if (document.activeElement !== inputElement) {
-    setTimeout(() => inputElement.focus(), 100);
+    setTimeout(() => {
+      if (!document.hasFocus()) window.focus();
+      inputElement.focus({ preventScroll: true });
+      requestAnimationFrame(() => {
+        if (document.activeElement !== inputElement) inputElement.focus();
+      });
+    }, 50);
   }
 }

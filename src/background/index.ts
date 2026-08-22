@@ -34,6 +34,13 @@ function onGlanceSubFrameNavigation(
   if (storedOrigin && origin === storedOrigin) {
     glanceUrlByTab.set(details.tabId, details.url);
   }
+
+  // Re-clear service workers for this origin — sites like bun.com re-register
+  // a SW after the initial clear, so in-iframe navigations would otherwise
+  // be served from the SW cache with the original blocking headers.
+  chrome.browsingData.removeServiceWorkers({ origins: [origin] }, () => {
+    void chrome.runtime.lastError;
+  });
 }
 
 chrome.webNavigation.onCommitted.addListener(onGlanceSubFrameNavigation);
@@ -59,11 +66,19 @@ function buildGlanceRule(): chrome.declarativeNetRequest.Rule {
       type: "modifyHeaders",
       responseHeaders: [
         { header: "x-frame-options", operation: "remove" },
+        { header: "frame-options", operation: "remove" },
         { header: "content-security-policy", operation: "remove" },
         {
           header: "content-security-policy-report-only",
           operation: "remove",
         },
+        { header: "x-content-security-policy", operation: "remove" },
+        { header: "x-webkit-csp", operation: "remove" },
+        { header: "cross-origin-embedder-policy", operation: "remove" },
+        { header: "cross-origin-opener-policy", operation: "remove" },
+        { header: "cross-origin-resource-policy", operation: "remove" },
+        { header: "permissions-policy", operation: "remove" },
+        { header: "x-permissions-policy", operation: "remove" },
       ],
     },
     condition: {
@@ -296,7 +311,8 @@ chrome.runtime.onMessage.addListener(
         if (request.url && sender.tab?.id) {
           glanceUrlByTab.set(sender.tab.id, request.url);
           glanceRuleTabs.add(sender.tab.id);
-          refreshGlanceRule();
+          refreshGlanceRule().then(() => sendResponse({ success: true }));
+          return true;
         }
         sendResponse({ success: true });
         return;

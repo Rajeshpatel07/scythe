@@ -84,16 +84,20 @@ export function openGlanceModal(url: string): void {
   const iframe = document.createElement("iframe");
   iframe.className = "glance-content-frame";
   iframe.id = "glance-content-frame";
+  iframe.referrerPolicy = "no-referrer";
+  iframe.setAttribute(
+    "sandbox",
+    "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads",
+  );
 
-  MessageBroker.send({ action: "openGlance", url }).catch(silenceError);
-
-  MessageBroker.send({ action: "clearSW", url })
-    .catch(silenceError)
-    .then(() => {
-      if (currentVersion === glanceVersion) {
-        iframe.src = url;
-      }
-    });
+  Promise.all([
+    MessageBroker.send({ action: "openGlance", url }).catch(silenceError),
+    MessageBroker.send({ action: "clearSW", url }).catch(silenceError),
+  ]).then(() => {
+    if (currentVersion === glanceVersion) {
+      iframe.src = url;
+    }
+  });
 
   overlay.appendChild(actionContainer);
   overlay.appendChild(iframe);
