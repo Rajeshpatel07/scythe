@@ -52,10 +52,7 @@ window.addEventListener(
 );
 
 window.addEventListener("message", (event: MessageEvent) => {
-  if (
-    event.data?.type === "scythe:closeGlance" &&
-    config.isGlanceOpen
-  ) {
+  if (event.data?.type === "scythe:closeGlance" && config.isGlanceOpen) {
     hideGlance();
   }
 });

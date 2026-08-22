@@ -74,8 +74,7 @@ export async function ensureHistoryIndex(): Promise<ParsedHistoryEntry[]> {
           fullPath,
           fullPathLower: fullPath.toLowerCase(),
         });
-      } catch {
-      }
+      } catch {}
     }
 
     historyIndex = parsed;
