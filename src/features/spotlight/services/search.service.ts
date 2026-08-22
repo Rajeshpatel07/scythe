@@ -172,18 +172,20 @@ function applyGhostSuggestion(
       continue;
     }
 
-    const host = url.hostname.replace(WWW_REGEX, "");
+    // Complete against the authority (host + explicit port) so visited
+    // origins like localhost:3000 are suggested as-is; hostname drops ports.
+    const authority = url.host.replace(WWW_REGEX, "");
     let candidate = "";
     let matched = false;
 
     if (hasPath) {
-      const fullUrlPath = host + url.pathname + url.search + url.hash;
+      const fullUrlPath = authority + url.pathname + url.search + url.hash;
       if (fullUrlPath.toLowerCase().startsWith(lowerCaseQuery)) {
         candidate = query + fullUrlPath.slice(query.length);
         matched = true;
       }
-    } else if (host.toLowerCase().startsWith(lowerCaseQuery)) {
-      candidate = query + host.slice(query.length);
+    } else if (authority.toLowerCase().startsWith(lowerCaseQuery)) {
+      candidate = query + authority.slice(query.length);
       matched = true;
     }
 
