@@ -31,7 +31,9 @@ export function handleCtrlEnter(): void {
   if (url) {
     hideSpotlight();
     if (config.openInNewTab) {
-      MessageBroker.send({ action: "createTab", url: url, active: true });
+      MessageBroker.send({ action: "createTab", url: url, active: true }).catch(
+        () => {},
+      );
     } else {
       window.location.href = url;
     }

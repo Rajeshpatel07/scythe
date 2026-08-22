@@ -68,5 +68,5 @@ export function confirmSelection(): void {
   MessageBroker.send({
     action: "switchTab",
     id: chosenTab.id,
-  });
+  }).catch(() => {});
 }

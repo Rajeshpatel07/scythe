@@ -68,7 +68,7 @@ function buildContent(): HTMLElement {
   );
 
   pageContentToggle = createToggle(config.hideNewTab, (checked) => {
-    storage.sync.set({ showNewTab: checked });
+    storage.sync.set({ showNewTab: checked }).catch(() => {});
     config.hideNewTab = checked;
   });
   content.appendChild(
@@ -82,7 +82,7 @@ function buildContent(): HTMLElement {
   );
 
   spotlightToggle = createToggle(config.isSpotlightEnabled, (checked) => {
-    storage.sync.set({ isSpotlightEnabled: checked });
+    storage.sync.set({ isSpotlightEnabled: checked }).catch(() => {});
     config.isSpotlightEnabled = checked;
   });
   content.appendChild(
@@ -96,7 +96,7 @@ function buildContent(): HTMLElement {
   );
 
   tabsToggle = createToggle(config.isTabEnabled, (checked) => {
-    storage.sync.set({ isTabEnabled: checked });
+    storage.sync.set({ isTabEnabled: checked }).catch(() => {});
     config.isTabEnabled = checked;
   });
   content.appendChild(
@@ -110,7 +110,7 @@ function buildContent(): HTMLElement {
   );
 
   glanceToggle = createToggle(config.isGlanceEnabled, (checked) => {
-    storage.sync.set({ isGlanceEnabled: checked });
+    storage.sync.set({ isGlanceEnabled: checked }).catch(() => {});
     config.isGlanceEnabled = checked;
   });
   content.appendChild(
@@ -183,7 +183,7 @@ function buildEngineSelector(): HTMLElement {
     if (!item?.dataset.value) return;
     const value = item.dataset.value;
     config.searchEngine = value;
-    storage.sync.set({ searchEngine: value });
+    storage.sync.set({ searchEngine: value }).catch(() => {});
     engineOptionsList.classList.remove("scythe-open");
   });
 

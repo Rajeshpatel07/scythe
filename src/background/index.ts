@@ -125,44 +125,21 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-async function fetchFaviconData(
-  pageUrl: string,
-  imgSize: number,
-): Promise<{ status: string; dataUrl: string | null }> {
-  const faviconUrl = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-  try {
-    const response = await fetch(faviconUrl, { signal: controller.signal });
-    if (!response.ok) throw Error();
-    const blob = await response.blob();
-    const dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        clearTimeout(timeoutId);
-        resolve(reader.result as string);
-      };
-      reader.onerror = () => {
-        clearTimeout(timeoutId);
-        reject();
-      };
-      reader.readAsDataURL(blob);
-    });
-    return { status: "success", dataUrl };
-  } catch {
-    clearTimeout(timeoutId);
-    return { status: "error", dataUrl: null };
-  }
+function buildChromeFaviconUrl(pageUrl: string, imgSize: number): string {
+  return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
 }
 
-async function fetchHighResFaviconData(
-  hostname: string,
+function buildHighResFaviconUrl(hostname: string): string {
+  return `https://www.google.com/s2/favicons?sz=128&domain_url=https://${hostname}`;
+}
+
+async function fetchAsDataUrl(
+  url: string,
 ): Promise<{ status: string; dataUrl: string | null }> {
-  const imgUrl = `https://www.google.com/s2/favicons?sz=128&domain_url=https://${hostname}`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
-    const response = await fetch(imgUrl, { signal: controller.signal });
+    const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) throw Error();
     const blob = await response.blob();
     const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -233,8 +210,9 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ status: "error", dataUrl: null });
           return true;
         }
-        const imgSize = request.size || 32;
-        fetchFaviconData(pageUrl, imgSize).then(sendResponse);
+        fetchAsDataUrl(buildChromeFaviconUrl(pageUrl, request.size || 32)).then(
+          sendResponse,
+        );
         return true;
       }
 
@@ -247,7 +225,7 @@ chrome.runtime.onMessage.addListener(
         if (!pendingHighResFavicon.has(hostname)) {
           pendingHighResFavicon.set(
             hostname,
-            fetchHighResFaviconData(hostname).finally(() =>
+            fetchAsDataUrl(buildHighResFaviconUrl(hostname)).finally(() =>
               pendingHighResFavicon.delete(hostname),
             ),
           );

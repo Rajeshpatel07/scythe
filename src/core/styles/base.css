@@ -1,0 +1,4 @@
+:host {
+  /* biome-ignore lint/complexity/noImportantStyles: required to override host page isolation in extensions */
+  all: initial !important;
+}

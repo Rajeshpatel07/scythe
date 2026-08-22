@@ -18,6 +18,18 @@ import { LruCache } from "../../../core/utils/lru";
 const suggestionCache = new LruCache<string, string>(200);
 let searchVersion = 0;
 
+export function showSpotlight(): void {
+  if (
+    !config.isSpotlightOpen &&
+    !config.isTabOpen &&
+    config.isSpotlightEnabled
+  ) {
+    config.openInNewTab = false;
+    config.isSpotlightOpen = true;
+    handleWebSearch();
+  }
+}
+
 export function handleWebSearch(): void {
   createSpotlightUI();
   const root = getHostRoot();

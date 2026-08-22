@@ -1,3 +1,4 @@
+import baseCss from "../styles/base.css?raw";
 import styleCss from "../styles/style.css?raw";
 import tabsCss from "../styles/tabs.css?raw";
 import glanceCss from "../styles/glance.css?raw";
@@ -7,9 +8,9 @@ const HOST_ID = "scythe-host";
 type Feature = "spotlight" | "switcher" | "glance";
 
 const featureStyles: Record<Feature, string> = {
-  spotlight: styleCss,
-  switcher: tabsCss,
-  glance: glanceCss,
+  spotlight: baseCss + styleCss,
+  switcher: baseCss + tabsCss,
+  glance: baseCss + glanceCss,
 };
 
 const featureRootIds: Record<Feature, string> = {

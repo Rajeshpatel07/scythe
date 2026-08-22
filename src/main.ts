@@ -1,6 +1,6 @@
 import { createNewTabPage } from "./features/new-tab/components/newtab.component";
 import { config, initializeConfig } from "./core/config/config";
-import { handleWebSearch } from "./features/spotlight/services/search.service";
+import { showSpotlight } from "./features/spotlight/services/search.service";
 import { confirmSelection } from "./features/tab-switcher/handlers/selection.handler";
 import {
   handleGlobalKeys,
@@ -52,15 +52,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   await initializeConfig();
   createNewTabPage();
 });
-
-export function showSpotlight(): void {
-  if (
-    !config.isSpotlightOpen &&
-    !config.isTabOpen &&
-    config.isSpotlightEnabled
-  ) {
-    config.openInNewTab = false;
-    config.isSpotlightOpen = true;
-    handleWebSearch();
-  }
-}
