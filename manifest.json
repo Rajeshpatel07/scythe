@@ -10,7 +10,6 @@
     "tabs",
     "webNavigation",
     "browsingData",
-    "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": ["<all_urls>"],

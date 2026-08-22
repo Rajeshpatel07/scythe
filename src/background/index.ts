@@ -1,8 +1,9 @@
 import type { MessagePayload } from "../core/messaging/message.types";
 
-const DNR_RULE_ID = 1;
+const GLANCE_DNR_RULE_ID = 1;
 
 const glanceUrlByTab = new Map<number, string>();
+const glanceRuleTabs = new Set<number>();
 const pendingHighResFavicon = new Map<
   string,
   Promise<{ status: string; dataUrl: string | null }>
@@ -45,45 +46,50 @@ chrome.webNavigation.onReferenceFragmentUpdated.addListener(
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   glanceUrlByTab.delete(tabId);
+  if (glanceRuleTabs.delete(tabId)) {
+    refreshGlanceRule();
+  }
 });
 
-async function registerDNRRules() {
-  try {
-    const existing = await chrome.declarativeNetRequest.getDynamicRules();
-    const existingIds = existing.map((r) => r.id);
-
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: existingIds,
-      addRules: [
+function buildGlanceRule(): chrome.declarativeNetRequest.Rule {
+  return {
+    id: GLANCE_DNR_RULE_ID,
+    priority: 1,
+    action: {
+      type: "modifyHeaders",
+      responseHeaders: [
+        { header: "x-frame-options", operation: "remove" },
+        { header: "content-security-policy", operation: "remove" },
         {
-          id: DNR_RULE_ID,
-          priority: 1,
-          action: {
-            type: "modifyHeaders",
-            responseHeaders: [
-              { header: "x-frame-options", operation: "remove" },
-              { header: "content-security-policy", operation: "remove" },
-              {
-                header: "content-security-policy-report-only",
-                operation: "remove",
-              },
-            ],
-          },
-          condition: {
-            resourceTypes: ["sub_frame"],
-          },
+          header: "content-security-policy-report-only",
+          operation: "remove",
         },
       ],
+    },
+    condition: {
+      resourceTypes: ["sub_frame"],
+      tabIds: [...glanceRuleTabs],
+    },
+  };
+}
+
+async function refreshGlanceRule(): Promise<void> {
+  try {
+    await chrome.declarativeNetRequest.updateSessionRules({
+      removeRuleIds: [GLANCE_DNR_RULE_ID],
+      addRules: glanceRuleTabs.size > 0 ? [buildGlanceRule()] : [],
     });
   } catch {
-    // DNR registration failure is non-fatal; iframe may not load
+    // Rule updates are best-effort; stubborn sites may refuse to embed
   }
 }
 
-registerDNRRules();
-
-chrome.runtime.onInstalled.addListener(registerDNRRules);
-chrome.runtime.onStartup.addListener(registerDNRRules);
+chrome.runtime.onInstalled.addListener(() => {
+  // Drop the legacy always-on dynamic rule installed by earlier versions.
+  chrome.declarativeNetRequest
+    .updateDynamicRules({ removeRuleIds: [GLANCE_DNR_RULE_ID] })
+    .catch(() => {});
+});
 
 function sendToActiveTab(payload: { action: string; reverse?: boolean }): void {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -311,6 +317,8 @@ chrome.runtime.onMessage.addListener(
       case "openGlance":
         if (request.url && sender.tab?.id) {
           glanceUrlByTab.set(sender.tab.id, request.url);
+          glanceRuleTabs.add(sender.tab.id);
+          refreshGlanceRule();
         }
         sendResponse({ success: true });
         return;
@@ -334,6 +342,9 @@ chrome.runtime.onMessage.addListener(
       case "closeGlance":
         if (sender.tab?.id) {
           glanceUrlByTab.delete(sender.tab.id);
+          if (glanceRuleTabs.delete(sender.tab.id)) {
+            refreshGlanceRule();
+          }
         }
         sendResponse({ success: true });
         return;
