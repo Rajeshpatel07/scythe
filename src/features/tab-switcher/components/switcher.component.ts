@@ -1,6 +1,7 @@
 import {
   loadFaviconFromCache,
   getHighResFallback,
+  persistFavicon,
 } from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { TabsResponse } from "../../../core/types/domain.types";
@@ -128,34 +129,31 @@ export async function renderTabs(): Promise<void> {
 
     if (cachedDataUrl && cachedDataUrl !== "null") {
       img.src = cachedDataUrl;
-    } else {
-      // Load fallback extension icon/default favicon first
-      loadFaviconFromCache(tab.url, img, 128);
+    } else if (hostname && !isChromeSchema) {
+      // High-res fetch covers this case; skip the redundant low-res request
+      // and show the extension icon until it lands.
+      img.src = chrome.runtime.getURL("src/assets/icon48.png");
 
-      if (hostname && !isChromeSchema) {
-        getHighResFallback(hostname)
-          .then((highResResult) => {
-            if (currentVersion !== renderVersion) return;
-            if (highResResult.status === "success" && highResResult.dataUrl) {
-              if (img.getAttribute("data-loading-url") === currentTargetUrl) {
-                img.style.opacity = "0.4";
-                const src = highResResult.dataUrl;
-                setTimeout(() => {
-                  if (currentVersion === renderVersion && src) {
-                    img.src = src;
-                    img.style.opacity = "1";
-                  }
-                }, 60);
-                storage.local
-                  .set({
-                    [storageKey]: highResResult.dataUrl,
-                  })
-                  .catch(() => {});
-              }
+      getHighResFallback(hostname)
+        .then((highResResult) => {
+          if (currentVersion !== renderVersion) return;
+          if (highResResult.status === "success" && highResResult.dataUrl) {
+            if (img.getAttribute("data-loading-url") === currentTargetUrl) {
+              img.style.opacity = "0.4";
+              const src = highResResult.dataUrl;
+              setTimeout(() => {
+                if (currentVersion === renderVersion && src) {
+                  img.src = src;
+                  img.style.opacity = "1";
+                }
+              }, 60);
+              persistFavicon(hostname, highResResult.dataUrl);
             }
-          })
-          .catch(() => {});
-      }
+          }
+        })
+        .catch(() => {});
+    } else {
+      loadFaviconFromCache(tab.url, img, 128);
     }
 
     tabItem.appendChild(img);

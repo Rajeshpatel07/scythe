@@ -6,6 +6,9 @@ export const storage = {
     set(items: Record<string, unknown>): Promise<void> {
       return chrome.storage.local.set(items);
     },
+    remove(keys: string | string[]): Promise<void> {
+      return chrome.storage.local.remove(keys);
+    },
   },
   sync: {
     get<T>(keys: string | string[]): Promise<Record<string, T>> {

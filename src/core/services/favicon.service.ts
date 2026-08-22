@@ -1,10 +1,14 @@
 import { MessageBroker } from "../messaging/message.broker";
 import { HAS_PROTOCOL_REGEX } from "../config/constants";
 import type { FaviconResponse } from "../messaging/message.types";
+import { LruCache } from "../utils/lru";
+import { storage } from "../storage/storage.utils";
 
 const MAX_CACHE_SIZE = 200;
+const FAVICON_INDEX_KEY = "favIndex";
+const MAX_PERSISTED_FAVICONS = 100;
 
-const faviconCache = new Map<string, string>();
+const faviconCache = new LruCache<string, string>(MAX_CACHE_SIZE);
 const pendingFavicons = new Map<string, Promise<string | null>>();
 
 function getFaviconFallbackUrl(url: string): string {
@@ -21,16 +25,6 @@ function cacheKey(url: string, size?: number): string {
   return `${size ?? 32}|${url}`;
 }
 
-function cacheDataUrl(key: string, dataUrl: string): void {
-  if (faviconCache.size >= MAX_CACHE_SIZE) {
-    const oldestKey = faviconCache.keys().next().value;
-    if (oldestKey !== undefined) {
-      faviconCache.delete(oldestKey);
-    }
-  }
-  faviconCache.set(key, dataUrl);
-}
-
 function getFaviconDataUrl(url: string, size?: number): Promise<string | null> {
   const key = cacheKey(url, size);
   const cached = faviconCache.get(key);
@@ -44,7 +38,7 @@ function getFaviconDataUrl(url: string, size?: number): Promise<string | null> {
   const promise = MessageBroker.send({ action: "getFavicon", url, size })
     .then((response) => {
       if (response?.status === "success" && response.dataUrl) {
-        cacheDataUrl(key, response.dataUrl);
+        faviconCache.set(key, response.dataUrl);
         return response.dataUrl;
       }
       return null;
@@ -90,5 +84,34 @@ export async function getHighResFallback(
     };
   } catch {
     return { status: "error", dataUrl: null };
+  }
+}
+
+async function getFaviconIndex(): Promise<string[]> {
+  try {
+    const result = await storage.local.get<string[]>([FAVICON_INDEX_KEY]);
+    return Array.isArray(result.favIndex) ? result.favIndex : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function persistFavicon(
+  hostname: string,
+  dataUrl: string,
+): Promise<void> {
+  const key = `fav_${hostname}`;
+  try {
+    const index = await getFaviconIndex();
+    const nextIndex = [key, ...index.filter((entry) => entry !== key)];
+    await storage.local.set({ [key]: dataUrl, favIndex: nextIndex });
+
+    const overflow = nextIndex.length - MAX_PERSISTED_FAVICONS;
+    if (overflow > 0) {
+      const evicted = nextIndex.splice(nextIndex.length - overflow, overflow);
+      await storage.local.remove(evicted);
+    }
+  } catch {
+    // Persistence is best-effort; the in-memory cache still serves the session
   }
 }

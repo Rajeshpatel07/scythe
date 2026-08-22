@@ -10,19 +10,9 @@ import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/result-item.component";
 import { resolveUrl, openUrl } from "../../../core/services/navigation.service";
 import { WWW_REGEX } from "../../../core/config/constants";
+import { LruCache } from "../../../core/utils/lru";
 
-const suggestionCache = new Map<string, string>();
-const MAX_SUGGESTION_CACHE_SIZE = 200;
-
-function cacheSuggestion(query: string, suggestion: string): void {
-  if (suggestionCache.size >= MAX_SUGGESTION_CACHE_SIZE) {
-    const oldestKey = suggestionCache.keys().next().value;
-    if (oldestKey !== undefined) {
-      suggestionCache.delete(oldestKey);
-    }
-  }
-  suggestionCache.set(query, suggestion);
-}
+const suggestionCache = new LruCache<string, string>(200);
 let searchVersion = 0;
 let suggestVersion = 0;
 
@@ -144,13 +134,11 @@ async function updateSuggestion(query: string): Promise<void> {
 
   const lowerCaseQuery = query.toLowerCase();
 
-  if (suggestionCache.has(lowerCaseQuery)) {
-    const cached = suggestionCache.get(lowerCaseQuery);
-    if (cached !== undefined) {
-      suggestionEl.innerText = cached;
-      config.currentSuggestion = cached;
-      return;
-    }
+  const cached = suggestionCache.get(lowerCaseQuery);
+  if (cached !== undefined) {
+    suggestionEl.innerText = cached;
+    config.currentSuggestion = cached;
+    return;
   }
 
   let response: HistoryResponse | null = null;
@@ -211,10 +199,10 @@ async function updateSuggestion(query: string): Promise<void> {
   if (bestSuggestion) {
     suggestionEl.innerText = bestSuggestion;
     config.currentSuggestion = bestSuggestion;
-    cacheSuggestion(lowerCaseQuery, bestSuggestion);
+    suggestionCache.set(lowerCaseQuery, bestSuggestion);
   } else {
     suggestionEl.innerText = "";
     config.currentSuggestion = "";
-    cacheSuggestion(lowerCaseQuery, "");
+    suggestionCache.set(lowerCaseQuery, "");
   }
 }
