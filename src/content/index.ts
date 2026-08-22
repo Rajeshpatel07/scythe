@@ -5,7 +5,10 @@ import {
   handleGlobalKeys,
   handleTabSwitcherCommand,
 } from "../core/handlers/keyboard.router";
-import { openGlanceModal } from "../features/glance/components/glance.component";
+import {
+  openGlanceModal,
+  hideGlance,
+} from "../features/glance/components/glance.component";
 
 document.addEventListener(
   "click",
@@ -48,9 +51,23 @@ window.addEventListener(
   { capture: true },
 );
 
+window.addEventListener("message", (event: MessageEvent) => {
+  if (
+    event.data?.type === "scythe:closeGlance" &&
+    config.isGlanceOpen
+  ) {
+    hideGlance();
+  }
+});
+
 initializeConfig();
 
 chrome.runtime.onMessage.addListener((request) => {
+  if (request.action === "closeGlanceFromFrame" && config.isGlanceOpen) {
+    hideGlance();
+    return;
+  }
+
   if (request.action === "toggleSpotlight") {
     if (
       !config.isSpotlightOpen &&

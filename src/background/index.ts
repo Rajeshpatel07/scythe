@@ -333,6 +333,17 @@ chrome.runtime.onMessage.addListener(
         return true;
       }
 
+      case "closeGlanceFromFrame":
+        if (sender.tab?.id) {
+          chrome.tabs.sendMessage(
+            sender.tab.id,
+            { action: "closeGlanceFromFrame" },
+            () => void chrome.runtime.lastError,
+          );
+        }
+        sendResponse({ success: true });
+        return;
+
       case "closeGlance":
         if (sender.tab?.id) {
           glanceUrlByTab.delete(sender.tab.id);

@@ -13,6 +13,7 @@ export type MessageAction =
   | "clearSW"
   | "openGlance"
   | "closeGlance"
+  | "closeGlanceFromFrame"
   | "getGlanceUrl"
   | "toggleTabSwitcher"
   | "toggleTabSwitcherPage";
