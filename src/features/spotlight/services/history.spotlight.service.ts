@@ -9,8 +9,17 @@ import {
 import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/result-item.component";
+import type { HistoryItem } from "../../../core/types/domain.types";
 
 let historyVersion = 0;
+
+// Fetched once per spotlight session and reused by keystroke-time suggestion
+// scoring so typing never triggers extra messaging round-trips.
+let recentHistoryCache: HistoryItem[] | null = null;
+
+export function getRecentHistorySnapshot(): HistoryItem[] {
+  return recentHistoryCache ?? [];
+}
 
 export async function populateHistory(): Promise<void> {
   historyVersion++;
@@ -24,39 +33,45 @@ export async function populateHistory(): Promise<void> {
   ) as HTMLUListElement;
   config.selectedResultIndex = -1;
 
-  const storedHistory = await getStoredHistory();
+  recentHistoryCache = null;
+  const stored = await getStoredHistory();
 
-  const needsFullFetch = storedHistory.length < 8;
-  const freshPromise = MessageBroker.send({
-    action: "getHistory",
-    ...(needsFullFetch ? { maxResults: 150 } : {}),
-  }).catch(() => ({ history: [] })) as Promise<HistoryResponse>;
-
-  if (storedHistory.length > 0) {
-    renderListItems(storedHistory.slice(0, 8), resultsList);
+  if (stored.length > 0) {
+    renderListItems(stored.slice(0, 8), resultsList);
   }
 
-  const recentResponse = await freshPromise;
+  const needsFullFetch = stored.length < 8;
+  let recent: HistoryResponse | null = null;
+  try {
+    recent = await MessageBroker.send({
+      action: "getHistory",
+      ...(needsFullFetch ? { maxResults: 150 } : {}),
+    });
+  } catch {
+    recent = null;
+  }
+
   if (currentVersion !== historyVersion) return;
 
-  const recentItems = recentResponse?.history || [];
+  const recentItems = recent?.history || [];
 
-  if (recentItems.length === 0 && storedHistory.length === 0) {
+  if (recentItems.length === 0 && stored.length === 0) {
     resultsList.innerHTML = "<li>No recent history.</li>";
+    recentHistoryCache = [];
     return;
   }
-
-  if (currentVersion !== historyVersion) return;
 
   const filteredFresh = recentItems.filter((item) =>
     filterDomainsOnly(item.url),
   );
 
-  const merged = mergeHistory(storedHistory, filteredFresh);
-  const finalHistory = merged.slice(0, 8);
+  const merged = mergeHistory(stored, filteredFresh);
+  recentHistoryCache = merged;
 
-  renderListItems(finalHistory, resultsList);
+  renderListItems(merged.slice(0, 8), resultsList);
 
   const cacheToStore = merged.length > 50 ? merged.slice(0, 50) : merged;
-  storage.local.set({ storedHistory: cacheToStore });
+  if (JSON.stringify(cacheToStore) !== JSON.stringify(stored)) {
+    storage.local.set({ storedHistory: cacheToStore }).catch(() => {});
+  }
 }

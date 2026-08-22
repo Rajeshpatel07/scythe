@@ -4,7 +4,10 @@ import {
   hideSpotlight,
 } from "../components/spotlight.component";
 import { getHostRoot } from "../../../core/utils/host.utils";
-import { populateHistory } from "./history.spotlight.service";
+import {
+  populateHistory,
+  getRecentHistorySnapshot,
+} from "./history.spotlight.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/result-item.component";
@@ -14,7 +17,6 @@ import { LruCache } from "../../../core/utils/lru";
 
 const suggestionCache = new LruCache<string, string>(200);
 let searchVersion = 0;
-let suggestVersion = 0;
 
 export function handleWebSearch(): void {
   createSpotlightUI();
@@ -47,11 +49,11 @@ export function handleWebSearch(): void {
 
       suggestTimeout = setTimeout(() => {
         updateSuggestion(query);
-      }, 10);
+      }, 120);
 
       searchTimeout = setTimeout(async () => {
         await searchAndSuggest(query);
-      }, 100);
+      }, 200);
     },
     true,
   );
@@ -115,10 +117,7 @@ async function searchAndSuggest(query: string): Promise<void> {
   }
 }
 
-async function updateSuggestion(query: string): Promise<void> {
-  suggestVersion++;
-  const currentVersion = suggestVersion;
-
+function updateSuggestion(query: string): void {
   const root = getHostRoot();
   if (!root) return;
 
@@ -141,20 +140,7 @@ async function updateSuggestion(query: string): Promise<void> {
     return;
   }
 
-  let response: HistoryResponse | null = null;
-  try {
-    response = await MessageBroker.send({
-      action: "searchHistory",
-      query,
-      maxResults: 150,
-    });
-  } catch {
-    response = null;
-  }
-
-  if (currentVersion !== suggestVersion) return;
-
-  const suggestions = response?.history || [];
+  const suggestions = getRecentHistorySnapshot();
 
   let bestScore = -1;
   let bestSuggestion = "";
