@@ -1,5 +1,5 @@
 export const LOCALHOST_REGEX =
-  /^(https?:\/\/)?localhost:\d+(\/.*)?(\?.*)?(#.*)?$/i;
+  /^(https?:\/\/)?localhost(:\d+)?(\/.*)?(\?.*)?(#.*)?$/i;
 export const LIKELY_URL_REGEX =
   /^(https?:\/\/)?([\w.-]+\.[a-z]{2,})(\/[^ ]*)?$/i;
 export const HAS_PROTOCOL_REGEX = /^https?:\/\//i;

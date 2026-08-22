@@ -19,8 +19,11 @@ const featureRootIds: Record<Feature, string> = {
 };
 
 let cachedRoot: ShadowRoot | null = null;
-let pendingRemoveTimeout: ReturnType<typeof setTimeout> | null = null;
+const pendingCleanups = new Map<Feature, ReturnType<typeof setTimeout>>();
 const activeFeatures = new Set<Feature>();
+
+// Matches the longest closing animation across feature stylesheets (0.25s).
+const FEATURE_TEARDOWN_MS = 280;
 
 function getOrCreateHost(): ShadowRoot {
   if (cachedRoot) return cachedRoot;
@@ -50,9 +53,10 @@ function ensureStyle(root: ShadowRoot, feature: Feature): void {
 }
 
 export function ensureHost(feature: Feature): ShadowRoot {
-  if (pendingRemoveTimeout !== null) {
-    clearTimeout(pendingRemoveTimeout);
-    pendingRemoveTimeout = null;
+  const pending = pendingCleanups.get(feature);
+  if (pending !== undefined) {
+    clearTimeout(pending);
+    pendingCleanups.delete(feature);
   }
 
   const root = getOrCreateHost();
@@ -69,34 +73,32 @@ export function ensureHost(feature: Feature): ShadowRoot {
 export function removeHost(feature: Feature): void {
   activeFeatures.delete(feature);
 
-  const root = getHostRoot();
-  const style = root?.querySelector(`style[data-feature="${feature}"]`);
-
-  const cleanup = () => {
-    const currentRoot = getHostRoot();
-    currentRoot?.getElementById(featureRootIds[feature])?.remove();
-    style?.remove();
-  };
-
-  if (activeFeatures.size === 0) {
-    if (pendingRemoveTimeout !== null) {
-      clearTimeout(pendingRemoveTimeout);
-    }
-    pendingRemoveTimeout = setTimeout(() => {
-      cleanup();
-      const host = document.getElementById(HOST_ID);
-      if (host) {
-        host.remove();
-      }
-      cachedRoot = null;
-      pendingRemoveTimeout = null;
-    }, 280);
-    return;
+  const existing = pendingCleanups.get(feature);
+  if (existing !== undefined) {
+    clearTimeout(existing);
   }
 
-  // Other features are still open: only tear down this feature's nodes after
-  // its closing animation, leaving the shared host and siblings untouched.
-  setTimeout(cleanup, 280);
+  const style = getHostRoot()?.querySelector(
+    `style[data-feature="${feature}"]`,
+  );
+
+  const timer = setTimeout(() => {
+    pendingCleanups.delete(feature);
+
+    // The feature was reopened before its closing animation finished;
+    // ensureHost already replaced the stale nodes, so keep them.
+    if (activeFeatures.has(feature)) return;
+
+    getHostRoot()?.getElementById(featureRootIds[feature])?.remove();
+    style?.remove();
+
+    if (activeFeatures.size === 0 && pendingCleanups.size === 0) {
+      document.getElementById(HOST_ID)?.remove();
+      cachedRoot = null;
+    }
+  }, FEATURE_TEARDOWN_MS);
+
+  pendingCleanups.set(feature, timer);
 }
 
 export function getHostRoot(): ShadowRoot | null {

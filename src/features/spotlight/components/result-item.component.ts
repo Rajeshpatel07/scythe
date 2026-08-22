@@ -61,7 +61,9 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
       (config.selectedResultIndex + 1) % results.length;
   } else if (direction === "ArrowUp") {
     config.selectedResultIndex =
-      (config.selectedResultIndex - 1 + results.length) % results.length;
+      config.selectedResultIndex === -1
+        ? results.length - 1
+        : (config.selectedResultIndex - 1 + results.length) % results.length;
   }
 
   results[config.selectedResultIndex]?.classList.add("selected");
