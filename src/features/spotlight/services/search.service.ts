@@ -4,7 +4,11 @@ import {
   hideSpotlight,
 } from "../components/spotlight.component";
 import { getHostRoot } from "../../../core/utils/host.utils";
-import { populateHistory } from "./history.spotlight.service";
+import {
+  populateHistory,
+  ensureHistoryIndex,
+  getHistoryIndexSync,
+} from "./history.spotlight.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/result-item.component";
@@ -33,6 +37,8 @@ export function handleWebSearch(): void {
   const root = getHostRoot();
   if (!root) return;
 
+  void ensureHistoryIndex();
+
   const searchInput = root.getElementById(
     "spotlight-search-input-ext",
   ) as HTMLInputElement;
@@ -55,6 +61,10 @@ export function handleWebSearch(): void {
 
       if (query.length === 0) return;
 
+      // Instant feedback from the local index (0ms) keeps typing feeling
+      // snappy; the debounced history query refines it with the full index.
+      updateGhostInstant(query, root);
+
       searchTimeout = setTimeout(async () => {
         await searchAndSuggest(query);
       }, SEARCH_DEBOUNCE_MS);
@@ -64,6 +74,50 @@ export function handleWebSearch(): void {
 
   populateHistory();
   setGhostSuggestion(root, "");
+}
+
+function updateGhostInstant(query: string, root: ShadowRoot): void {
+  const lower = query.toLowerCase();
+
+  const cached = suggestionCache.get(lower);
+  if (cached !== undefined) {
+    setGhostSuggestion(root, cached);
+    return;
+  }
+
+  const index = getHistoryIndexSync();
+  if (!index || index.length === 0) return;
+
+  const hasPath = lower.includes("/");
+  let bestScore = -1;
+  let bestSuggestion = "";
+
+  for (const entry of index) {
+    let matched = false;
+    let candidate = "";
+
+    if (hasPath) {
+      if (entry.fullPathLower.startsWith(lower)) {
+        candidate = query + entry.fullPath.slice(query.length);
+        matched = true;
+      }
+    } else if (entry.authorityLower.startsWith(lower)) {
+      candidate = query + entry.authority.slice(query.length);
+      matched = true;
+    }
+
+    if (!matched) continue;
+    if (candidate.toLowerCase() === lower) continue;
+
+    const score =
+      (entry.raw.typedCount || 0) * 10 + (entry.raw.visitCount || 0);
+    if (score > bestScore) {
+      bestScore = score;
+      bestSuggestion = candidate;
+    }
+  }
+
+  if (bestSuggestion) setGhostSuggestion(root, bestSuggestion);
 }
 
 export function handleSearchSubmit(input: string): void {

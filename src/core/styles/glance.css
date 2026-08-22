@@ -71,7 +71,7 @@
 
 #glance-extension-modal .glance-content-frame {
   width: min(82vw, calc(100vw - 120px));
-  height: 98vh;
+  height: 99.5vh;
   border: 1px solid #3b3b3b;
   border-radius: 5px;
   box-shadow: 0 28px 75px rgba(0, 0, 0, 0.4);
