@@ -4,10 +4,7 @@ import {
   hideSpotlight,
 } from "../components/spotlight.component";
 import { getHostRoot } from "../../../core/utils/host.utils";
-import {
-  populateHistory,
-  getRecentHistorySnapshot,
-} from "./history.spotlight.service";
+import { populateHistory } from "./history.spotlight.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
 import { createListItem } from "../components/result-item.component";
@@ -16,6 +13,7 @@ import { WWW_REGEX } from "../../../core/config/constants";
 import { LruCache } from "../../../core/utils/lru";
 
 const suggestionCache = new LruCache<string, string>(200);
+const SEARCH_DEBOUNCE_MS = 150;
 let searchVersion = 0;
 
 export function showSpotlight(): void {
@@ -40,7 +38,6 @@ export function handleWebSearch(): void {
   ) as HTMLInputElement;
 
   let searchTimeout: ReturnType<typeof setTimeout>;
-  let suggestTimeout: ReturnType<typeof setTimeout>;
 
   searchInput.addEventListener(
     "input",
@@ -48,30 +45,25 @@ export function handleWebSearch(): void {
       const query = searchInput.value.trim();
 
       clearTimeout(searchTimeout);
-      clearTimeout(suggestTimeout);
 
       if (searchInput.value.length === 0) {
         searchVersion++;
         populateHistory();
-        updateSuggestion("");
+        setGhostSuggestion(root, "");
         return;
       }
 
       if (query.length === 0) return;
 
-      suggestTimeout = setTimeout(() => {
-        updateSuggestion(query);
-      }, 120);
-
       searchTimeout = setTimeout(async () => {
         await searchAndSuggest(query);
-      }, 200);
+      }, SEARCH_DEBOUNCE_MS);
     },
     true,
   );
 
   populateHistory();
-  updateSuggestion("");
+  setGhostSuggestion(root, "");
 }
 
 export function handleSearchSubmit(input: string): void {
@@ -97,9 +89,16 @@ async function searchAndSuggest(query: string): Promise<void> {
 
   resultsList.innerHTML = "<li>Searching history...</li>";
 
+  // One substring query over the full history feeds both the results list
+  // (top entries) and the ghost-text completion, so deep paths like
+  // github.com/<user> are still suggestable.
   let response: HistoryResponse | null = null;
   try {
-    response = await MessageBroker.send({ action: "searchHistory", query });
+    response = await MessageBroker.send({
+      action: "searchHistory",
+      query,
+      maxResults: 150,
+    });
   } catch {
     response = null;
   }
@@ -109,57 +108,61 @@ async function searchAndSuggest(query: string): Promise<void> {
   if (!response?.history) {
     resultsList.innerHTML =
       "<li class='spotlight-result-item-ext'>Could not search history. Fetching web suggestions...</li>";
+    setGhostSuggestion(root, "");
     return;
   }
 
-  if (currentVersion !== searchVersion) return;
+  renderResults(resultsList, query, response.history);
+  applyGhostSuggestion(root, query, response.history);
+}
 
+function renderResults(
+  resultsList: HTMLUListElement,
+  query: string,
+  history: HistoryResponse["history"],
+): void {
   resultsList.innerHTML = "";
-  if (response.history.length === 0 && query.length > 0) {
+  if (history.length === 0 && query.length > 0) {
     const li = createListItem({ title: query, url: query, showUrl: false });
     resultsList.appendChild(li);
     return;
-  } else {
-    const frag = document.createDocumentFragment();
-    response.history.forEach((item) => {
-      const li = createListItem({ title: item.title, url: item.url || "" });
-      frag.appendChild(li);
-    });
-    resultsList.appendChild(frag);
   }
+
+  const frag = document.createDocumentFragment();
+  history.slice(0, 8).forEach((item) => {
+    const li = createListItem({ title: item.title, url: item.url || "" });
+    frag.appendChild(li);
+  });
+  resultsList.appendChild(frag);
 }
 
-function updateSuggestion(query: string): void {
-  const root = getHostRoot();
-  if (!root) return;
-
+function setGhostSuggestion(root: ShadowRoot, suggestion: string): void {
   const suggestionEl = root.getElementById(
     "spotlight-suggestion-ext",
   ) as HTMLLIElement;
+  suggestionEl.innerText = suggestion;
+  config.currentSuggestion = suggestion;
+}
 
-  if (!query) {
-    suggestionEl.innerText = "";
-    config.currentSuggestion = "";
-    return;
-  }
-
+function applyGhostSuggestion(
+  root: ShadowRoot,
+  query: string,
+  history: HistoryResponse["history"],
+): void {
   const lowerCaseQuery = query.toLowerCase();
 
   const cached = suggestionCache.get(lowerCaseQuery);
   if (cached !== undefined) {
-    suggestionEl.innerText = cached;
-    config.currentSuggestion = cached;
+    setGhostSuggestion(root, cached);
     return;
   }
-
-  const suggestions = getRecentHistorySnapshot();
 
   let bestScore = -1;
   let bestSuggestion = "";
   const hasPath = lowerCaseQuery.includes("/");
 
-  for (let i = 0; i < suggestions.length; i++) {
-    const res = suggestions[i];
+  for (let i = 0; i < history.length; i++) {
+    const res = history[i];
     if (!res.url?.startsWith("http")) continue;
 
     let url: URL;
@@ -194,13 +197,6 @@ function updateSuggestion(query: string): void {
     }
   }
 
-  if (bestSuggestion) {
-    suggestionEl.innerText = bestSuggestion;
-    config.currentSuggestion = bestSuggestion;
-    suggestionCache.set(lowerCaseQuery, bestSuggestion);
-  } else {
-    suggestionEl.innerText = "";
-    config.currentSuggestion = "";
-    suggestionCache.set(lowerCaseQuery, "");
-  }
+  setGhostSuggestion(root, bestSuggestion);
+  suggestionCache.set(lowerCaseQuery, bestSuggestion);
 }

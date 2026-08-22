@@ -9,17 +9,8 @@ import {
 import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { renderListItems } from "../components/result-item.component";
-import type { HistoryItem } from "../../../core/types/domain.types";
 
 let historyVersion = 0;
-
-// Fetched once per spotlight session and reused by keystroke-time suggestion
-// scoring so typing never triggers extra messaging round-trips.
-let recentHistoryCache: HistoryItem[] | null = null;
-
-export function getRecentHistorySnapshot(): HistoryItem[] {
-  return recentHistoryCache ?? [];
-}
 
 export async function populateHistory(): Promise<void> {
   historyVersion++;
@@ -33,7 +24,6 @@ export async function populateHistory(): Promise<void> {
   ) as HTMLUListElement;
   config.selectedResultIndex = -1;
 
-  recentHistoryCache = null;
   const stored = await getStoredHistory();
 
   if (stored.length > 0) {
@@ -57,7 +47,6 @@ export async function populateHistory(): Promise<void> {
 
   if (recentItems.length === 0 && stored.length === 0) {
     resultsList.innerHTML = "<li>No recent history.</li>";
-    recentHistoryCache = [];
     return;
   }
 
@@ -66,7 +55,6 @@ export async function populateHistory(): Promise<void> {
   );
 
   const merged = mergeHistory(stored, filteredFresh);
-  recentHistoryCache = merged;
 
   renderListItems(merged.slice(0, 8), resultsList);
 
