@@ -1,9 +1,8 @@
 import type { MessagePayload } from "../core/messaging/message.types";
 
-const GLANCE_DNR_RULE_ID = 1;
+const RULE_ID = 1;
 
 const glanceUrlByTab = new Map<number, string>();
-const glanceRuleTabs = new Set<number>();
 const pendingHighResFavicon = new Map<
   string,
   Promise<{ status: string; dataUrl: string | null }>
@@ -53,46 +52,38 @@ chrome.webNavigation.onReferenceFragmentUpdated.addListener(
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   glanceUrlByTab.delete(tabId);
-  if (glanceRuleTabs.delete(tabId)) {
-    refreshGlanceRule();
-  }
 });
 
-function buildGlanceRule(): chrome.declarativeNetRequest.Rule {
-  return {
-    id: GLANCE_DNR_RULE_ID,
+async function updateRules() {
+  const rule: chrome.declarativeNetRequest.Rule = {
+    id: RULE_ID,
     priority: 1,
     action: {
       type: "modifyHeaders",
       responseHeaders: [
-        { header: "x-frame-options", operation: "remove" },
-        { header: "frame-options", operation: "remove" },
-        { header: "content-security-policy", operation: "remove" },
-        {
-          header: "content-security-policy-report-only",
-          operation: "remove",
-        },
-        { header: "x-content-security-policy", operation: "remove" },
-        { header: "x-webkit-csp", operation: "remove" },
-        { header: "cross-origin-embedder-policy", operation: "remove" },
-        { header: "cross-origin-opener-policy", operation: "remove" },
-        { header: "cross-origin-resource-policy", operation: "remove" },
-        { header: "permissions-policy", operation: "remove" },
-        { header: "x-permissions-policy", operation: "remove" },
+        { header: "X-Frame-Options", operation: "remove" },
+        { header: "Content-Security-Policy", operation: "remove" },
+        { header: "Content-Security-Policy-Report-Only", operation: "remove" },
+        { header: "X-Content-Security-Policy", operation: "remove" },
+        { header: "X-WebKit-CSP", operation: "remove" },
+        { header: "Cross-Origin-Embedder-Policy", operation: "remove" },
+        { header: "Cross-Origin-Opener-Policy", operation: "remove" },
+        { header: "Cross-Origin-Resource-Policy", operation: "remove" },
+        { header: "Permissions-Policy", operation: "remove" },
+        { header: "X-Permissions-Policy", operation: "remove" },
+        { header: "frame-ancestors", operation: "remove" },
       ],
     },
     condition: {
+      urlFilter: "*",
       resourceTypes: ["sub_frame"],
-      tabIds: [...glanceRuleTabs],
     },
   };
-}
 
-async function refreshGlanceRule(): Promise<void> {
   try {
-    await chrome.declarativeNetRequest.updateSessionRules({
-      removeRuleIds: [GLANCE_DNR_RULE_ID],
-      addRules: glanceRuleTabs.size > 0 ? [buildGlanceRule()] : [],
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: [RULE_ID],
+      addRules: [rule],
     });
   } catch {
     // Rule updates are best-effort; stubborn sites may refuse to embed
@@ -100,10 +91,7 @@ async function refreshGlanceRule(): Promise<void> {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  // Drop the legacy always-on dynamic rule installed by earlier versions.
-  chrome.declarativeNetRequest
-    .updateDynamicRules({ removeRuleIds: [GLANCE_DNR_RULE_ID] })
-    .catch(() => {});
+  updateRules();
 });
 
 function sendToActiveTab(payload: { action: string; reverse?: boolean }): void {
@@ -310,9 +298,6 @@ chrome.runtime.onMessage.addListener(
       case "openGlance":
         if (request.url && sender.tab?.id) {
           glanceUrlByTab.set(sender.tab.id, request.url);
-          glanceRuleTabs.add(sender.tab.id);
-          refreshGlanceRule().then(() => sendResponse({ success: true }));
-          return true;
         }
         sendResponse({ success: true });
         return;
@@ -347,9 +332,6 @@ chrome.runtime.onMessage.addListener(
       case "closeGlance":
         if (sender.tab?.id) {
           glanceUrlByTab.delete(sender.tab.id);
-          if (glanceRuleTabs.delete(sender.tab.id)) {
-            refreshGlanceRule();
-          }
         }
         sendResponse({ success: true });
         return;
