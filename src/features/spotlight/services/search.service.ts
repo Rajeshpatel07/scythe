@@ -81,7 +81,7 @@ function updateGhostInstant(query: string, root: ShadowRoot): void {
 
   const cached = suggestionCache.get(lower);
   if (cached !== undefined) {
-    setGhostSuggestion(root, cached);
+    setGhostSuggestion(root, cached, query);
     return;
   }
 
@@ -117,7 +117,12 @@ function updateGhostInstant(query: string, root: ShadowRoot): void {
     }
   }
 
-  if (bestSuggestion) setGhostSuggestion(root, bestSuggestion);
+  if (bestSuggestion) {
+    suggestionCache.set(lower, bestSuggestion);
+    setGhostSuggestion(root, bestSuggestion, query);
+  } else {
+    clearGhostUnlessPrefix(root, query);
+  }
 }
 
 export function handleSearchSubmit(input: string): void {
@@ -143,9 +148,6 @@ async function searchAndSuggest(query: string): Promise<void> {
 
   resultsList.innerHTML = "<li>Searching history...</li>";
 
-  // One substring query over the full history feeds both the results list
-  // (top entries) and the ghost-text completion, so deep paths like
-  // github.com/<user> are still suggestable.
   let response: HistoryResponse | null = null;
   try {
     response = await MessageBroker.send({
@@ -159,10 +161,20 @@ async function searchAndSuggest(query: string): Promise<void> {
 
   if (currentVersion !== searchVersion) return;
 
+  // The input may have moved on while the query was in flight; a newer
+  // debounced search will cover it, so never paint stale results or ghosts.
+  const liveInput =
+    (
+      root.getElementById(
+        "spotlight-search-input-ext",
+      ) as HTMLInputElement | null
+    )?.value.trim() ?? query;
+  if (liveInput !== query) return;
+
   if (!response?.history) {
     resultsList.innerHTML =
       "<li class='spotlight-result-item-ext'>Could not search history. Fetching web suggestions...</li>";
-    setGhostSuggestion(root, "");
+    clearGhostUnlessPrefix(root, query);
     return;
   }
 
@@ -190,12 +202,40 @@ function renderResults(
   resultsList.appendChild(frag);
 }
 
-function setGhostSuggestion(root: ShadowRoot, suggestion: string): void {
+function setGhostSuggestion(
+  root: ShadowRoot,
+  suggestion: string,
+  query?: string,
+): void {
   const suggestionEl = root.getElementById(
     "spotlight-suggestion-ext",
-  ) as HTMLLIElement;
-  suggestionEl.innerText = suggestion;
-  config.currentSuggestion = suggestion;
+  ) as HTMLLIElement | null;
+  if (!suggestionEl) return;
+
+  let next = suggestion || "";
+  const q = (query ?? "").toLowerCase();
+  if (next && q) {
+    const nextLower = next.toLowerCase();
+    if (!nextLower.startsWith(q) || nextLower === q) next = "";
+  }
+
+  if (
+    config.currentSuggestion === next &&
+    suggestionEl.innerText === next
+  ) {
+    return;
+  }
+
+  suggestionEl.innerText = next;
+  config.currentSuggestion = next;
+}
+
+function clearGhostUnlessPrefix(root: ShadowRoot, query: string): void {
+  if (
+    config.currentSuggestion?.toLowerCase().startsWith(query.toLowerCase())
+  )
+    return;
+  setGhostSuggestion(root, "", query);
 }
 
 function applyGhostSuggestion(
@@ -207,7 +247,7 @@ function applyGhostSuggestion(
 
   const cached = suggestionCache.get(lowerCaseQuery);
   if (cached !== undefined) {
-    setGhostSuggestion(root, cached);
+    setGhostSuggestion(root, cached, query);
     return;
   }
 
@@ -253,6 +293,13 @@ function applyGhostSuggestion(
     }
   }
 
-  setGhostSuggestion(root, bestSuggestion);
-  suggestionCache.set(lowerCaseQuery, bestSuggestion);
+  if (bestSuggestion) {
+    setGhostSuggestion(root, bestSuggestion, query);
+    suggestionCache.set(lowerCaseQuery, bestSuggestion);
+  } else {
+    // A debounced miss must not wipe the instant ghost shown above when
+    // that ghost is still a valid completion of this query. Empties are
+    // deliberately never cached.
+    clearGhostUnlessPrefix(root, query);
+  }
 }
