@@ -6,7 +6,7 @@
     -webkit-backdrop-filter: blur(0px);
   }
   to {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -14,7 +14,7 @@
 
 @keyframes spotlight-overlay-out {
   from {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -132,7 +132,7 @@
   z-index: 2;
 }
 
-/* The ghost text for autocompletion */
+/* The inline autocompletion text shown behind the input */
 #spotlight-suggestion-ext {
   position: absolute;
   top: 0;

@@ -1,6 +1,6 @@
 import type { MessagePayload } from "../core/messaging/message.types";
-import { updateRules } from "./services/rules.service";
-import { handleCommand } from "./services/command-router.service";
+import { installGlanceHeaderRules } from "./services/rules.service";
+import { handleBrowserCommand } from "./services/command-router.service";
 import {
   handleTabRemoved,
   onGlanceSubFrameNavigation,
@@ -18,10 +18,10 @@ chrome.webNavigation.onReferenceFragmentUpdated.addListener(
 chrome.tabs.onRemoved.addListener(handleTabRemoved);
 
 chrome.runtime.onInstalled.addListener(() => {
-  updateRules();
+  installGlanceHeaderRules();
 });
 
-chrome.commands.onCommand.addListener(handleCommand);
+chrome.commands.onCommand.addListener(handleBrowserCommand);
 
 chrome.runtime.onMessage.addListener(
   (

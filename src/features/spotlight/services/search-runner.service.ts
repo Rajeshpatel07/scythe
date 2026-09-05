@@ -3,13 +3,16 @@ import { hideSpotlight } from "../components/spotlight.component";
 import { getHostRoot } from "../../../core/utils/host.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import type { HistoryResponse } from "../../../core/types/domain.types";
-import { createListItem, renderListItems } from "../components/result-item.component";
-import { resolveUrl, openUrl } from "../../../core/services/navigation.service";
-import { parseHistoryEntry } from "./suggestion.engine";
 import {
-  applyGhostSuggestion,
-  clearGhostUnlessPrefix,
-} from "./ghost.service";
+  createListItem,
+  renderListItems,
+} from "../components/result-item.component";
+import { resolveUrl, openUrl } from "../../../core/services/navigation.service";
+import { parseHistoryEntry } from "./autocompletion.engine";
+import {
+  applyAutocompletion,
+  clearAutocompletionUnlessPrefix,
+} from "./autocompletion.service";
 import {
   SEARCHING_PLACEHOLDER_HTML,
   SEARCH_FAILED_HTML,
@@ -48,7 +51,7 @@ export async function searchAndSuggest(query: string): Promise<void> {
   resultsList.innerHTML = SEARCHING_PLACEHOLDER_HTML;
 
   // One substring query over the full history feeds both the results list
-  // (top entries) and the ghost-text completion, so deep paths like
+  // (top entries) and the autocompletion text, so deep paths like
   // github.com/<user> are still suggestable.
   let response: HistoryResponse | null = null;
   try {
@@ -64,18 +67,16 @@ export async function searchAndSuggest(query: string): Promise<void> {
   if (currentVersion !== searchVersion) return;
 
   // The input may have moved on while the query was in flight; a newer
-  // debounced search will cover it, so never paint stale results or ghosts.
+  // debounced search will cover it, so never paint stale results or completions.
   const liveInput =
     (
-      root.getElementById(
-        SPOTLIGHT_IDS.searchInput,
-      ) as HTMLInputElement | null
+      root.getElementById(SPOTLIGHT_IDS.searchInput) as HTMLInputElement | null
     )?.value.trim() ?? query;
   if (liveInput !== query) return;
 
   if (!response?.history) {
     resultsList.innerHTML = SEARCH_FAILED_HTML;
-    clearGhostUnlessPrefix(root, query);
+    clearAutocompletionUnlessPrefix(root, query);
     return;
   }
 
@@ -86,7 +87,7 @@ export async function searchAndSuggest(query: string): Promise<void> {
     const entry = parseHistoryEntry(item);
     if (entry) candidates.push(entry);
   }
-  applyGhostSuggestion(root, query, candidates);
+  applyAutocompletion(root, query, candidates);
 }
 
 function renderResults(

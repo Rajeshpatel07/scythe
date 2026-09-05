@@ -1,7 +1,7 @@
 import { WWW_REGEX } from "../../../core/config/constants";
 import { TYPED_COUNT_WEIGHT } from "../spotlight.constants";
 
-export interface SuggestionCandidate {
+export interface AutocompletionCandidate {
   authority: string;
   authorityLower: string;
   fullPath: string;
@@ -18,7 +18,7 @@ interface ScorableItem {
 
 export function parseHistoryEntry(
   item: ScorableItem,
-): SuggestionCandidate | null {
+): AutocompletionCandidate | null {
   if (!item.url?.startsWith("http")) return null;
 
   let url: URL;
@@ -42,15 +42,15 @@ export function parseHistoryEntry(
   };
 }
 
-export function pickBestSuggestion(
+export function pickBestAutocompletion(
   query: string,
-  candidates: SuggestionCandidate[],
+  candidates: AutocompletionCandidate[],
 ): string {
   const lower = query.toLowerCase();
   const hasPath = lower.includes("/");
 
   let bestScore = -1;
-  let bestSuggestion = "";
+  let bestAutocompletion = "";
 
   for (const entry of candidates) {
     let matched = false;
@@ -72,9 +72,9 @@ export function pickBestSuggestion(
     const score = entry.typedCount * TYPED_COUNT_WEIGHT + entry.visitCount;
     if (score > bestScore) {
       bestScore = score;
-      bestSuggestion = candidate;
+      bestAutocompletion = candidate;
     }
   }
 
-  return bestSuggestion;
+  return bestAutocompletion;
 }

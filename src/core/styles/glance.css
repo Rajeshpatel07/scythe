@@ -1,26 +1,26 @@
 @keyframes glance-overlay-in {
   from {
     background-color: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(0px) saturate(100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
   }
   to {
     background-color: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(8px) saturate(120%);
-    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 }
 
 @keyframes glance-overlay-out {
   from {
     background-color: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(8px) saturate(120%);
-    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   to {
     background-color: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(0px) saturate(100%);
-    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
   }
 }
 
@@ -60,8 +60,8 @@
 
   overflow: hidden;
 
-  backdrop-filter: blur(0px) saturate(100%);
-  -webkit-backdrop-filter: blur(0px) saturate(100%);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
   animation: glance-overlay-in 0.25s ease forwards;
 }
 

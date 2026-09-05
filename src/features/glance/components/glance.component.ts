@@ -6,7 +6,7 @@ import {
 } from "../../../core/utils/host.utils";
 import { openUrl } from "../../../core/services/navigation.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
-import { el } from "../../../shared/ui/dom-factory";
+import { createElement } from "../../../shared/ui/dom-factory";
 
 function silenceError(err: unknown): void {
   if (
@@ -39,17 +39,17 @@ export function openGlanceModal(url: string): void {
 
   document.body.style.overflow = "hidden";
 
-  const overlay = el("div", {
+  const overlay = createElement("div", {
     id: "glance-extension-modal",
     className: "glance-overlay",
   });
 
-  const actionContainer = el("div", {
+  const actionContainer = createElement("div", {
     id: "glance-action-container",
     className: "glance-action-container",
   });
 
-  const tabButton = el("button", {
+  const tabButton = createElement("button", {
     id: "glance-tab-btn",
     className: "glance-action-btn glance-btn-primary",
   });
@@ -62,14 +62,14 @@ export function openGlanceModal(url: string): void {
   tabButton.onclick = () => {
     MessageBroker.send({ action: "getGlanceUrl" })
       .then((response) => {
-        openUrlInBackground(response.url || url);
+        openGlanceUrlInNewTab(response.url || url);
       })
       .catch(() => {
-        openUrlInBackground(url);
+        openGlanceUrlInNewTab(url);
       });
   };
 
-  const closeButton = el("button", {
+  const closeButton = createElement("button", {
     id: "glance-close-btn",
     className: "glance-action-btn glance-btn-danger",
   });
@@ -86,7 +86,7 @@ export function openGlanceModal(url: string): void {
   actionContainer.appendChild(tabButton);
   actionContainer.appendChild(closeButton);
 
-  const iframe = el("iframe", {
+  const iframe = createElement("iframe", {
     id: "glance-content-frame",
     className: "glance-content-frame",
   });
@@ -112,7 +112,7 @@ export function openGlanceModal(url: string): void {
   });
 }
 
-async function openUrlInBackground(url: string) {
+async function openGlanceUrlInNewTab(url: string) {
   const root = getHostRoot();
   const actionContainer = root?.getElementById(
     "glance-action-container",

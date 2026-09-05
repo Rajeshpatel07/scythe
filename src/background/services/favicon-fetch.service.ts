@@ -52,12 +52,14 @@ export function fetchChromeFaviconDataUrl(
   return fetchAsDataUrl(buildChromeFaviconUrl(pageUrl, imgSize));
 }
 
-export function fetchHighResDataUrl(hostname: string): Promise<FaviconResponse> {
+export function fetchHighResDataUrl(
+  hostname: string,
+): Promise<FaviconResponse> {
   const pending = pendingHighResFavicon.get(hostname);
   if (pending) return pending;
 
-  const promise = fetchAsDataUrl(buildHighResFaviconUrl(hostname)).finally(
-    () => pendingHighResFavicon.delete(hostname),
+  const promise = fetchAsDataUrl(buildHighResFaviconUrl(hostname)).finally(() =>
+    pendingHighResFavicon.delete(hostname),
   );
   pendingHighResFavicon.set(hostname, promise);
   return promise;

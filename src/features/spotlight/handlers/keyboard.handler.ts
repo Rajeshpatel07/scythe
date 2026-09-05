@@ -42,16 +42,16 @@ export function handleCtrlEnter(): void {
   }
 }
 
-export function handleTab(): void {
-  if (!config.currentSuggestion) return;
+export function handleTabCompletion(): void {
+  if (!config.currentAutocompletion) return;
 
   const searchInput = getSearchInput();
 
   if (searchInput) {
-    searchInput.value = config.currentSuggestion;
+    searchInput.value = config.currentAutocompletion;
     // Programmatic value sets don't fire "input"; dispatch it so the
-    // results list and ghost re-run for the completed text.
+    // results list and autocompletion re-run for the completed text.
     searchInput.dispatchEvent(new Event("input", { bubbles: true }));
   }
-  config.currentSuggestion = "";
+  config.currentAutocompletion = "";
 }

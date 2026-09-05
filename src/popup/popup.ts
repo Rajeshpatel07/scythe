@@ -1,6 +1,6 @@
 import { config, initializeConfig } from "../core/config/config";
 import { storage } from "../core/storage/storage.utils";
-import { el } from "../shared/ui/dom-factory";
+import { createElement } from "../shared/ui/dom-factory";
 import googleLogo from "../assets/search-engine-logos/google.svg?inline";
 import duckduckgoLogo from "../assets/search-engine-logos/duckduckgo.svg?inline";
 import braveLogo from "../assets/search-engine-logos/brave.svg?inline";
@@ -29,24 +29,26 @@ let spotlightToggle: HTMLInputElement;
 let tabsToggle: HTMLInputElement;
 let glanceToggle: HTMLInputElement;
 
-async function init(): Promise<void> {
+async function initPopup(): Promise<void> {
   buildPopup();
-  render();
+  renderPopup();
   await initializeConfig();
-  render();
+  renderPopup();
 
   chrome.storage.onChanged.addListener(() => {
-    render();
+    renderPopup();
   });
 }
 
 function buildPopup(): void {
-  const popup = el("div", { className: "scythe-popup" }, [buildContent()]);
+  const popup = createElement("div", { className: "scythe-popup" }, [
+    buildContent(),
+  ]);
   document.body.appendChild(popup);
 }
 
 function card(row: HTMLElement): HTMLElement {
-  return el("div", { className: "scythe-card" }, [row]);
+  return createElement("div", { className: "scythe-card" }, [row]);
 }
 
 interface ToggleSettingDef {
@@ -109,7 +111,7 @@ const TOGGLE_SETTINGS: ToggleSettingDef[] = [
 ];
 
 function buildContent(): HTMLElement {
-  const content = el("div", { className: "scythe-content" });
+  const content = createElement("div", { className: "scythe-content" });
 
   content.appendChild(
     card(
@@ -133,9 +135,13 @@ function buildContent(): HTMLElement {
 }
 
 function buildEngineSelector(): HTMLElement {
-  const wrapper = el("div", { className: "scythe-engine-select-wrapper" });
+  const wrapper = createElement("div", {
+    className: "scythe-engine-select-wrapper",
+  });
 
-  const trigger = el("button", { className: "scythe-engine-select-trigger" });
+  const trigger = createElement("button", {
+    className: "scythe-engine-select-trigger",
+  });
   trigger.type = "button";
 
   engineTriggerImg = document.createElement("img");
@@ -153,17 +159,21 @@ function buildEngineSelector(): HTMLElement {
   trigger.appendChild(engineTriggerSpan);
   trigger.appendChild(arrow);
 
-  engineOptionsList = el("ul", { className: "scythe-engine-options" });
+  engineOptionsList = createElement("ul", {
+    className: "scythe-engine-options",
+  });
 
   ENGINES.forEach((engine) => {
-    const item = el("li", { className: "scythe-engine-option-item" });
+    const item = createElement("li", {
+      className: "scythe-engine-option-item",
+    });
     item.dataset.value = engine.value;
 
     const img = document.createElement("img");
     img.src = engine.favicon;
     img.alt = engine.name;
 
-    const span = el("span", { text: engine.name });
+    const span = createElement("span", { text: engine.name });
 
     item.appendChild(img);
     item.appendChild(span);
@@ -208,13 +218,17 @@ function settingRow(
   description: string,
   control: HTMLElement,
 ): HTMLElement {
-  const lbl = el("label", { text: label });
-  const desc = el("span", { text: description });
-  const details = el("div", { className: "scythe-setting-details" }, [
-    lbl,
-    desc,
+  const lbl = createElement("label", { text: label });
+  const desc = createElement("span", { text: description });
+  const details = createElement(
+    "div",
+    { className: "scythe-setting-details" },
+    [lbl, desc],
+  );
+  return createElement("div", { className: "scythe-setting-row" }, [
+    details,
+    control,
   ]);
-  return el("div", { className: "scythe-setting-row" }, [details, control]);
 }
 
 function createToggle(
@@ -230,13 +244,20 @@ function createToggle(
 }
 
 function toggleContainer(input: HTMLInputElement): HTMLElement {
-  const thumb = el("span", { className: "scythe-switch-thumb" });
-  const slider = el("span", { className: "scythe-switch-slider" }, [thumb]);
-  const label = el("label", { className: "scythe-switch" }, [input, slider]);
-  return el("div", { className: "scythe-toggle-container" }, [label]);
+  const thumb = createElement("span", { className: "scythe-switch-thumb" });
+  const slider = createElement("span", { className: "scythe-switch-slider" }, [
+    thumb,
+  ]);
+  const label = createElement("label", { className: "scythe-switch" }, [
+    input,
+    slider,
+  ]);
+  return createElement("div", { className: "scythe-toggle-container" }, [
+    label,
+  ]);
 }
 
-function render(): void {
+function renderPopup(): void {
   const current =
     ENGINES.find((e) => e.value === config.searchEngine?.toLowerCase()) ??
     ENGINES[0];
@@ -258,4 +279,4 @@ function render(): void {
   glanceToggle.checked = config.isGlanceEnabled;
 }
 
-init();
+initPopup();

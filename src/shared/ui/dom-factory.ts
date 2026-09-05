@@ -4,7 +4,7 @@ interface ElementOptions {
   text?: string;
 }
 
-export function el<K extends keyof HTMLElementTagNameMap>(
+export function createElement<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   options: ElementOptions = {},
   children: HTMLElement[] = [],

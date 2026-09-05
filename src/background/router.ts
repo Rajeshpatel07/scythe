@@ -2,7 +2,10 @@ import type {
   MessageAction,
   MessagePayload,
 } from "../core/messaging/message.types";
-import { handleGetHighResFavicon, handleGetFavicon } from "./handlers/favicon.handler";
+import {
+  handleGetHighResFavicon,
+  handleGetFavicon,
+} from "./handlers/favicon.handler";
 import { handleOpenGlance } from "./handlers/glance.handler";
 import { handleCloseGlance } from "./handlers/glance.handler";
 import { handleCloseGlanceFromFrame } from "./handlers/glance.handler";

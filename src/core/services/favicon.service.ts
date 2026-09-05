@@ -109,7 +109,9 @@ export async function persistFavicon(
     const nextIndex = [key, ...index.filter((entry) => entry !== key)];
     const overflow = nextIndex.length - MAX_PERSISTED_FAVICONS;
     const evicted =
-      overflow > 0 ? nextIndex.splice(nextIndex.length - overflow, overflow) : [];
+      overflow > 0
+        ? nextIndex.splice(nextIndex.length - overflow, overflow)
+        : [];
     await storage.local.set({ [key]: dataUrl, favIndex: nextIndex });
 
     if (evicted.length > 0) {

@@ -10,7 +10,10 @@ function rewriteNewtabEntry(): Plugin {
     closeBundle() {
       const distIndex = resolve(import.meta.dirname, "dist/index.html");
       const html = readFileSync(distIndex, "utf8");
-      writeFileSync(distIndex, html.replace("/src/newtab.ts", "/src/newtab.js"));
+      writeFileSync(
+        distIndex,
+        html.replace("/src/newtab.ts", "/src/newtab.js"),
+      );
     },
   };
 }

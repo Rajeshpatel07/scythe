@@ -1,5 +1,5 @@
 import type { MessagePayload } from "../../core/messaging/message.types";
-import { fail } from "../../core/messaging/protocol";
+import { createTabResponse } from "../../core/messaging/protocol";
 
 type SendResponse = (response?: unknown) => void;
 
@@ -11,7 +11,7 @@ export function handleCreateTab(
   sendResponse: SendResponse,
 ): boolean {
   if (!request.url) {
-    sendResponse(fail());
+    sendResponse(createTabResponse(false));
     return true;
   }
 
@@ -23,12 +23,12 @@ export function handleCreateTab(
     .then((tab) => {
       const tabId = tab.id;
       if (tabId === undefined) {
-        sendResponse({ success: false, tabId: undefined });
+        sendResponse(createTabResponse(false));
         return;
       }
 
       if (request.active) {
-        sendResponse({ success: true, tabId: tabId });
+        sendResponse(createTabResponse(true, tabId));
         return;
       }
 
@@ -41,7 +41,7 @@ export function handleCreateTab(
           cleanup();
           if (!resolved) {
             resolved = true;
-            sendResponse({ success: true, tabId: tabId });
+            sendResponse(createTabResponse(true, tabId));
           }
         }
       };
@@ -50,7 +50,7 @@ export function handleCreateTab(
         cleanup();
         if (!resolved) {
           resolved = true;
-          sendResponse({ success: true, tabId: tabId });
+          sendResponse(createTabResponse(true, tabId));
         }
       }, TAB_LOAD_TIMEOUT_MS);
 
@@ -62,7 +62,7 @@ export function handleCreateTab(
       chrome.tabs.onUpdated.addListener(listener);
     })
     .catch(() => {
-      sendResponse({ success: false, tabId: undefined });
+      sendResponse(createTabResponse(false));
     });
   return true;
 }

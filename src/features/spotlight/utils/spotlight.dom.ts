@@ -1,8 +1,5 @@
 import { getHostRoot } from "../../../core/utils/host.utils";
-import {
-  SPOTLIGHT_CLASSES,
-  SPOTLIGHT_IDS,
-} from "../spotlight.constants";
+import { SPOTLIGHT_CLASSES, SPOTLIGHT_IDS } from "../spotlight.constants";
 
 function queryInHost(selector: string): Element | null {
   const root = getHostRoot();
@@ -11,7 +8,9 @@ function queryInHost(selector: string): Element | null {
 }
 
 export function getSearchInput(): HTMLInputElement | null {
-  return queryInHost(`#${SPOTLIGHT_IDS.searchInput}`) as HTMLInputElement | null;
+  return queryInHost(
+    `#${SPOTLIGHT_IDS.searchInput}`,
+  ) as HTMLInputElement | null;
 }
 
 export function getFirstResultItem(): HTMLLIElement | null {

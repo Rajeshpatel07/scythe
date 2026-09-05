@@ -4,7 +4,7 @@ import type { ConfigState } from "../types/config.types";
 function createConfig(): ConfigState {
   const state: ConfigState = {
     selectedResultIndex: -1,
-    currentSuggestion: "",
+    currentAutocompletion: "",
     isSpotlightOpen: false,
     openInNewTab: false,
     searchEngine: "google",
@@ -79,7 +79,10 @@ if (
   chrome.storage.onChanged
 ) {
   chrome.storage.onChanged.addListener(
-    (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
+    (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ) => {
       if (areaName !== "sync") return;
       for (const key of SYNC_KEYS) {
         const change = changes[key];

@@ -3,7 +3,10 @@ import { createSpotlightUI } from "../components/spotlight.component";
 import { getHostRoot } from "../../../core/utils/host.utils";
 import { populateHistory } from "./history-list.service";
 import { ensureHistoryIndex } from "./history-index.store";
-import { setGhostSuggestion, updateGhostInstant } from "./ghost.service";
+import {
+  setAutocompletion,
+  updateAutocompletionInstant,
+} from "./autocompletion.service";
 import {
   invalidatePendingSearch,
   searchAndSuggest,
@@ -48,7 +51,7 @@ export function handleWebSearch(): void {
       if (searchInput.value.length === 0) {
         invalidatePendingSearch();
         populateHistory();
-        setGhostSuggestion(root, "");
+        setAutocompletion(root, "");
         return;
       }
 
@@ -59,7 +62,7 @@ export function handleWebSearch(): void {
 
       // Instant feedback from the local index (0ms) keeps typing feeling
       // snappy; the debounced history query refines it with the full index.
-      updateGhostInstant(query, root);
+      updateAutocompletionInstant(query, root);
 
       searchTimeout = setTimeout(() => {
         void searchAndSuggest(query);
@@ -69,5 +72,5 @@ export function handleWebSearch(): void {
   );
 
   populateHistory();
-  setGhostSuggestion(root, "");
+  setAutocompletion(root, "");
 }

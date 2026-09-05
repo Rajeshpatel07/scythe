@@ -1,17 +1,17 @@
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { getStoredHistory } from "../../../core/services/history.service";
 import type { HistoryItem } from "../../../core/types/domain.types";
-import type { SuggestionCandidate } from "./suggestion.engine";
-import { parseHistoryEntry } from "./suggestion.engine";
+import type { AutocompletionCandidate } from "./autocompletion.engine";
+import { parseHistoryEntry } from "./autocompletion.engine";
 import { HISTORY_SNAPSHOT_SIZE } from "../spotlight.constants";
 
 const HISTORY_INDEX_TTL_MS = 5 * 60 * 1000;
 
-let historyIndex: SuggestionCandidate[] | null = null;
-let historyIndexPromise: Promise<SuggestionCandidate[]> | null = null;
+let historyIndex: AutocompletionCandidate[] | null = null;
+let historyIndexPromise: Promise<AutocompletionCandidate[]> | null = null;
 let historyIndexBuiltAt = 0;
 
-export function getHistoryIndexSync(): SuggestionCandidate[] | null {
+export function getHistoryIndexSync(): AutocompletionCandidate[] | null {
   return historyIndex;
 }
 
@@ -19,7 +19,7 @@ export function invalidateHistoryIndex(): void {
   historyIndex = null;
 }
 
-export async function ensureHistoryIndex(): Promise<SuggestionCandidate[]> {
+export async function ensureHistoryIndex(): Promise<AutocompletionCandidate[]> {
   if (
     historyIndex &&
     Date.now() - historyIndexBuiltAt <= HISTORY_INDEX_TTL_MS
@@ -53,7 +53,7 @@ export async function ensureHistoryIndex(): Promise<SuggestionCandidate[]> {
       // best-effort merge
     }
 
-    const parsed: SuggestionCandidate[] = [];
+    const parsed: AutocompletionCandidate[] = [];
     for (const item of items) {
       const entry = parseHistoryEntry(item);
       if (entry) parsed.push(entry);

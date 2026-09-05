@@ -31,11 +31,11 @@ function buildSearchBar(): {
   searchInput.autocomplete = "off";
   searchInput.setAttribute("autofocus", "");
 
-  const suggestionEl = document.createElement("div");
-  suggestionEl.id = SPOTLIGHT_IDS.suggestion;
+  const autocompletionEl = document.createElement("div");
+  autocompletionEl.id = SPOTLIGHT_IDS.suggestion;
 
   inputWrapper.appendChild(searchInput);
-  inputWrapper.appendChild(suggestionEl);
+  inputWrapper.appendChild(autocompletionEl);
   searchContainer.appendChild(inputWrapper);
 
   return { container: searchContainer, input: searchInput };

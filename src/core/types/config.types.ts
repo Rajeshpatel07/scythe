@@ -1,6 +1,6 @@
 export interface ConfigState {
   selectedResultIndex: number;
-  currentSuggestion: string;
+  currentAutocompletion: string;
   isSpotlightOpen: boolean;
   openInNewTab: boolean;
   searchEngine: string | null;

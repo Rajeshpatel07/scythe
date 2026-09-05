@@ -30,7 +30,7 @@ function buildGlanceRule(): chrome.declarativeNetRequest.Rule {
   };
 }
 
-export async function updateRules(): Promise<void> {
+export async function installGlanceHeaderRules(): Promise<void> {
   try {
     await chrome.declarativeNetRequest.updateDynamicRules({
       removeRuleIds: [GLANCE_RULE_ID],

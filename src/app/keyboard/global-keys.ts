@@ -3,16 +3,14 @@ import { hideSpotlight } from "../../features/spotlight/components/spotlight.com
 import {
   handleCtrlEnter,
   handleEnter,
-  handleTab,
+  handleTabCompletion,
 } from "../../features/spotlight/handlers/keyboard.handler";
 import { navigateResults } from "../../features/spotlight/components/result-item.component";
 import {
   openSwitcher,
   closeSwitcher,
 } from "../../features/tab-switcher/components/switcher.component";
-import {
-  updateSelection,
-} from "../../features/tab-switcher/actions/selection.actions";
+import { updateSelection } from "../../features/tab-switcher/actions/selection.actions";
 import { getTabItemsCount } from "../../features/tab-switcher/state/selection.store";
 import { config } from "../../core/config/config";
 import { getSearchInput } from "../../features/spotlight/utils/spotlight.dom";
@@ -56,7 +54,10 @@ export function handleTabSwitcherCommand(isReverse: boolean): void {
   openOrCycleTabSwitcher(isReverse);
 }
 
-function handleTabShortcut(e: KeyboardEvent, isSpotlightOpen: boolean): boolean {
+function handleTabShortcut(
+  e: KeyboardEvent,
+  isSpotlightOpen: boolean,
+): boolean {
   const isModifier = e.metaKey || e.ctrlKey;
 
   if (
@@ -90,7 +91,7 @@ function handleSpotlightKeys(e: KeyboardEvent): void {
     } else if (e.key === "Escape") {
       hideSpotlight();
     } else if (e.key === "Tab") {
-      handleTab();
+      handleTabCompletion();
     }
     return;
   }

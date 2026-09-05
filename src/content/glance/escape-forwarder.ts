@@ -4,8 +4,7 @@
   window.addEventListener(
     "keydown",
     (e: KeyboardEvent) => {
-      if (e.key !== "Escape" && (e as KeyboardEvent).code !== "Escape")
-        return;
+      if (e.key !== "Escape" && (e as KeyboardEvent).code !== "Escape") return;
       if (e.defaultPrevented) return;
       if (document.fullscreenElement) return;
 

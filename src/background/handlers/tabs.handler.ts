@@ -1,5 +1,5 @@
 import type { MessagePayload } from "../../core/messaging/message.types";
-import { fail, ok } from "../../core/messaging/protocol";
+import { failResponse, okResponse } from "../../core/messaging/protocol";
 
 type SendResponse = (response?: unknown) => void;
 
@@ -26,13 +26,13 @@ export function handleSwitchTab(
   sendResponse: SendResponse,
 ): boolean {
   if (!request.id || !NUMERIC_TAB_ID.test(request.id)) {
-    sendResponse(fail());
+    sendResponse(failResponse());
     return true;
   }
 
   chrome.tabs.update(parseInt(request.id, 10), { active: true }).then(
-    () => sendResponse(ok()),
-    () => sendResponse(fail()),
+    () => sendResponse(okResponse()),
+    () => sendResponse(failResponse()),
   );
   return true;
 }

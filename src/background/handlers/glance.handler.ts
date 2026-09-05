@@ -1,5 +1,5 @@
 import type { MessagePayload } from "../../core/messaging/message.types";
-import { fail, ok } from "../../core/messaging/protocol";
+import { failResponse, okResponse } from "../../core/messaging/protocol";
 
 type SendResponse = (response?: unknown) => void;
 
@@ -51,7 +51,7 @@ export function handleOpenGlance(
   if (request.url && sender.tab?.id) {
     glanceUrlByTab.set(sender.tab.id, request.url);
   }
-  sendResponse(ok());
+  sendResponse(okResponse());
 }
 
 export function handleClearSW(
@@ -60,16 +60,16 @@ export function handleClearSW(
   sendResponse: SendResponse,
 ): boolean {
   if (!request.url) {
-    sendResponse(fail());
+    sendResponse(failResponse());
     return true;
   }
   try {
     const origin = new URL(request.url).origin;
     chrome.browsingData.removeServiceWorkers({ origins: [origin] }, () =>
-      sendResponse(ok()),
+      sendResponse(okResponse()),
     );
   } catch {
-    sendResponse(fail());
+    sendResponse(failResponse());
   }
   return true;
 }
@@ -86,7 +86,7 @@ export function handleCloseGlanceFromFrame(
       () => void chrome.runtime.lastError,
     );
   }
-  sendResponse(ok());
+  sendResponse(okResponse());
 }
 
 export function handleCloseGlance(
@@ -97,7 +97,7 @@ export function handleCloseGlance(
   if (sender.tab?.id) {
     glanceUrlByTab.delete(sender.tab.id);
   }
-  sendResponse(ok());
+  sendResponse(okResponse());
 }
 
 export function handleGetGlanceUrl(

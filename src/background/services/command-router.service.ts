@@ -28,7 +28,7 @@ export function sendToActiveTab(payload: {
   });
 }
 
-export function handleCommand(command: string): void {
+export function handleBrowserCommand(command: string): void {
   if (command === "toggle-spotlight") {
     sendToActiveTab({ action: "toggleSpotlight" });
   } else if (command === "toggle-tab-switcher") {

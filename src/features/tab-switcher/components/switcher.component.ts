@@ -12,7 +12,7 @@ import {
 } from "../../../core/utils/host.utils";
 import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
-import { el } from "../../../shared/ui/dom-factory";
+import { createElement } from "../../../shared/ui/dom-factory";
 import {
   updateSelection,
   confirmSelection,
@@ -25,17 +25,19 @@ import {
 function createTabsDock(): void {
   const shadowRoot = ensureHost("switcher");
 
-  const tabList = el("div", { id: "tab-list", className: "tab-list" });
-  const tabTitle = el("div", {
+  const tabList = createElement("div", {
+    id: "tab-list",
+    className: "tab-list",
+  });
+  const tabTitle = createElement("div", {
     id: "active-tab-title",
     className: "active-title",
   });
-  const container = el(
-    "div",
-    { className: "switcher-container" },
-    [tabList, tabTitle],
-  );
-  const overlay = el(
+  const container = createElement("div", { className: "switcher-container" }, [
+    tabList,
+    tabTitle,
+  ]);
+  const overlay = createElement(
     "div",
     { id: "switcher-overlay", className: "overlay hidden" },
     [container],
