@@ -1,4 +1,8 @@
-import type { MessagePayload } from "../core/messaging/message.types";
+import type {
+  CommandAction,
+  MessagePayload,
+} from "../core/messaging/message.types";
+import { toPageAction } from "../core/messaging/message.types";
 
 const RULE_ID = 1;
 
@@ -94,7 +98,10 @@ chrome.runtime.onInstalled.addListener(() => {
   updateRules();
 });
 
-function sendToActiveTab(payload: { action: string; reverse?: boolean }): void {
+function sendToActiveTab(payload: {
+  action: CommandAction;
+  reverse?: boolean;
+}): void {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tab = tabs[0];
     if (!tab?.id) return;
@@ -104,7 +111,7 @@ function sendToActiveTab(payload: { action: string; reverse?: boolean }): void {
       // Broadcast targeted at extension pages only. Content scripts use the
       // `*Page`-suffixed action so a broadcast never leaks into other tabs.
       chrome.runtime
-        .sendMessage({ ...payload, action: `${payload.action}Page` })
+        .sendMessage({ ...payload, action: toPageAction(payload.action) })
         .catch(() => {
           // Ignore if no extension page is listening (e.g. popup only)
         });
@@ -149,7 +156,11 @@ async function fetchAsDataUrl(
       const reader = new FileReader();
       reader.onloadend = () => {
         clearTimeout(timeoutId);
-        resolve(reader.result as string);
+        if (typeof reader.result === "string") {
+          resolve(reader.result);
+        } else {
+          reject();
+        }
       };
       reader.onerror = () => {
         clearTimeout(timeoutId);

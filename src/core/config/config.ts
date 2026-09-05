@@ -22,61 +22,71 @@ function createConfig(): ConfigState {
 
 export const config = createConfig();
 
+const SYNC_KEYS = [
+  "showNewTab",
+  "searchEngine",
+  "isSpotlightEnabled",
+  "isTabEnabled",
+  "isGlanceEnabled",
+] as const;
+
+type SyncKey = (typeof SYNC_KEYS)[number];
+
+function applySyncValue(key: SyncKey, value: unknown): void {
+  switch (key) {
+    case "showNewTab":
+      if (typeof value === "boolean") config.hideNewTab = value;
+      break;
+    case "searchEngine":
+      if (typeof value === "string") {
+        config.searchEngine = value.toLowerCase();
+      } else if (value !== undefined) {
+        config.searchEngine = "google";
+      }
+      break;
+    case "isSpotlightEnabled":
+      if (typeof value === "boolean") config.isSpotlightEnabled = value;
+      break;
+    case "isTabEnabled":
+      if (typeof value === "boolean") config.isTabEnabled = value;
+      break;
+    case "isGlanceEnabled":
+      if (typeof value === "boolean") config.isGlanceEnabled = value;
+      break;
+  }
+}
+
+function applySyncValues(values: Record<string, unknown>): void {
+  for (const key of SYNC_KEYS) {
+    if (values[key] !== undefined) {
+      applySyncValue(key, values[key]);
+    }
+  }
+}
+
 export async function initializeConfig(): Promise<void> {
   try {
-    const result = await storage.sync.get<boolean | string>([
-      "showNewTab",
-      "searchEngine",
-      "isSpotlightEnabled",
-      "isTabEnabled",
-      "isGlanceEnabled",
-    ]);
-
-    if (result.showNewTab !== undefined)
-      config.hideNewTab = result.showNewTab as boolean;
-    config.searchEngine =
-      (result.searchEngine as string)?.toLowerCase() ?? "google";
-    if (result.isSpotlightEnabled !== undefined)
-      config.isSpotlightEnabled = result.isSpotlightEnabled as boolean;
-    if (result.isTabEnabled !== undefined)
-      config.isTabEnabled = result.isTabEnabled as boolean;
-    if (result.isGlanceEnabled !== undefined)
-      config.isGlanceEnabled = result.isGlanceEnabled as boolean;
+    const result = await storage.sync.get([...SYNC_KEYS]);
+    applySyncValues(result);
   } catch {
     // Storage unavailable; defaults remain
   }
 }
-
-let storageListenerAdded = false;
 
 if (
   typeof chrome !== "undefined" &&
   chrome.storage &&
   chrome.storage.onChanged
 ) {
-  if (!storageListenerAdded) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === "sync") {
-        if (changes.showNewTab !== undefined) {
-          config.hideNewTab = changes.showNewTab.newValue as boolean;
-        }
-        if (changes.searchEngine !== undefined) {
-          config.searchEngine = (
-            changes.searchEngine.newValue as string
-          )?.toLowerCase();
-        }
-        if (changes.isSpotlightEnabled !== undefined) {
-          config.isSpotlightEnabled = changes.isSpotlightEnabled
-            .newValue as boolean;
-        }
-        if (changes.isTabEnabled !== undefined) {
-          config.isTabEnabled = changes.isTabEnabled.newValue as boolean;
-        }
-        if (changes.isGlanceEnabled !== undefined) {
-          config.isGlanceEnabled = changes.isGlanceEnabled.newValue as boolean;
+  chrome.storage.onChanged.addListener(
+    (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => {
+      if (areaName !== "sync") return;
+      for (const key of SYNC_KEYS) {
+        const change = changes[key];
+        if (change !== undefined) {
+          applySyncValue(key, change.newValue);
         }
       }
-    });
-    storageListenerAdded = true;
-  }
+    },
+  );
 }

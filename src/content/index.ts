@@ -9,6 +9,7 @@ import {
   openGlanceModal,
   hideGlance,
 } from "../features/glance/components/glance.component";
+import type { MessagePayload } from "../core/messaging/message.types";
 
 document.addEventListener(
   "click",
@@ -59,7 +60,7 @@ window.addEventListener("message", (event: MessageEvent) => {
 
 initializeConfig();
 
-chrome.runtime.onMessage.addListener((request) => {
+chrome.runtime.onMessage.addListener((request: MessagePayload) => {
   if (request.action === "closeGlanceFromFrame" && config.isGlanceOpen) {
     hideGlance();
     return;

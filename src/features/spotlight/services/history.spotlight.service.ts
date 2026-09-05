@@ -95,7 +95,8 @@ export async function populateHistory(): Promise<void> {
 
   const resultsList = root.getElementById(
     "spotlight-results-ext",
-  ) as HTMLUListElement;
+  ) as HTMLUListElement | null;
+  if (!resultsList) return;
   config.selectedResultIndex = -1;
 
   const stored = await getStoredHistory();

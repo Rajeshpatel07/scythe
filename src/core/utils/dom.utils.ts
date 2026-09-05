@@ -3,7 +3,9 @@ import { getHostRoot } from "./host.utils";
 export function getSearchInput(): HTMLInputElement | null {
   const root = getHostRoot();
   if (!root) return null;
-  return root.getElementById("spotlight-search-input-ext") as HTMLInputElement;
+  return root.getElementById(
+    "spotlight-search-input-ext",
+  ) as HTMLInputElement | null;
 }
 
 export function getFirstResultItem(): HTMLLIElement | null {

@@ -41,7 +41,8 @@ export function handleWebSearch(): void {
 
   const searchInput = root.getElementById(
     "spotlight-search-input-ext",
-  ) as HTMLInputElement;
+  ) as HTMLInputElement | null;
+  if (!searchInput) return;
 
   let searchTimeout: ReturnType<typeof setTimeout>;
 

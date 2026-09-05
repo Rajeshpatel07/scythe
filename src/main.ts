@@ -6,8 +6,9 @@ import {
   handleGlobalKeys,
   handleTabSwitcherCommand,
 } from "./core/handlers/keyboard.router";
+import type { MessagePayload } from "./core/messaging/message.types";
 
-chrome.runtime.onMessage.addListener((request) => {
+chrome.runtime.onMessage.addListener((request: MessagePayload) => {
   // Handle both the extension-page broadcast (toggleTabSwitcherPage) and the
   // tab-scoped action (toggleTabSwitcher) so the newtab page responds to the
   // background regardless of which variant is delivered.
