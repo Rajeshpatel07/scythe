@@ -47,6 +47,9 @@ export function handleTab(): void {
 
   if (searchInput) {
     searchInput.value = config.currentSuggestion;
+    // Programmatic value sets don't fire "input"; dispatch it so the
+    // results list and ghost re-run for the completed text.
+    searchInput.dispatchEvent(new Event("input", { bubbles: true }));
   }
   config.currentSuggestion = "";
 }
