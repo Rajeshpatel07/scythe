@@ -12,42 +12,41 @@ import {
 } from "../../../core/utils/host.utils";
 import { storage } from "../../../core/storage/storage.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
+import { el } from "../../../shared/ui/dom-factory";
 import {
   updateSelection,
   confirmSelection,
+} from "../actions/selection.actions";
+import {
   setCachedTabItems,
   clearCachedTabItems,
-} from "../handlers/selection.handler";
+} from "../state/selection.store";
 
-export function createTabsDock(): void {
+function createTabsDock(): void {
   const shadowRoot = ensureHost("switcher");
 
-  const overlay = document.createElement("div");
-  overlay.setAttribute("id", "switcher-overlay");
-  overlay.setAttribute("class", "overlay hidden");
-
-  const container = document.createElement("div");
-  container.setAttribute("class", "switcher-container");
-
-  const tabList = document.createElement("div");
-  tabList.setAttribute("id", "tab-list");
-  tabList.setAttribute("class", "tab-list");
-
-  const tabTitle = document.createElement("div");
-  tabTitle.setAttribute("id", "active-tab-title");
-  tabTitle.setAttribute("class", "active-title");
-
-  container.appendChild(tabList);
-  container.appendChild(tabTitle);
-
-  overlay.appendChild(container);
+  const tabList = el("div", { id: "tab-list", className: "tab-list" });
+  const tabTitle = el("div", {
+    id: "active-tab-title",
+    className: "active-title",
+  });
+  const container = el(
+    "div",
+    { className: "switcher-container" },
+    [tabList, tabTitle],
+  );
+  const overlay = el(
+    "div",
+    { id: "switcher-overlay", className: "overlay hidden" },
+    [container],
+  );
 
   shadowRoot.appendChild(overlay);
 }
 
 let renderVersion = 0;
 
-export async function renderTabs(): Promise<void> {
+async function renderTabs(): Promise<void> {
   const root = getHostRoot();
   if (!root) return;
   renderVersion++;
@@ -147,7 +146,9 @@ export async function renderTabs(): Promise<void> {
                   img.style.opacity = "1";
                 }
               }, 60);
-              persistFavicon(hostname, highResResult.dataUrl);
+              persistFavicon(hostname, highResResult.dataUrl, () => {
+                return currentVersion === renderVersion;
+              });
             }
           }
         })

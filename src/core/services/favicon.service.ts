@@ -99,16 +99,20 @@ async function getFaviconIndex(): Promise<string[]> {
 export async function persistFavicon(
   hostname: string,
   dataUrl: string,
+  isCurrent?: () => boolean,
 ): Promise<void> {
   const key = `fav_${hostname}`;
   try {
     const index = await getFaviconIndex();
+    if (isCurrent && !isCurrent()) return;
+
     const nextIndex = [key, ...index.filter((entry) => entry !== key)];
+    const overflow = nextIndex.length - MAX_PERSISTED_FAVICONS;
+    const evicted =
+      overflow > 0 ? nextIndex.splice(nextIndex.length - overflow, overflow) : [];
     await storage.local.set({ [key]: dataUrl, favIndex: nextIndex });
 
-    const overflow = nextIndex.length - MAX_PERSISTED_FAVICONS;
-    if (overflow > 0) {
-      const evicted = nextIndex.splice(nextIndex.length - overflow, overflow);
+    if (evicted.length > 0) {
       await storage.local.remove(evicted);
     }
   } catch {

@@ -6,6 +6,7 @@ import {
 } from "../../../core/utils/host.utils";
 import { openUrl } from "../../../core/services/navigation.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
+import { el } from "../../../shared/ui/dom-factory";
 
 function silenceError(err: unknown): void {
   if (
@@ -38,17 +39,20 @@ export function openGlanceModal(url: string): void {
 
   document.body.style.overflow = "hidden";
 
-  const overlay = document.createElement("div");
-  overlay.id = "glance-extension-modal";
-  overlay.className = "glance-overlay";
+  const overlay = el("div", {
+    id: "glance-extension-modal",
+    className: "glance-overlay",
+  });
 
-  const actionContainer = document.createElement("div");
-  actionContainer.className = "glance-action-container";
-  actionContainer.id = "glance-action-container";
+  const actionContainer = el("div", {
+    id: "glance-action-container",
+    className: "glance-action-container",
+  });
 
-  const tabButton = document.createElement("button");
-  tabButton.id = "glance-tab-btn";
-  tabButton.className = "glance-action-btn glance-btn-primary";
+  const tabButton = el("button", {
+    id: "glance-tab-btn",
+    className: "glance-action-btn glance-btn-primary",
+  });
   tabButton.title = "Open in New Tab";
   tabButton.innerHTML = `
     <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,9 +69,10 @@ export function openGlanceModal(url: string): void {
       });
   };
 
-  const closeButton = document.createElement("button");
-  closeButton.id = "glance-close-btn";
-  closeButton.className = "glance-action-btn glance-btn-danger";
+  const closeButton = el("button", {
+    id: "glance-close-btn",
+    className: "glance-action-btn glance-btn-danger",
+  });
   closeButton.title = "Close Modal";
   closeButton.innerHTML = `
 <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,9 +86,10 @@ export function openGlanceModal(url: string): void {
   actionContainer.appendChild(tabButton);
   actionContainer.appendChild(closeButton);
 
-  const iframe = document.createElement("iframe");
-  iframe.className = "glance-content-frame";
-  iframe.id = "glance-content-frame";
+  const iframe = el("iframe", {
+    id: "glance-content-frame",
+    className: "glance-content-frame",
+  });
 
   MessageBroker.send({ action: "openGlance", url }).catch(silenceError);
 
@@ -106,7 +112,7 @@ export function openGlanceModal(url: string): void {
   });
 }
 
-export async function openUrlInBackground(url: string) {
+async function openUrlInBackground(url: string) {
   const root = getHostRoot();
   const actionContainer = root?.getElementById(
     "glance-action-container",

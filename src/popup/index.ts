@@ -1,5 +1,6 @@
 import { config, initializeConfig } from "../core/config/config";
 import { storage } from "../core/storage/storage.utils";
+import { el } from "../shared/ui/dom-factory";
 import googleLogo from "../assets/search-engine-logos/google.svg?inline";
 import duckduckgoLogo from "../assets/search-engine-logos/duckduckgo.svg?inline";
 import braveLogo from "../assets/search-engine-logos/brave.svg?inline";
@@ -40,22 +41,75 @@ async function init(): Promise<void> {
 }
 
 function buildPopup(): void {
-  const popup = document.createElement("div");
-  popup.className = "scythe-popup";
-  popup.appendChild(buildContent());
+  const popup = el("div", { className: "scythe-popup" }, [buildContent()]);
   document.body.appendChild(popup);
 }
 
 function card(row: HTMLElement): HTMLElement {
-  const el = document.createElement("div");
-  el.className = "scythe-card";
-  el.appendChild(row);
-  return el;
+  return el("div", { className: "scythe-card" }, [row]);
 }
 
+interface ToggleSettingDef {
+  label: string;
+  description: string;
+  initial: () => boolean;
+  onChange: (checked: boolean) => void;
+  save: (input: HTMLInputElement) => void;
+}
+
+const TOGGLE_SETTINGS: ToggleSettingDef[] = [
+  {
+    label: "Page content",
+    description: "Show or hide content on the new tab page",
+    initial: () => config.hideNewTab,
+    onChange: (checked) => {
+      storage.sync.set({ showNewTab: checked }).catch(() => {});
+      config.hideNewTab = checked;
+    },
+    save: (input) => {
+      pageContentToggle = input;
+    },
+  },
+  {
+    label: "Spotlight",
+    description: "Quick search web",
+    initial: () => config.isSpotlightEnabled,
+    onChange: (checked) => {
+      storage.sync.set({ isSpotlightEnabled: checked }).catch(() => {});
+      config.isSpotlightEnabled = checked;
+    },
+    save: (input) => {
+      spotlightToggle = input;
+    },
+  },
+  {
+    label: "Tab Switcher",
+    description: "Quickly switch between open tabs",
+    initial: () => config.isTabEnabled,
+    onChange: (checked) => {
+      storage.sync.set({ isTabEnabled: checked }).catch(() => {});
+      config.isTabEnabled = checked;
+    },
+    save: (input) => {
+      tabsToggle = input;
+    },
+  },
+  {
+    label: "Glance",
+    description: "Preview links without leaving the page",
+    initial: () => config.isGlanceEnabled,
+    onChange: (checked) => {
+      storage.sync.set({ isGlanceEnabled: checked }).catch(() => {});
+      config.isGlanceEnabled = checked;
+    },
+    save: (input) => {
+      glanceToggle = input;
+    },
+  },
+];
+
 function buildContent(): HTMLElement {
-  const content = document.createElement("div");
-  content.className = "scythe-content";
+  const content = el("div", { className: "scythe-content" });
 
   content.appendChild(
     card(
@@ -67,72 +121,22 @@ function buildContent(): HTMLElement {
     ),
   );
 
-  pageContentToggle = createToggle(config.hideNewTab, (checked) => {
-    storage.sync.set({ showNewTab: checked }).catch(() => {});
-    config.hideNewTab = checked;
-  });
-  content.appendChild(
-    card(
-      settingRow(
-        "Page content",
-        "Show or hide content on the new tab page",
-        toggleContainer(pageContentToggle),
-      ),
-    ),
-  );
-
-  spotlightToggle = createToggle(config.isSpotlightEnabled, (checked) => {
-    storage.sync.set({ isSpotlightEnabled: checked }).catch(() => {});
-    config.isSpotlightEnabled = checked;
-  });
-  content.appendChild(
-    card(
-      settingRow(
-        "Spotlight",
-        "Quick search web",
-        toggleContainer(spotlightToggle),
-      ),
-    ),
-  );
-
-  tabsToggle = createToggle(config.isTabEnabled, (checked) => {
-    storage.sync.set({ isTabEnabled: checked }).catch(() => {});
-    config.isTabEnabled = checked;
-  });
-  content.appendChild(
-    card(
-      settingRow(
-        "Tab Switcher",
-        "Quickly switch between open tabs",
-        toggleContainer(tabsToggle),
-      ),
-    ),
-  );
-
-  glanceToggle = createToggle(config.isGlanceEnabled, (checked) => {
-    storage.sync.set({ isGlanceEnabled: checked }).catch(() => {});
-    config.isGlanceEnabled = checked;
-  });
-  content.appendChild(
-    card(
-      settingRow(
-        "Glance",
-        "Preview links without leaving the page",
-        toggleContainer(glanceToggle),
-      ),
-    ),
-  );
+  for (const def of TOGGLE_SETTINGS) {
+    const toggle = createToggle(def.initial(), def.onChange);
+    def.save(toggle);
+    content.appendChild(
+      card(settingRow(def.label, def.description, toggleContainer(toggle))),
+    );
+  }
 
   return content;
 }
 
 function buildEngineSelector(): HTMLElement {
-  const wrapper = document.createElement("div");
-  wrapper.className = "scythe-engine-select-wrapper";
+  const wrapper = el("div", { className: "scythe-engine-select-wrapper" });
 
-  const trigger = document.createElement("button");
+  const trigger = el("button", { className: "scythe-engine-select-trigger" });
   trigger.type = "button";
-  trigger.className = "scythe-engine-select-trigger";
 
   engineTriggerImg = document.createElement("img");
   engineTriggerImg.alt = "";
@@ -149,20 +153,17 @@ function buildEngineSelector(): HTMLElement {
   trigger.appendChild(engineTriggerSpan);
   trigger.appendChild(arrow);
 
-  engineOptionsList = document.createElement("ul");
-  engineOptionsList.className = "scythe-engine-options";
+  engineOptionsList = el("ul", { className: "scythe-engine-options" });
 
   ENGINES.forEach((engine) => {
-    const item = document.createElement("li");
-    item.className = "scythe-engine-option-item";
+    const item = el("li", { className: "scythe-engine-option-item" });
     item.dataset.value = engine.value;
 
     const img = document.createElement("img");
     img.src = engine.favicon;
     img.alt = engine.name;
 
-    const span = document.createElement("span");
-    span.textContent = engine.name;
+    const span = el("span", { text: engine.name });
 
     item.appendChild(img);
     item.appendChild(span);
@@ -207,22 +208,13 @@ function settingRow(
   description: string,
   control: HTMLElement,
 ): HTMLElement {
-  const row = document.createElement("div");
-  row.className = "scythe-setting-row";
-
-  const details = document.createElement("div");
-  details.className = "scythe-setting-details";
-
-  const lbl = document.createElement("label");
-  lbl.textContent = label;
-  const desc = document.createElement("span");
-  desc.textContent = description;
-
-  details.appendChild(lbl);
-  details.appendChild(desc);
-  row.appendChild(details);
-  row.appendChild(control);
-  return row;
+  const lbl = el("label", { text: label });
+  const desc = el("span", { text: description });
+  const details = el("div", { className: "scythe-setting-details" }, [
+    lbl,
+    desc,
+  ]);
+  return el("div", { className: "scythe-setting-row" }, [details, control]);
 }
 
 function createToggle(
@@ -238,22 +230,10 @@ function createToggle(
 }
 
 function toggleContainer(input: HTMLInputElement): HTMLElement {
-  const wrap = document.createElement("div");
-  wrap.className = "scythe-toggle-container";
-
-  const label = document.createElement("label");
-  label.className = "scythe-switch";
-
-  const slider = document.createElement("span");
-  slider.className = "scythe-switch-slider";
-  const thumb = document.createElement("span");
-  thumb.className = "scythe-switch-thumb";
-  slider.appendChild(thumb);
-
-  label.appendChild(input);
-  label.appendChild(slider);
-  wrap.appendChild(label);
-  return wrap;
+  const thumb = el("span", { className: "scythe-switch-thumb" });
+  const slider = el("span", { className: "scythe-switch-slider" }, [thumb]);
+  const label = el("label", { className: "scythe-switch" }, [input, slider]);
+  return el("div", { className: "scythe-toggle-container" }, [label]);
 }
 
 function render(): void {

@@ -1,7 +1,7 @@
 import { createNewTabPage } from "./features/new-tab/components/newtab.component";
 import { config, initializeConfig } from "./core/config/config";
 import { showSpotlight } from "./features/spotlight/services/search.service";
-import { confirmSelection } from "./features/tab-switcher/handlers/selection.handler";
+import { confirmSelection } from "./features/tab-switcher/actions/selection.actions";
 import {
   handleGlobalKeys,
   handleTabSwitcherCommand,

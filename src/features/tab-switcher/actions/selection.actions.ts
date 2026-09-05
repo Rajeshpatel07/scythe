@@ -2,20 +2,7 @@ import { config } from "../../../core/config/config";
 import { getHostRoot } from "../../../core/utils/host.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { closeSwitcher } from "../components/switcher.component";
-
-let cachedTabItems: NodeListOf<Element> | null = null;
-
-export function setCachedTabItems(items: NodeListOf<Element>): void {
-  cachedTabItems = items;
-}
-
-export function getTabItemsCount(): number {
-  return cachedTabItems?.length ?? 0;
-}
-
-export function clearCachedTabItems(): void {
-  cachedTabItems = null;
-}
+import { getCachedTabItems } from "../state/selection.store";
 
 export function updateSelection(index: number): void {
   const root = getHostRoot();
@@ -26,7 +13,7 @@ export function updateSelection(index: number): void {
   ) as HTMLDivElement | null;
   if (!tabTitle) return;
 
-  const items = cachedTabItems ?? root.querySelectorAll(".tab-item");
+  const items = getCachedTabItems() ?? root.querySelectorAll(".tab-item");
   const count = items.length;
 
   // Safety check to handle out-of-bounds, empty lists, or NaN indexes
@@ -59,7 +46,7 @@ export function confirmSelection(): void {
   const root = getHostRoot();
   if (!root) return;
 
-  const items = cachedTabItems ?? root.querySelectorAll(".tab-item");
+  const items = getCachedTabItems() ?? root.querySelectorAll(".tab-item");
   const chosenTab = items[config.tabSelectedIndex];
   if (!chosenTab?.id) return;
 

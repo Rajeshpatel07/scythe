@@ -41,7 +41,10 @@
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content/glance-meta-bypass.js"],
+      "js": [
+        "src/content/glance/escape-forwarder.js",
+        "src/content/glance/csp-stripper.js"
+      ],
       "run_at": "document_start",
       "all_frames": true
     }

@@ -32,12 +32,20 @@ function applyPageVisibility(): void {
 }
 
 function newtabPageContent() {
-  const pageContainer = document.createElement("div");
-  pageContainer.id = "spotlight-page-container";
+  const rootEl = document.createElement("div");
+  rootEl.id = "spotlight-page-container";
 
   const mainContent = document.createElement("main");
   mainContent.id = "spotlight-main-content";
 
+  mainContent.appendChild(buildBrand());
+  mainContent.appendChild(buildSearchForm());
+  rootEl.appendChild(mainContent);
+
+  return rootEl;
+}
+
+function buildBrand(): HTMLElement {
   const brandContainer = document.createElement("div");
   brandContainer.id = "spotlight-brand-container";
 
@@ -51,8 +59,11 @@ function newtabPageContent() {
   titleH1.id = "spotlight-title";
   titleH1.textContent = "Scythe";
   brandContainer.appendChild(titleH1);
-  mainContent.appendChild(brandContainer);
 
+  return brandContainer;
+}
+
+function buildSearchForm(): HTMLElement {
   const searchForm = document.createElement("form");
   searchForm.id = "spotlight-search-form";
   searchForm.action = "https://duckduckgo.com/";
@@ -81,8 +92,6 @@ function newtabPageContent() {
   searchWrapper.appendChild(searchInput);
 
   searchForm.appendChild(searchWrapper);
-  mainContent.appendChild(searchForm);
-  pageContainer.appendChild(mainContent);
 
-  return pageContainer;
+  return searchForm;
 }

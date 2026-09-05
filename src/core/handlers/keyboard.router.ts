@@ -12,8 +12,8 @@ import {
 } from "../../features/tab-switcher/components/switcher.component";
 import {
   updateSelection,
-  getTabItemsCount,
-} from "../../features/tab-switcher/handlers/selection.handler";
+} from "../../features/tab-switcher/actions/selection.actions";
+import { getTabItemsCount } from "../../features/tab-switcher/state/selection.store";
 import { config } from "../config/config";
 import { getSearchInput } from "../utils/dom.utils";
 import { getHostRoot } from "../utils/host.utils";
