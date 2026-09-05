@@ -146,7 +146,7 @@ async function openUrlInBackground(url: string) {
     } else {
       openUrl(url);
     }
-  } catch (_e) {
+  } catch {
     openUrl(url);
   }
 }
