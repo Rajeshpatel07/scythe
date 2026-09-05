@@ -5,7 +5,7 @@ import { confirmSelection } from "./features/tab-switcher/actions/selection.acti
 import {
   handleGlobalKeys,
   handleTabSwitcherCommand,
-} from "./core/handlers/keyboard.router";
+} from "./app/keyboard/global-keys";
 import type { MessagePayload } from "./core/messaging/message.types";
 
 chrome.runtime.onMessage.addListener((request: MessagePayload) => {

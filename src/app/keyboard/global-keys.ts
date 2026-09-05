@@ -14,9 +14,9 @@ import {
   updateSelection,
 } from "../../features/tab-switcher/actions/selection.actions";
 import { getTabItemsCount } from "../../features/tab-switcher/state/selection.store";
-import { config } from "../config/config";
+import { config } from "../../core/config/config";
 import { getSearchInput } from "../../features/spotlight/utils/spotlight.dom";
-import { getHostRoot } from "../utils/host.utils";
+import { getHostRoot } from "../../core/utils/host.utils";
 
 let lastDomTabShortcutAt = 0;
 const COMMAND_DEDUP_WINDOW_MS = 1000;
@@ -56,77 +56,97 @@ export function handleTabSwitcherCommand(isReverse: boolean): void {
   openOrCycleTabSwitcher(isReverse);
 }
 
+function handleTabShortcut(e: KeyboardEvent, isSpotlightOpen: boolean): boolean {
+  const isModifier = e.metaKey || e.ctrlKey;
+
+  if (
+    isModifier &&
+    e.code === "Space" &&
+    !isSpotlightOpen &&
+    config.isTabEnabled
+  ) {
+    e.preventDefault();
+    lastDomTabShortcutAt = performance.now();
+    openOrCycleTabSwitcher(e.shiftKey);
+    return true;
+  }
+
+  return false;
+}
+
+function handleSpotlightKeys(e: KeyboardEvent): void {
+  const root = getHostRoot();
+  const searchInput = getSearchInput();
+  if (!root || !searchInput) return;
+
+  if (e.key === "/" || e.key === "Escape" || e.key === "Tab") {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+
+    if (e.key === "/") {
+      searchInput.focus();
+      searchInput.value += "/";
+      searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+    } else if (e.key === "Escape") {
+      hideSpotlight();
+    } else if (e.key === "Tab") {
+      handleTab();
+    }
+    return;
+  }
+
+  if (root.activeElement !== searchInput) {
+    searchInput.focus();
+  }
+
+  e.stopImmediatePropagation();
+  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+    e.preventDefault();
+    navigateResults(e.key);
+  } else if (e.ctrlKey && e.key === "Enter") {
+    handleCtrlEnter();
+  } else if (e.key === "Enter") {
+    handleEnter();
+  }
+}
+
+function handleOverlayEscape(
+  e: KeyboardEvent,
+  isTabOpen: boolean,
+  isGlanceOpen: boolean,
+): boolean {
+  if (isTabOpen && e.key === "Escape") {
+    e.preventDefault();
+    closeSwitcher();
+    return true;
+  }
+
+  if (isGlanceOpen && e.key === "Escape") {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    hideGlance();
+    return true;
+  }
+
+  return false;
+}
+
 export function handleGlobalKeys(e: KeyboardEvent): void {
   try {
     const isSpotlightOpen = config.isSpotlightOpen;
     const isTabOpen = config.isTabOpen;
     const isGlanceOpen = config.isGlanceOpen;
 
-    const isModifier = e.metaKey || e.ctrlKey;
-
-    if (
-      isModifier &&
-      e.code === "Space" &&
-      !isSpotlightOpen &&
-      config.isTabEnabled
-    ) {
-      e.preventDefault();
-      lastDomTabShortcutAt = performance.now();
-      openOrCycleTabSwitcher(e.shiftKey);
-      return;
-    }
+    if (handleTabShortcut(e, isSpotlightOpen)) return;
 
     // Spotlight is the topmost overlay when open, so it consumes its keys first
     // (even when stacked above Glance).
     if (isSpotlightOpen) {
-      const root = getHostRoot();
-      const searchInput = getSearchInput();
-      if (!root || !searchInput) return;
-
-      if (e.key === "/" || e.key === "Escape" || e.key === "Tab") {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-
-        if (e.key === "/") {
-          searchInput.focus();
-          searchInput.value += "/";
-          searchInput.dispatchEvent(new Event("input", { bubbles: true }));
-        } else if (e.key === "Escape") {
-          hideSpotlight();
-        } else if (e.key === "Tab") {
-          handleTab();
-        }
-        return;
-      }
-
-      if (root.activeElement !== searchInput) {
-        searchInput.focus();
-      }
-
-      e.stopImmediatePropagation();
-      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-        e.preventDefault();
-        navigateResults(e.key);
-      } else if (e.ctrlKey && e.key === "Enter") {
-        handleCtrlEnter();
-      } else if (e.key === "Enter") {
-        handleEnter();
-      }
+      handleSpotlightKeys(e);
       return;
     }
 
-    if (isTabOpen && e.key === "Escape") {
-      e.preventDefault();
-      closeSwitcher();
-      return;
-    }
-
-    if (isGlanceOpen && e.key === "Escape") {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      hideGlance();
-      return;
-    }
+    if (handleOverlayEscape(e, isTabOpen, isGlanceOpen)) return;
   } catch (err) {
     // biome-ignore lint/suspicious/noConsole: diagnostic logging
     console.error("handleGlobalKeys error:", err);

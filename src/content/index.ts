@@ -4,7 +4,7 @@ import { handleWebSearch } from "../features/spotlight/services/spotlight.contro
 import {
   handleGlobalKeys,
   handleTabSwitcherCommand,
-} from "../core/handlers/keyboard.router";
+} from "../app/keyboard/global-keys";
 import {
   openGlanceModal,
   hideGlance,
