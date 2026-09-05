@@ -1,5 +1,5 @@
 import { config } from "../../../core/config/config";
-import { showSpotlight } from "../../spotlight/services/search.service";
+import { showSpotlight } from "../../spotlight/services/spotlight.controller";
 
 let pageContainer: HTMLDivElement;
 

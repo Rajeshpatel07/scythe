@@ -4,16 +4,15 @@ import {
   removeHost,
   getHostRoot,
 } from "../../../core/utils/host.utils";
+import { invalidateHistoryIndex } from "../services/history-index.store";
+import { SPOTLIGHT_CLASSES, SPOTLIGHT_IDS } from "../spotlight.constants";
 
-export function createSpotlightUI(): void {
-  const shadowRoot = ensureHost("spotlight");
+let focusGeneration = 0;
 
-  const overlay = document.createElement("div");
-  overlay.id = "spotlight-overlay-ext";
-
-  const modal = document.createElement("div");
-  modal.id = "spotlight-modal-ext";
-
+function buildSearchBar(): {
+  container: HTMLElement;
+  input: HTMLInputElement;
+} {
   const searchContainer = document.createElement("div");
   searchContainer.className = "spotlight-search-container-ext";
   searchContainer.innerHTML = `
@@ -26,21 +25,39 @@ export function createSpotlightUI(): void {
   inputWrapper.className = "spotlight-input-wrapper-ext";
 
   const searchInput = document.createElement("input");
-  searchInput.id = "spotlight-search-input-ext";
+  searchInput.id = SPOTLIGHT_IDS.searchInput;
   searchInput.type = "text";
   searchInput.placeholder = "Search or enter address";
   searchInput.autocomplete = "off";
   searchInput.setAttribute("autofocus", "");
 
   const suggestionEl = document.createElement("div");
-  suggestionEl.id = "spotlight-suggestion-ext";
+  suggestionEl.id = SPOTLIGHT_IDS.suggestion;
 
   inputWrapper.appendChild(searchInput);
   inputWrapper.appendChild(suggestionEl);
   searchContainer.appendChild(inputWrapper);
 
+  return { container: searchContainer, input: searchInput };
+}
+
+function buildResultsList(): HTMLUListElement {
   const resultsList = document.createElement("ul");
-  resultsList.id = "spotlight-results-ext";
+  resultsList.id = SPOTLIGHT_IDS.resultsList;
+  return resultsList;
+}
+
+export function createSpotlightUI(): void {
+  const shadowRoot = ensureHost("spotlight");
+
+  const overlay = document.createElement("div");
+  overlay.id = "spotlight-overlay-ext";
+
+  const modal = document.createElement("div");
+  modal.id = "spotlight-modal-ext";
+
+  const { container: searchContainer, input: searchInput } = buildSearchBar();
+  const resultsList = buildResultsList();
 
   modal.appendChild(searchContainer);
   modal.appendChild(resultsList);
@@ -51,21 +68,33 @@ export function createSpotlightUI(): void {
 }
 
 export function hideSpotlight(): void {
+  focusGeneration++;
+  invalidateHistoryIndex();
+
   const root = getHostRoot();
-  root?.getElementById("spotlight-overlay-ext")?.classList.add("closing");
+  root
+    ?.getElementById("spotlight-overlay-ext")
+    ?.classList.add(SPOTLIGHT_CLASSES.closing);
 
   config.isSpotlightOpen = false;
   removeHost("spotlight");
 }
 
 function forceFocusOnInput(inputElement: HTMLInputElement) {
-  if (!document.hasFocus()) window.focus();
-  inputElement.focus({ preventScroll: true });
+  const generation = focusGeneration;
+
+  const tryFocus = () => {
+    if (generation !== focusGeneration) return;
+    if (!document.hasFocus()) window.focus();
+    inputElement.focus({ preventScroll: true });
+  };
+
+  tryFocus();
   if (document.activeElement !== inputElement) {
     setTimeout(() => {
-      if (!document.hasFocus()) window.focus();
-      inputElement.focus({ preventScroll: true });
+      tryFocus();
       requestAnimationFrame(() => {
+        if (generation !== focusGeneration) return;
         if (document.activeElement !== inputElement) inputElement.focus();
       });
     }, 50);

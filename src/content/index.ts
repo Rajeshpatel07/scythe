@@ -1,6 +1,6 @@
 import { config, initializeConfig } from "../core/config/config";
 import { confirmSelection } from "../features/tab-switcher/actions/selection.actions";
-import { handleWebSearch } from "../features/spotlight/services/search.service";
+import { handleWebSearch } from "../features/spotlight/services/spotlight.controller";
 import {
   handleGlobalKeys,
   handleTabSwitcherCommand,

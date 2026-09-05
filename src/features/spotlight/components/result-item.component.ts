@@ -5,11 +5,24 @@ import { LIKELY_URL_REGEX } from "../../../core/config/constants";
 import { getHostRoot } from "../../../core/utils/host.utils";
 import { hideSpotlight } from "../components/spotlight.component";
 import { openUrl } from "../../../core/services/navigation.service";
+import {
+  NO_SELECTION,
+  RESULT_URL_ATTRIBUTE,
+  SPOTLIGHT_CLASSES,
+} from "../spotlight.constants";
+
+function attachFavicon(favicon: HTMLImageElement, url: string): void {
+  if (LIKELY_URL_REGEX.test(url)) {
+    loadFaviconFromCache(url, favicon);
+  } else {
+    favicon.src = chrome.runtime.getURL("src/assets/icon48.png");
+  }
+}
 
 export function createListItem({ title, url, showUrl = true }: ListItems) {
   const li = document.createElement("li");
-  li.className = "spotlight-result-item-ext";
-  li.setAttribute("data-url", url);
+  li.className = SPOTLIGHT_CLASSES.resultItem;
+  li.setAttribute(RESULT_URL_ATTRIBUTE, url);
   li.addEventListener("click", () => {
     hideSpotlight();
     openUrl(url, config.openInNewTab);
@@ -17,12 +30,7 @@ export function createListItem({ title, url, showUrl = true }: ListItems) {
 
   const favicon = document.createElement("img");
   favicon.className = "spotlight-favicon-ext";
-
-  if (LIKELY_URL_REGEX.test(url)) {
-    loadFaviconFromCache(url, favicon);
-  } else {
-    favicon.src = chrome.runtime.getURL("src/assets/icon48.png");
-  }
+  attachFavicon(favicon, url);
   const textContent = document.createElement("div");
   textContent.className = "spotlight-text-content-ext";
   const titleEl = document.createElement("span");
@@ -49,11 +57,13 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
   const root = getHostRoot();
   if (!root) return;
 
-  const results = root.querySelectorAll(".spotlight-result-item-ext");
+  const results = root.querySelectorAll(`.${SPOTLIGHT_CLASSES.resultItem}`);
   if (results.length === 0) return;
 
-  if (config.selectedResultIndex !== -1) {
-    results[config.selectedResultIndex]?.classList.remove("selected");
+  if (config.selectedResultIndex !== NO_SELECTION) {
+    results[config.selectedResultIndex]?.classList.remove(
+      SPOTLIGHT_CLASSES.selected,
+    );
   }
 
   if (direction === "ArrowDown") {
@@ -61,12 +71,14 @@ export function navigateResults(direction: "ArrowDown" | "ArrowUp") {
       (config.selectedResultIndex + 1) % results.length;
   } else if (direction === "ArrowUp") {
     config.selectedResultIndex =
-      config.selectedResultIndex === -1
+      config.selectedResultIndex === NO_SELECTION
         ? results.length - 1
         : (config.selectedResultIndex - 1 + results.length) % results.length;
   }
 
-  results[config.selectedResultIndex]?.classList.add("selected");
+  results[config.selectedResultIndex]?.classList.add(
+    SPOTLIGHT_CLASSES.selected,
+  );
   results[config.selectedResultIndex]?.scrollIntoView({ block: "nearest" });
 }
 

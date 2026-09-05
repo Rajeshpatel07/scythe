@@ -1,12 +1,14 @@
 import { config } from "../../../core/config/config";
-import { handleSearchSubmit } from "../services/search.service";
+import { handleSearchSubmit } from "../services/search-runner.service";
 import { hideSpotlight } from "../components/spotlight.component";
 import {
   getFirstResultItem,
   getSearchInput,
   getSelectedResultItem,
-} from "../../../core/utils/dom.utils";
+} from "../utils/spotlight.dom";
+import { openUrl } from "../../../core/services/navigation.service";
 import { MessageBroker } from "../../../core/messaging/message.broker";
+import { RESULT_URL_ATTRIBUTE } from "../spotlight.constants";
 
 export function handleEnter(): void {
   const searchInput = getSearchInput();
@@ -27,7 +29,7 @@ export function handleEnter(): void {
 export function handleCtrlEnter(): void {
   const firstItem = getFirstResultItem();
   if (!firstItem) return;
-  const url = firstItem.getAttribute("data-url");
+  const url = firstItem.getAttribute(RESULT_URL_ATTRIBUTE);
   if (url) {
     hideSpotlight();
     if (config.openInNewTab) {
@@ -35,7 +37,7 @@ export function handleCtrlEnter(): void {
         () => {},
       );
     } else {
-      window.location.href = url;
+      openUrl(url);
     }
   }
 }

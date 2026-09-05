@@ -15,7 +15,7 @@ import {
 } from "../../features/tab-switcher/actions/selection.actions";
 import { getTabItemsCount } from "../../features/tab-switcher/state/selection.store";
 import { config } from "../config/config";
-import { getSearchInput } from "../utils/dom.utils";
+import { getSearchInput } from "../../features/spotlight/utils/spotlight.dom";
 import { getHostRoot } from "../utils/host.utils";
 
 let lastDomTabShortcutAt = 0;
