@@ -1,3 +1,4 @@
+import newtabStyle from "./core/styles/newtab.css?raw";
 import { createNewTabPage } from "./features/new-tab/components/newtab.component";
 import { config, initializeConfig } from "./core/config/config";
 import { showSpotlight } from "./features/spotlight/services/spotlight.controller";
@@ -53,3 +54,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   await initializeConfig();
   createNewTabPage();
 });
+
+function injectCss() {
+  // document_start guarantees <head> exists for well-formed Chrome pages, but
+  // bail out instead of throwing if a malformed preamble ever lacks one.
+  if (!document.head) return;
+  const style = document.createElement("style");
+  style.textContent = newtabStyle;
+  document.head.appendChild(style);
+}
+
+injectCss();
