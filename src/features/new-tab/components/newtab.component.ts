@@ -13,8 +13,8 @@ export function createNewTabPage() {
   applyPageVisibility();
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === "sync" && changes.showNewTab !== undefined) {
-      config.hideNewTab = changes.showNewTab.newValue as boolean;
+    if (areaName === "sync" && changes.hideNewTabContent !== undefined) {
+      config.hideNewTabContent = changes.hideNewTabContent.newValue as boolean;
       applyPageVisibility();
     }
   });
@@ -22,7 +22,7 @@ export function createNewTabPage() {
 
 function applyPageVisibility(): void {
   const body = document.body as HTMLBodyElement;
-  if (config.hideNewTab) {
+  if (config.hideNewTabContent) {
     pageContainer.style.display = "none";
     body.classList.add("minimal-empty");
   } else {

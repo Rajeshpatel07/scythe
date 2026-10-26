@@ -63,10 +63,10 @@ const TOGGLE_SETTINGS: ToggleSettingDef[] = [
   {
     label: "Page content",
     description: "Show or hide content on the new tab page",
-    initial: () => config.hideNewTab,
+    initial: () => config.hideNewTabContent,
     onChange: (checked) => {
-      storage.sync.set({ showNewTab: checked }).catch(() => {});
-      config.hideNewTab = checked;
+      storage.sync.set({ hideNewTabContent: checked }).catch(() => {});
+      config.hideNewTabContent = checked;
     },
     save: (input) => {
       pageContentToggle = input;
@@ -273,7 +273,7 @@ function renderPopup(): void {
     );
   }
 
-  pageContentToggle.checked = config.hideNewTab;
+  pageContentToggle.checked = config.hideNewTabContent;
   spotlightToggle.checked = config.isSpotlightEnabled;
   tabsToggle.checked = config.isTabEnabled;
   glanceToggle.checked = config.isGlanceEnabled;

@@ -8,7 +8,7 @@ function createConfig(): ConfigState {
     isSpotlightOpen: false,
     openInNewTab: false,
     searchEngine: "google",
-    hideNewTab: false,
+    hideNewTabContent: false,
     isTabOpen: false,
     tabSelectedIndex: 0,
     isGlanceOpen: false,
@@ -23,7 +23,7 @@ function createConfig(): ConfigState {
 export const config = createConfig();
 
 const SYNC_KEYS = [
-  "showNewTab",
+  "hideNewTabContent",
   "searchEngine",
   "isSpotlightEnabled",
   "isTabEnabled",
@@ -34,8 +34,8 @@ type SyncKey = (typeof SYNC_KEYS)[number];
 
 function applySyncValue(key: SyncKey, value: unknown): void {
   switch (key) {
-    case "showNewTab":
-      if (typeof value === "boolean") config.hideNewTab = value;
+    case "hideNewTabContent":
+      if (typeof value === "boolean") config.hideNewTabContent = value;
       break;
     case "searchEngine":
       if (typeof value === "string") {

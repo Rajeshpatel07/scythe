@@ -4,7 +4,7 @@ export interface ConfigState {
   isSpotlightOpen: boolean;
   openInNewTab: boolean;
   searchEngine: string | null;
-  hideNewTab: boolean;
+  hideNewTabContent: boolean;
   isTabOpen: boolean;
   tabSelectedIndex: number;
   isGlanceOpen: boolean;
