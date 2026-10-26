@@ -1,11 +1,11 @@
 import { config, initializeConfig } from "../core/config/config";
 import { storage } from "../core/storage/storage.utils";
 import { createElement } from "../shared/ui/dom-factory";
-import googleLogo from "../assets/search-engine-logos/google.svg?inline";
-import duckduckgoLogo from "../assets/search-engine-logos/duckduckgo.svg?inline";
-import braveLogo from "../assets/search-engine-logos/brave.svg?inline";
-import bingLogo from "../assets/search-engine-logos/bing.svg?inline";
-import unduckLogo from "../assets/search-engine-logos/unduck.png";
+import googleLogo from "../assets/search-engine-logos/google.svg?url";
+import duckduckgoLogo from "../assets/search-engine-logos/duckduckgo.svg?url";
+import braveLogo from "../assets/search-engine-logos/brave.svg?url";
+import bingLogo from "../assets/search-engine-logos/bing.svg?url";
+import unduckLogo from "../assets/search-engine-logos/unduck.png?url";
 
 interface SearchEngine {
   name: string;
