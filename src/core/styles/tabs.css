@@ -72,7 +72,8 @@
   width: 96px;
   height: 96px;
   border-radius: 18px;
-  cursor: pointer;
+  cursor: default;
+  user-select: none;
   border: 1px solid transparent;
 
   /* Smooth scale & color interpolation setup */
@@ -96,9 +97,8 @@
   transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Selected State via Keyboard or Mouse Hover */
-.tab-item.selected,
-.tab-item:hover {
+/* Keyboard-selected state only; the mouse never changes the selection */
+.tab-item.selected {
   background-color: rgb(131 131 131 / 18%);
   border-color: rgba(255, 255, 255, 0.18);
 
@@ -108,9 +108,13 @@
 }
 
 /* Slight extra push to the icon graphic itself during active state */
-.tab-item.selected .tab-icon,
-.tab-item:hover .tab-icon {
+.tab-item.selected .tab-icon {
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35));
+}
+
+.overlay:focus,
+.tab-item:focus {
+  outline: none;
 }
 
 /* Bold Dynamic Subtext Box */

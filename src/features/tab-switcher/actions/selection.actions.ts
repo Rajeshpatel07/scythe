@@ -2,7 +2,11 @@ import { config } from "../../../core/config/config";
 import { getHostRoot } from "../../../core/utils/host.utils";
 import { MessageBroker } from "../../../core/messaging/message.broker";
 import { closeSwitcher } from "../components/switcher.component";
-import { getCachedTabItems } from "../state/selection.store";
+import {
+  getCachedTabItems,
+  isSwitcherReady,
+  setPendingConfirm,
+} from "../state/selection.store";
 
 export function updateSelection(index: number): void {
   const root = getHostRoot();
@@ -37,18 +41,27 @@ export function updateSelection(index: number): void {
       block: "nearest",
       inline: "nearest",
     });
+    (targetItem as HTMLElement).focus({ preventScroll: true });
   }
 
   config.tabSelectedIndex = index;
 }
 
-export function confirmSelection(): void {
+export function confirmSelection(): boolean {
   const root = getHostRoot();
-  if (!root) return;
+  if (!root) return false;
+
+  // The initial tab render is asynchronous. If the user releases Ctrl before
+  // it finishes, defer the confirm until the dock is ready instead of dropping
+  // the keyup and leaving the switcher open.
+  if (!isSwitcherReady()) {
+    setPendingConfirm();
+    return false;
+  }
 
   const items = getCachedTabItems() ?? root.querySelectorAll(".tab-item");
   const chosenTab = items[config.tabSelectedIndex];
-  if (!chosenTab?.id) return;
+  if (!chosenTab?.id) return false;
 
   // Tear down synchronously: the user is leaving this page, so the animated
   // fade would only survive as a stale frame when they return to the tab.
@@ -58,4 +71,6 @@ export function confirmSelection(): void {
     action: "switchTab",
     id: chosenTab.id,
   }).catch(() => {});
+
+  return true;
 }

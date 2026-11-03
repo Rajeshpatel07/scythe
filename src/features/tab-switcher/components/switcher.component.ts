@@ -20,7 +20,18 @@ import {
 import {
   setCachedTabItems,
   clearCachedTabItems,
+  setSwitcherReady,
+  consumePendingConfirm,
 } from "../state/selection.store";
+
+function focusSwitcher(): void {
+  const root = getHostRoot();
+  if (!root) return;
+
+  const selectedItem = root.querySelector<HTMLElement>(".tab-item.selected");
+  const target = selectedItem ?? root.getElementById("switcher-overlay");
+  target?.focus({ preventScroll: true });
+}
 
 function createTabsDock(): void {
   const shadowRoot = ensureHost("switcher");
@@ -42,6 +53,18 @@ function createTabsDock(): void {
     { id: "switcher-overlay", className: "overlay hidden" },
     [container],
   );
+  overlay.tabIndex = -1;
+
+  // Keep focus inside the switcher when the overlay is clicked. The mouse is
+  // intentionally inert: it must not change or confirm the selection.
+  overlay.addEventListener("mousedown", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    focusSwitcher();
+  });
+  overlay.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
 
   shadowRoot.appendChild(overlay);
 }
@@ -117,6 +140,7 @@ async function renderTabs(): Promise<void> {
     tabItem.setAttribute("id", tab.id);
     tabItem.setAttribute("data-index", String(index));
     tabItem.setAttribute("data-title", tab.title);
+    tabItem.tabIndex = -1;
 
     const img = document.createElement("img");
     img.classList.add("tab-icon");
@@ -161,11 +185,6 @@ async function renderTabs(): Promise<void> {
 
     tabItem.appendChild(img);
 
-    tabItem.addEventListener("mouseenter", () => updateSelection(index));
-    tabItem.addEventListener("click", () => {
-      confirmSelection();
-    });
-
     fragment.appendChild(tabItem);
   });
 
@@ -180,24 +199,35 @@ async function renderTabs(): Promise<void> {
 }
 
 export async function openSwitcher(isReverse = false): Promise<void> {
+  setSwitcherReady(false);
   createTabsDock();
   await renderTabs();
 
   const root = getHostRoot();
-  if (!root) return;
+  if (!root || !config.isTabOpen) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
   const items = root.querySelectorAll(".tab-item");
   const tabsLen = items.length;
 
   config.isTabOpen = true;
-  overlay.classList.remove("hidden");
 
   if (isReverse) {
     updateSelection((config.tabSelectedIndex - 1 + tabsLen) % tabsLen);
   } else {
     updateSelection((config.tabSelectedIndex + 1) % tabsLen);
   }
+
+  setSwitcherReady(true);
+
+  // Releasing Ctrl while the list was still loading defers the confirm; honour
+  // it now, before the dock is painted, so a quick tap still switches tabs.
+  if (consumePendingConfirm() && confirmSelection()) {
+    return;
+  }
+
+  overlay.classList.remove("hidden");
+  focusSwitcher();
 }
 
 export function closeSwitcher(immediate = false): void {

@@ -38,8 +38,8 @@ Visually switch between open tabs using the keyboard. A dock appears in the cent
 
 - Hold Ctrl/Cmd and press Space to cycle forward
 - Add Shift to cycle in reverse
-- Hover with mouse or keep pressing Space to navigate
-- Release Ctrl/Cmd or click to confirm selection
+- Keep pressing Space to navigate; the mouse does not change the selection
+- Release Ctrl/Cmd to confirm the selection
 - High-resolution favicon loading with local caching
 
 ![Tab Switcher](src/assets/images/tab-switcher.png)
