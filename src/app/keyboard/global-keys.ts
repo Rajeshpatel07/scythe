@@ -19,6 +19,28 @@ import { getHostRoot } from "../../core/utils/host.utils";
 let lastDomTabShortcutAt = 0;
 const COMMAND_DEDUP_WINDOW_MS = 1000;
 
+const IS_MAC = /mac/i.test(navigator.platform);
+
+/**
+ * Some Chromium-based browsers (notably Brave) list `Ctrl+Space` as one of
+ * their own accelerators, so Chrome silently refuses to auto-assign it to this
+ * extension. The content-script listener below is the fallback for that case;
+ * when the command is assigned, Chrome consumes the key before the page sees
+ * it and the command-router path handles it.
+ *
+ * On Windows/Linux, Meta is the Windows/Super key and must never count as the
+ * switcher modifier; otherwise Win+Shift+Space opens the switcher by accident.
+ * On macOS the manifest uses MacCtrl, but Cmd is accepted as well.
+ */
+export function hasTabSwitcherModifier(e: KeyboardEvent): boolean {
+  if (e.altKey) return false;
+  return IS_MAC ? e.metaKey || e.ctrlKey : e.ctrlKey && !e.metaKey;
+}
+
+export function isTabSwitcherConfirmKey(key: string): boolean {
+  return key === "Control" || (IS_MAC && key === "Meta");
+}
+
 function blurFocusedFrame(): void {
   const root = getHostRoot();
   const candidates = [document.activeElement, root?.activeElement];
@@ -58,10 +80,8 @@ function handleTabShortcut(
   e: KeyboardEvent,
   isSpotlightOpen: boolean,
 ): boolean {
-  const isModifier = e.metaKey || e.ctrlKey;
-
   if (
-    isModifier &&
+    hasTabSwitcherModifier(e) &&
     e.code === "Space" &&
     !isSpotlightOpen &&
     config.isTabEnabled

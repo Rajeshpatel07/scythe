@@ -4,6 +4,7 @@ import { handleWebSearch } from "../features/spotlight/services/spotlight.contro
 import {
   handleGlobalKeys,
   handleTabSwitcherCommand,
+  isTabSwitcherConfirmKey,
 } from "../app/keyboard/global-keys";
 import {
   openGlanceModal,
@@ -43,7 +44,7 @@ window.addEventListener(
 
     e.stopImmediatePropagation();
     e.preventDefault();
-    if (e.key === "Meta" || e.key === "Control") {
+    if (isTabSwitcherConfirmKey(e.key)) {
       if (config.isTabOpen) {
         confirmSelection();
       }

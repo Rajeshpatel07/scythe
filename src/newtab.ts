@@ -6,6 +6,7 @@ import { confirmSelection } from "./features/tab-switcher/actions/selection.acti
 import {
   handleGlobalKeys,
   handleTabSwitcherCommand,
+  isTabSwitcherConfirmKey,
 } from "./app/keyboard/global-keys";
 import type { MessagePayload } from "./core/messaging/message.types";
 
@@ -30,7 +31,7 @@ chrome.runtime.onMessage.addListener((request: MessagePayload) => {
 window.addEventListener(
   "keyup",
   (e: KeyboardEvent) => {
-    if (e.key === "Meta" || e.key === "Control") {
+    if (isTabSwitcherConfirmKey(e.key)) {
       if (config.isTabOpen) {
         confirmSelection();
       }
