@@ -1,8 +1,12 @@
-import { loadFaviconFromCache } from "../../../core/services/favicon.service";
+import {
+  loadFaviconFromCache,
+  loadFaviconWithLogoFallback,
+} from "../../../core/services/favicon.service";
 import { config } from "../../../core/config/config";
 import type { ListItems } from "../../../core/types/domain.types";
 import { LIKELY_URL_REGEX } from "../../../core/config/constants";
 import { getHostRoot } from "../../../core/utils/host.utils";
+import { isLocalhostUrl } from "../../../core/utils/url.utils";
 import { hideSpotlight } from "../components/spotlight.component";
 import { openUrl } from "../../../core/services/navigation.service";
 import {
@@ -12,7 +16,9 @@ import {
 } from "../spotlight.constants";
 
 function attachFavicon(favicon: HTMLImageElement, url: string): void {
-  if (LIKELY_URL_REGEX.test(url)) {
+  if (isLocalhostUrl(url)) {
+    loadFaviconWithLogoFallback(url, favicon);
+  } else if (LIKELY_URL_REGEX.test(url)) {
     loadFaviconFromCache(url, favicon);
   } else {
     favicon.src = chrome.runtime.getURL("src/assets/icon48.png");

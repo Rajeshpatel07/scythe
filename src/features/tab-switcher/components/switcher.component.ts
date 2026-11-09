@@ -2,7 +2,9 @@ import {
   loadFaviconFromCache,
   getHighResFallback,
   persistFavicon,
+  loadFaviconWithLogoFallback,
 } from "../../../core/services/favicon.service";
+import { isLocalhostUrl } from "../../../core/utils/url.utils";
 import { config } from "../../../core/config/config";
 import type { TabsResponse } from "../../../core/types/domain.types";
 import {
@@ -102,9 +104,16 @@ async function renderTabs(): Promise<void> {
     }
   });
 
+  // Localhost tabs are never matched here (favicons are fetched fresh from
+  // Chrome's favicon service instead of the per-hostname storage cache, and a
+  // stale fav_localhost entry would be wrong for the site this tab hosts).
   const storageKeys = tabHostnames
-    .filter((hostname) => hostname !== "")
-    .map((hostname) => `fav_${hostname}`);
+    .map((hostname, index) => ({
+      hostname,
+      url: response.tabs[index]?.url ?? "",
+    }))
+    .filter(({ hostname, url }) => hostname !== "" && !isLocalhostUrl(url))
+    .map(({ hostname }) => `fav_${hostname}`);
 
   let cachedFavicons: Record<string, string> = {};
   if (storageKeys.length > 0) {
@@ -148,12 +157,17 @@ async function renderTabs(): Promise<void> {
 
     img.setAttribute("data-loading-url", currentTargetUrl);
 
-    // Retrieve from our batched cache read
-    const storageKey = hostname ? `fav_${hostname}` : "";
+    const isLocalhost = isLocalhostUrl(currentTargetUrl);
+
+    // Retrieve from our batched cache read (localhost tabs always go to the
+    // favicon service instead of the storage cache)
+    const storageKey = !isLocalhost && hostname ? `fav_${hostname}` : "";
     const cachedDataUrl = storageKey ? cachedFavicons[storageKey] : undefined;
 
     if (cachedDataUrl && cachedDataUrl !== "null") {
       img.src = cachedDataUrl;
+    } else if (isLocalhost) {
+     loadFaviconWithLogoFallback(currentTargetUrl, img, 128);
     } else if (hostname && !isChromeSchema) {
       // High-res fetch covers this case; skip the redundant low-res request
       // and show the extension icon until it lands.

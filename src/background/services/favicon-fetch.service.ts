@@ -8,7 +8,7 @@ export function buildChromeFaviconUrl(
   pageUrl: string,
   imgSize: number,
 ): string {
-  return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}&allowGoogle=true`;
+  return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=${imgSize}`;
 }
 
 export function buildHighResFaviconUrl(hostname: string): string {
