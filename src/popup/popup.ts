@@ -61,8 +61,8 @@ interface ToggleSettingDef {
 
 const TOGGLE_SETTINGS: ToggleSettingDef[] = [
   {
-    label: "Page content",
-    description: "Show or hide content on the new tab page",
+    label: "Hide new tab content",
+    description: "Hide content on the new tab page",
     initial: () => config.hideNewTabContent,
     onChange: (checked) => {
       storage.sync.set({ hideNewTabContent: checked }).catch(() => {});
