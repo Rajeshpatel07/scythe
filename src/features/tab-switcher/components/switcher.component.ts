@@ -26,13 +26,92 @@ import {
   consumePendingConfirm,
 } from "../state/selection.store";
 
-function focusSwitcher(): void {
-  const root = getHostRoot();
-  if (!root) return;
+// Focus is managed here instead of a one-shot .focus(): the dock is painted
+// before its tabs arrive and the host page may still own focus. Generations
+// cancel pending retries when the switcher is reopened or closed.
+let focusGeneration = 0;
 
-  const selectedItem = root.querySelector<HTMLElement>(".tab-item.selected");
-  const target = selectedItem ?? root.getElementById("switcher-overlay");
-  target?.focus({ preventScroll: true });
+interface SavedFocus {
+  shadowActive: Element | null;
+  documentActive: Element | null;
+}
+
+let previousFocus: SavedFocus | null = null;
+
+function capturePreviousFocus(): void {
+  const root = getHostRoot();
+  previousFocus = {
+    shadowActive: root?.activeElement ?? null,
+    documentActive: document.activeElement,
+  };
+}
+
+function getSwitcherFocusTarget(root: ShadowRoot): HTMLElement | null {
+  return (
+    root.querySelector<HTMLElement>(".tab-item.selected") ??
+    root.getElementById("switcher-overlay")
+  );
+}
+
+function focusSwitcher(): void {
+  if (!config.isTabOpen || !getHostRoot()) return;
+
+  const generation = ++focusGeneration;
+
+  const attempt = (verify: boolean): void => {
+    if (generation !== focusGeneration || !config.isTabOpen) return;
+    const root = getHostRoot();
+    if (!root) return;
+
+    try {
+      if (!document.hasFocus()) window.focus();
+    } catch {
+      // window.focus() can be restricted; the .focus() below still applies.
+    }
+
+    const target = getSwitcherFocusTarget(root);
+    if (!target) return;
+
+    if (verify) {
+      if (root.activeElement !== target) target.focus();
+    } else {
+      target.focus({ preventScroll: true });
+    }
+  };
+
+  attempt(false);
+
+  // Re-assert focus after the overlay has painted and again after tabs render;
+  // a single early .focus() is routinely lost to the host page.
+  setTimeout(() => {
+    attempt(false);
+    requestAnimationFrame(() => attempt(true));
+  }, 50);
+}
+
+function restorePreviousFocus(): void {
+  const saved = previousFocus;
+  previousFocus = null;
+
+  if (saved) {
+    for (const element of [saved.shadowActive, saved.documentActive]) {
+      if (!element?.isConnected) continue;
+      if (typeof (element as HTMLElement).focus !== "function") continue;
+      try {
+        (element as HTMLElement).focus({ preventScroll: true });
+        return;
+      } catch {
+        // Best effort: fall through to the next candidate.
+      }
+    }
+  }
+
+  if (config.isGlanceOpen) {
+    const frame = getHostRoot()?.getElementById(
+      "glance-content-frame",
+    ) as HTMLIFrameElement | null;
+    frame?.focus({ preventScroll: true });
+  }
 }
 
 function createTabsDock(): void {
@@ -72,6 +151,7 @@ function createTabsDock(): void {
 }
 
 let renderVersion = 0;
+let openGeneration = 0;
 
 async function renderTabs(): Promise<void> {
   const root = getHostRoot();
@@ -87,6 +167,8 @@ async function renderTabs(): Promise<void> {
   } catch {
     response = null;
   }
+
+  if (currentVersion !== renderVersion) return;
 
   if (!response?.tabs) {
     return;
@@ -123,6 +205,8 @@ async function renderTabs(): Promise<void> {
       // Ignore storage read failures
     }
   }
+
+  if (currentVersion !== renderVersion) return;
 
   // 2. Loop through tabs and construct elements using batched cache
   let activeTabIndex = 0;
@@ -167,7 +251,7 @@ async function renderTabs(): Promise<void> {
     if (cachedDataUrl && cachedDataUrl !== "null") {
       img.src = cachedDataUrl;
     } else if (isLocalhost) {
-     loadFaviconWithLogoFallback(currentTargetUrl, img, 128);
+      loadFaviconWithLogoFallback(currentTargetUrl, img, 128);
     } else if (hostname && !isChromeSchema) {
       // High-res fetch covers this case; skip the redundant low-res request
       // and show the extension icon until it lands.
@@ -213,18 +297,32 @@ async function renderTabs(): Promise<void> {
 }
 
 export async function openSwitcher(isReverse = false): Promise<void> {
-  setSwitcherReady(false);
-  createTabsDock();
-  await renderTabs();
+  const generation = ++openGeneration;
 
+  config.isTabOpen = true;
+  setSwitcherReady(false);
+  capturePreviousFocus();
+  createTabsDock();
+
+  // Paint and focus the dock immediately. Fetching tabs (a service-worker
+  // round trip plus a storage read) must not delay the overlay appearing.
   const root = getHostRoot();
   if (!root || !config.isTabOpen) return;
 
   const overlay = root.getElementById("switcher-overlay") as HTMLDivElement;
-  const items = root.querySelectorAll(".tab-item");
-  const tabsLen = items.length;
+  overlay.classList.remove("hidden");
+  focusSwitcher();
 
-  config.isTabOpen = true;
+  await renderTabs();
+
+  // A newer open (or a close) superseded this one while the tabs were loading.
+  const currentRoot = getHostRoot();
+  if (generation !== openGeneration || !currentRoot || !config.isTabOpen) {
+    return;
+  }
+
+  const items = currentRoot.querySelectorAll(".tab-item");
+  const tabsLen = items.length;
 
   if (isReverse) {
     updateSelection((config.tabSelectedIndex - 1 + tabsLen) % tabsLen);
@@ -234,19 +332,20 @@ export async function openSwitcher(isReverse = false): Promise<void> {
 
   setSwitcherReady(true);
 
-  // Releasing Ctrl while the list was still loading defers the confirm; honour
-  // it now, before the dock is painted, so a quick tap still switches tabs.
+  // Releasing Ctrl while the list was still loading defers the confirm;
+  // honour it now so a quick tap still switches tabs.
   if (consumePendingConfirm() && confirmSelection()) {
     return;
   }
-
-  overlay.classList.remove("hidden");
-  focusSwitcher();
 }
 
 export function closeSwitcher(immediate = false): void {
   // Disable input routing immediately to prevent race conditions during animation
   config.isTabOpen = false;
+
+  // Cancel any in-flight open/focus work belonging to this switcher session.
+  openGeneration++;
+  focusGeneration++;
 
   const root = getHostRoot();
   if (!root) return;
@@ -256,12 +355,10 @@ export function closeSwitcher(immediate = false): void {
 
   clearCachedTabItems();
 
-  removeHost("switcher", immediate);
-
-  if (config.isGlanceOpen) {
-    const glanceFrame = root.getElementById(
-      "glance-content-frame",
-    ) as HTMLIFrameElement | null;
-    glanceFrame?.focus();
+  if (!immediate) {
+    // Cancelling keeps the user on this tab, so restore their prior focus.
+    restorePreviousFocus();
   }
+
+  removeHost("switcher", immediate);
 }
